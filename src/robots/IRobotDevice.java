@@ -6,6 +6,7 @@ public interface IRobotDevice {
 	
 	public RobotType getType();
 	public String getAddress();
+	public String getName();
 
 	public void destroy();
 	

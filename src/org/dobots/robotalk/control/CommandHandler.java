@@ -1,6 +1,5 @@
 package org.dobots.robotalk.control;
 
-import org.dobots.robotalk.control.RemoteControlHelper.Move;
 import org.dobots.robotalk.msg.RoboCommands;
 import org.dobots.robotalk.msg.RoboCommands.BaseCommand;
 import org.dobots.robotalk.msg.RoboCommands.DriveCommand;
