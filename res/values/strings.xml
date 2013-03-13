@@ -1,0 +1,20 @@
+<resources>
+
+    <string name="app_name">RoboTalk-Lib</string>
+      
+    <!--  Settings --> 
+    <string name="menu_settings">Settings</string>
+    <string name="nick_name">Nickname</string>
+    <string name="address">Address</string>
+    <string name="command_port">Command Port</string>
+    <string name="video_port">Video Port</string>
+    <string name="event_port">Event Port</string>
+          
+    <!--  Remote Control -->
+    <string name="control_fwd">Fwd</string>    
+    <string name="control_left">Left</string>    
+    <string name="control_bwd">Bwd</string>    
+    <string name="control_right">Right</string> 
+    <string name="control">Remote Control</string>
+    
+</resources>
