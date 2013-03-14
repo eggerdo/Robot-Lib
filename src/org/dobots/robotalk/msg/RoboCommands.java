@@ -44,11 +44,13 @@ public class RoboCommands {
 		int nHeaderID;
 		int nTransactionID;
 		long lTimeStamp;
+		String strRobot;
 		
-		public BaseCommand(int i_nID) {
+		public BaseCommand(int i_nID, String i_strRobot) {
 			nHeaderID = i_nID;
 			nTransactionID = TRANSACTION_ID++;
 			lTimeStamp = System.currentTimeMillis();
+			strRobot = i_strRobot;
 		}
 		
 		public BaseCommand(JSONObject i_oObj) throws JSONException {
@@ -56,6 +58,7 @@ public class RoboCommands {
 			nHeaderID 		= header.getInt(RoboCommandTypes.F_HEADER_ID);
 			nTransactionID 	= header.getInt(RoboCommandTypes.F_TID);
 			lTimeStamp 		= header.getLong(RoboCommandTypes.F_TIMESTAMP);
+			strRobot		= header.getString(RoboCommandTypes.F_ROBOT);
 		}
 		
 		public JSONObject toJSON() {
@@ -63,8 +66,9 @@ public class RoboCommands {
 			JSONObject header = new JSONObject();
 			try {
 				header.put(RoboCommandTypes.F_HEADER_ID, 	nHeaderID);
-				header.put(RoboCommandTypes.F_TID, 		nTransactionID);
+				header.put(RoboCommandTypes.F_TID, 			nTransactionID);
 				header.put(RoboCommandTypes.F_TIMESTAMP, 	lTimeStamp);
+				header.put(RoboCommandTypes.F_ROBOT, 		strRobot);
 				obj.put(RoboCommandTypes.S_HEADER, header);
 				return obj;
 			} catch (JSONException e) {
@@ -86,8 +90,8 @@ public class RoboCommands {
 		public double dblSpeed;
 		public double dblAngle;
 		
-		public DriveCommand(RemoteControlHelper.Move i_eMove, double i_dblSpeed, double i_dblAngle) {
-			super(RoboCommandTypes.DRIVE_COMMAND);
+		public DriveCommand(String i_strRobot, RemoteControlHelper.Move i_eMove, double i_dblSpeed, double i_dblAngle) {
+			super(RoboCommandTypes.DRIVE_COMMAND, i_strRobot);
 			
 			this.eMove = i_eMove;
 			this.dblSpeed = i_dblSpeed; 
@@ -121,12 +125,12 @@ public class RoboCommands {
 	
 	}
 	
-	public static DriveCommand createDriveCommand(RemoteControlHelper.Move i_eMove, double i_dblSpeed, double i_dblAngle) {
-		return getInstance().new DriveCommand(i_eMove, i_dblSpeed, i_dblAngle);
+	public static DriveCommand createDriveCommand(String i_strRobot, RemoteControlHelper.Move i_eMove, double i_dblSpeed, double i_dblAngle) {
+		return getInstance().new DriveCommand(i_strRobot, i_eMove, i_dblSpeed, i_dblAngle);
 	}
 	
-	public static DriveCommand createDriveCommand(RemoteControlHelper.Move i_eMove, double i_dblSpeed) {
-		return getInstance().new DriveCommand(i_eMove, i_dblSpeed, 0);
+	public static DriveCommand createDriveCommand(String i_strRobot, RemoteControlHelper.Move i_eMove, double i_dblSpeed) {
+		return getInstance().new DriveCommand(i_strRobot, i_eMove, i_dblSpeed, 0);
 	}
 
 	public enum CameraCommandType {
@@ -139,8 +143,8 @@ public class RoboCommands {
 
 		public CameraCommandType eType;
 		
-		public CameraCommand(CameraCommandType i_eType) {
-			super(RoboCommandTypes.CAMERA_COMMAND);
+		public CameraCommand(String i_strRobot, CameraCommandType i_eType) {
+			super(RoboCommandTypes.CAMERA_COMMAND, i_strRobot);
 			
 			eType = i_eType;
 		}
@@ -167,16 +171,16 @@ public class RoboCommands {
 		}
 	}
 	
-	public static CameraCommand createCameraCommand(CameraCommandType i_eType) {
-		return getInstance().new CameraCommand(i_eType);
+	public static CameraCommand createCameraCommand(String i_strRobot, CameraCommandType i_eType) {
+		return getInstance().new CameraCommand(i_strRobot, i_eType);
 	}
 	
 	public class ControlCommand extends BaseCommand {
 		
 		Request eRequest;
 		
-		public ControlCommand(Request i_eRequest) {
-			super(RoboCommandTypes.CONTROL_COMMAND);
+		public ControlCommand(String i_strRobot, Request i_eRequest) {
+			super(RoboCommandTypes.CONTROL_COMMAND, i_strRobot);
 			
 			eRequest = i_eRequest;
 		}

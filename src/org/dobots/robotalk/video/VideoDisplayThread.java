@@ -3,7 +3,7 @@ package org.dobots.robotalk.video;
 import java.io.ByteArrayInputStream;
 
 import org.dobots.robotalk.msg.RobotMessage;
-import org.dobots.robotalk.zmq.ZMQReceiveThread;
+import org.dobots.robotalk.zmq.ZmqReceiveThread;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMsg;
@@ -13,7 +13,7 @@ import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Message;
 
-public class VideoDisplayThread extends ZMQReceiveThread {
+public class VideoDisplayThread extends ZmqReceiveThread {
 	
 	public interface VideoListener {
 		/**
@@ -54,7 +54,7 @@ public class VideoDisplayThread extends ZMQReceiveThread {
 
 	@Override
 	protected void execute() {
-		ZMsg oMsg = ZMsg.recvMsg(m_oSocket);
+		ZMsg oMsg = ZMsg.recvMsg(m_oInSocket);
 		if (oMsg != null) {
 			// create a video message out of the zmq message
 			RobotMessage oVideoMsg = RobotMessage.fromZMsg(oMsg);

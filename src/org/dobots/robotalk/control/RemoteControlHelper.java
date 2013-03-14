@@ -7,6 +7,7 @@ import org.dobots.utilities.joystick.IJoystickListener;
 import org.dobots.utilities.joystick.Joystick;
 
 import robots.IRobotDevice;
+import robots.RobotRemoteListener;
 import android.app.Activity;
 import android.os.SystemClock;
 import android.util.Log;
@@ -18,15 +19,15 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ToggleButton;
 
-public class RemoteControlHelper implements IJoystickListener, IRemoteControlListener {
+public class RemoteControlHelper implements IJoystickListener {
 
-	private static final String TAG = "RemoteControlHelper";
+	static final String TAG = "RemoteControlHelper";
 	
 	public enum Move {
 		NONE, STRAIGHT_FORWARD, FORWARD, STRAIGHT_BACKWARD, BACKWARD, LEFT, RIGHT
 	}
 	
-	protected IRemoteControlListener m_oRemoteControlListener;
+	protected IRemoteControlListener m_oRemoteControlListener = null;
 	
 	private Move lastMove = Move.NONE;
 
@@ -50,29 +51,28 @@ public class RemoteControlHelper implements IJoystickListener, IRemoteControlLis
 	
 	private Joystick m_oJoystick;
 	
-	private IRobotDevice m_oRobot;
+	protected RemoteControlHelper(Activity i_oActivity) {
+		this.m_oActivity = i_oActivity;
+	}
 
 	// At least one of the parameters i_oRobot or i_oListener has to be assigned! the other can be null.
 	// It is also possible to assign both
 	public RemoteControlHelper(Activity i_oActivity, IRobotDevice i_oRobot, IRemoteControlListener i_oListener) {
-		this.m_oActivity = i_oActivity;
+		this(i_oActivity);
 		
 		// one of the two parameters, RobotDevice or RemoteControlListener has to be assigned!
 		assert(!(i_oRobot == null && i_oListener == null));
 		
-		m_oRobot = i_oRobot;
+		if (i_oRobot != null) {
+			m_oRemoteControlListener = new RobotRemoteListener(i_oRobot);
+		}
 		
 		// by default, this class is handling the move commands triggered either by the remote control buttons
 		// or by the joystick. However it is possible to overwrite the listener so that move commands
 		// can be individually handled
-		if (i_oListener == null) {
-			m_oRemoteControlListener = this;
-		} else {
+		if (i_oListener != null) {
 			m_oRemoteControlListener = i_oListener;
 		}
-		
-		// TODO
-//		RoboTalkActivity_Client.getRoboControl().setRemoteControlListener(this);
 	}
 	
 	public void setRemoteControlListener(IRemoteControlListener i_oListener) {
@@ -81,7 +81,7 @@ public class RemoteControlHelper implements IJoystickListener, IRemoteControlLis
 	
 	public void removeRemoteControlListener(IRemoteControlListener i_oListener) {
 		if (m_oRemoteControlListener == i_oListener) {
-			m_oRemoteControlListener = this;
+			m_oRemoteControlListener = null;
 		}
 	}
 	
@@ -105,9 +105,7 @@ public class RemoteControlHelper implements IJoystickListener, IRemoteControlLis
 				@Override
 				public void onClick(View v) {
 					m_bControl = !m_bControl;
-					if (m_oRemoteControlListener != null) {
-						m_oRemoteControlListener.enableControl(m_bControl);
-					}
+					enableControl(m_bControl);
 					showControlButtons(m_bControl);
 				}
 			});
@@ -126,12 +124,12 @@ public class RemoteControlHelper implements IJoystickListener, IRemoteControlLis
 					switch (action & MotionEvent.ACTION_MASK) {
 					case MotionEvent.ACTION_CANCEL:
 					case MotionEvent.ACTION_UP:
-						m_oRemoteControlListener.onMove(Move.NONE);
+						onMove(Move.NONE);
 						break;
 					case MotionEvent.ACTION_POINTER_UP:
 						break;
 					case MotionEvent.ACTION_DOWN:
-						m_oRemoteControlListener.onMove(Move.STRAIGHT_FORWARD);
+						onMove(Move.STRAIGHT_FORWARD);
 						break;
 					case MotionEvent.ACTION_POINTER_DOWN:
 						break;					
@@ -151,12 +149,12 @@ public class RemoteControlHelper implements IJoystickListener, IRemoteControlLis
 					switch (action & MotionEvent.ACTION_MASK) {
 					case MotionEvent.ACTION_CANCEL:
 					case MotionEvent.ACTION_UP:
-						m_oRemoteControlListener.onMove(Move.NONE);
+						onMove(Move.NONE);
 						break;
 					case MotionEvent.ACTION_POINTER_UP:
 						break;
 					case MotionEvent.ACTION_DOWN:
-						m_oRemoteControlListener.onMove(Move.STRAIGHT_BACKWARD);
+						onMove(Move.STRAIGHT_BACKWARD);
 						break;
 					case MotionEvent.ACTION_POINTER_DOWN:
 						break;					
@@ -176,12 +174,12 @@ public class RemoteControlHelper implements IJoystickListener, IRemoteControlLis
 					switch (action & MotionEvent.ACTION_MASK) {
 					case MotionEvent.ACTION_CANCEL:
 					case MotionEvent.ACTION_UP:
-						m_oRemoteControlListener.onMove(Move.NONE);
+						onMove(Move.NONE);
 						break;
 					case MotionEvent.ACTION_POINTER_UP:
 						break;
 					case MotionEvent.ACTION_DOWN:
-						m_oRemoteControlListener.onMove(Move.LEFT);
+						onMove(Move.LEFT);
 						break;
 					case MotionEvent.ACTION_POINTER_DOWN:
 						break;					
@@ -201,12 +199,12 @@ public class RemoteControlHelper implements IJoystickListener, IRemoteControlLis
 					switch (action & MotionEvent.ACTION_MASK) {
 					case MotionEvent.ACTION_CANCEL:
 					case MotionEvent.ACTION_UP:
-						m_oRemoteControlListener.onMove(Move.NONE);
+						onMove(Move.NONE);
 						break;
 					case MotionEvent.ACTION_POINTER_UP:
 						break;
 					case MotionEvent.ACTION_DOWN:
-						m_oRemoteControlListener.onMove(Move.RIGHT);
+						onMove(Move.RIGHT);
 						break;
 					case MotionEvent.ACTION_POINTER_DOWN:
 						break;					
@@ -276,7 +274,7 @@ public class RemoteControlHelper implements IJoystickListener, IRemoteControlLis
 		if (i_dblPercentage == 0 && i_dblAngle == 0) {
 			// if percentage and angle is 0 this means the joystick was released
 			// so we stop the robot
-			m_oRemoteControlListener.onMove(Move.NONE, 0, 0);
+			onMove(Move.NONE, 0, 0);
 			lastMove = Move.NONE;
 		} else {
 
@@ -371,88 +369,21 @@ public class RemoteControlHelper implements IJoystickListener, IRemoteControlLis
 			// where -90 is left and +90 is right
 			dblAbsAngle -= 90.0;
 			
-			m_oRemoteControlListener.onMove(thisMove, i_dblPercentage, dblAbsAngle);
+			onMove(thisMove, i_dblPercentage, dblAbsAngle);
 			lastMove = thisMove;
 		}
 	}
 
-	// called by RemoteControlHelper when the joystick is used (if no other RemoteControlListener
-	// was assigned)
-	@Override
 	public void onMove(Move i_oMove, double i_dblSpeed, double i_dblAngle) {
-
-		if (i_dblSpeed == -1) {
-			i_dblSpeed = m_oRobot.getBaseSped();
-		}
-		
-		// execute this move
-		switch(i_oMove) {
-		case NONE:
-			m_oRobot.moveStop();
-			Log.i(TAG, "stop()");
-			break;
-		case BACKWARD:
-			m_oRobot.moveBackward(i_dblSpeed, i_dblAngle);
-			Log.i(TAG, String.format("bwd(s=%f, a=%f)", i_dblSpeed, i_dblAngle));
-			break;
-		case STRAIGHT_BACKWARD:
-			m_oRobot.moveBackward(i_dblSpeed);
-			Log.i(TAG, String.format("bwd(s=%f)", i_dblSpeed));
-			break;
-		case FORWARD:
-			m_oRobot.moveForward(i_dblSpeed, i_dblAngle);
-			Log.i(TAG, String.format("fwd(s=%f, a=%f)", i_dblSpeed, i_dblAngle));
-			break;
-		case STRAIGHT_FORWARD:
-			m_oRobot.moveForward(i_dblSpeed);
-			Log.i(TAG, String.format("fwd(s=%f)", i_dblSpeed));
-			break;
-		case LEFT:
-			m_oRobot.rotateCounterClockwise(i_dblSpeed);
-			Log.i(TAG, String.format("c cw(s=%f)", i_dblSpeed));
-			break;
-		case RIGHT:
-			m_oRobot.rotateClockwise(i_dblSpeed);
-			Log.i(TAG, String.format("cw(s=%f)", i_dblSpeed));
-			break;
-		}
+		m_oRemoteControlListener.onMove(i_oMove, i_dblSpeed, i_dblAngle);
 	}
 
-	// called by RemoteControlHelper when the buttons are used (if no other RemoteControlListener
-	// was assigned)
-	@Override
 	public void onMove(Move i_oMove) {
-		
-		// execute this move
-		switch(i_oMove) {
-		case NONE:
-			m_oRobot.moveStop();
-			Log.i(TAG, "stop()");
-			break;
-		case STRAIGHT_BACKWARD:
-		case BACKWARD:
-			m_oRobot.moveBackward();
-			Log.i(TAG, "bwd()");
-			break;
-		case STRAIGHT_FORWARD:
-		case FORWARD:
-			m_oRobot.moveForward();
-			Log.i(TAG, "fwd()");
-			break;
-		case LEFT:
-			m_oRobot.rotateCounterClockwise();
-			Log.i(TAG, "c cw()");
-			break;
-		case RIGHT:
-			m_oRobot.rotateClockwise();
-			Log.i(TAG, "cw()");
-			break;
-		}
+		m_oRemoteControlListener.onMove(i_oMove);
 	}
 
-	@Override
 	public void enableControl(boolean i_bEnable) {
-		m_oRobot.enableControl(i_bEnable);
+		m_oRemoteControlListener.enableControl(i_bEnable);
 	}
 	
 	public boolean isControlEnabled() {

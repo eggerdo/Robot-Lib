@@ -2,10 +2,10 @@ package org.dobots.robotalk.video;
 
 import java.util.HashMap;
 
-import org.dobots.robotalk.zmq.ZMQReceiveThread;
+import org.dobots.robotalk.zmq.ZmqForwarderThread;
+import org.dobots.robotalk.zmq.ZmqReceiveThread;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
-import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMsg;
 
 public class VideoHandler {
@@ -14,8 +14,7 @@ public class VideoHandler {
 	
 	private static VideoHandler INSTANCE;
 
-	private ZContext m_oZContext;
-//	private ZmqSettings m_oSettings;
+	ZContext m_oZContext;
 
 	// the channel used to send our own video
 	private ZMQ.Socket m_oExt_VideoOut = null;
@@ -28,7 +27,7 @@ public class VideoHandler {
     
 	private HashMap<String, VideoPublisherEntry> m_mVideoPublisher;
 
-	private VideoReceiveThread m_oVideoRecvThread;
+	private ZmqForwarderThread m_oVideoRecvThread;
 
 	private boolean m_bReceiverConnected;
 
@@ -58,40 +57,7 @@ public class VideoHandler {
 	public void setDebug(boolean i_bDebug) {
 		m_bDebug = i_bDebug;
 	}
-	
-//	private void sendVideoMessage(byte[] rgb) {
-//		
-//		if (m_bSenderConnected) {
-//			// create a video message from the rgb data
-//			VideoMessage videoMsg = new VideoMessage(m_oSettings.getRobotName(), rgb);
-//			// make a zmq message
-//			ZMsg outMsg = videoMsg.toZmsg();
-//			// send the zmq message out
-//			outMsg.send(m_oVideoSender);
-//		}
-//	}
-//
-//	public void setupConnections() {
-//
-//		if (!m_bConnected) {
-//			m_oVideoSender = m_oZContext.createSocket(ZMQ.PUB);
-//			m_oVideoReceiver = m_oZContext.createSocket(ZMQ.PULL);
-//	
-//			// obtain video ports from settings
-//			// receive port is always equal to send port + 1
-//			int nVideoSendPort = m_oSettings.getVideoPort();
-//			
-//			// set the output queue size down, we don't really want to have old video frames displayed
-//			// we only want the most recent ones
-//			m_oVideoSender.setHWM(20);
-//	
-//			m_oVideoSender.connect(String.format("tcp://%s:%d", m_oSettings.getAddress(), nVideoSendPort));
-//			
-//			m_bConnected = true;
-//		}
-//		
-//	}
-	
+
 	/**
 	 * If only incoming video should be handled, supply null as the OutSockete parameter (or vice versa)
 	 * @param i_oInSocket
@@ -102,7 +68,7 @@ public class VideoHandler {
 		if (i_oInSocket != null) {
 			m_oExt_VideoIn = i_oInSocket;
 
-			m_oVideoRecvThread = new VideoReceiveThread(m_oExt_VideoIn);
+			m_oVideoRecvThread = new ZmqForwarderThread(m_oZContext.getContext(), m_oExt_VideoIn, m_oInt_VideoOut, "VideoReceiver");
 			m_oVideoRecvThread.start();
 			
 			m_bReceiverConnected = true;
@@ -145,22 +111,6 @@ public class VideoHandler {
 		
 	}
 
-	class VideoReceiveThread extends ZMQReceiveThread {
-
-		public VideoReceiveThread(Socket i_oInSocket) {
-			super(m_oZContext.getContext(), i_oInSocket, "VideoReceiver");
-		}
-
-		@Override
-		protected void execute() {
-			ZMsg msg = ZMsg.recvMsg(m_oSocket);
-			if (msg != null) {
-				msg.send(m_oInt_VideoOut);
-			}
-		}
-		
-	}
-
 	private class VideoPublisherEntry {
 		public ZMQ.Socket inSocket;
 		public Thread streamer;
@@ -176,7 +126,7 @@ public class VideoHandler {
 		}
 	}
 	
-	public void registerVideo(String i_strVideoAddr) {
+	public void publishVideo(String i_strVideoAddr) {
 		
 		ZMQ.Socket oSocket = m_oZContext.createSocket(ZMQ.PULL);
 		oSocket.connect(i_strVideoAddr);
@@ -197,7 +147,7 @@ public class VideoHandler {
 		
 	}
 	
-	public void unregisterVideo(String i_strVideoAddr) {
+	public void unpublishVideo(String i_strVideoAddr) {
 		
 		VideoPublisherEntry entry = m_mVideoPublisher.get(i_strVideoAddr);
 		if (entry != null) {
@@ -206,7 +156,7 @@ public class VideoHandler {
 		
 	}
 	
-	class ZMQForwarderThread extends ZMQReceiveThread {
+	class ZMQForwarderThread extends ZmqReceiveThread {
 		
 		public ZMQForwarderThread(ZMQ.Socket i_oInSocket) {
 			super(m_oZContext.getContext(), i_oInSocket, "ZMQForwarder");
@@ -214,7 +164,7 @@ public class VideoHandler {
 		
 		@Override
 		protected void execute() {
-			ZMsg msg = ZMsg.recvMsg(m_oSocket);
+			ZMsg msg = ZMsg.recvMsg(m_oInSocket);
 			
 			// while disconnected from external "world"
 			// skip sending messages

@@ -2,18 +2,18 @@ package org.dobots.robotalk.zmq;
 
 import org.zeromq.ZMQ;
 
-public abstract class ZMQReceiveThread extends Thread {
+public abstract class ZmqReceiveThread extends Thread {
 
-	protected ZMQ.Socket m_oSocket;
+	protected ZMQ.Socket m_oInSocket;
 	
 	private ZMQ.Poller m_oPoller;
 	
-	public ZMQReceiveThread(ZMQ.Context i_oContext, ZMQ.Socket i_oInSocket, String i_strThreadName) {
+	public ZmqReceiveThread(ZMQ.Context i_oContext, ZMQ.Socket i_oInSocket, String i_strThreadName) {
 		super(i_strThreadName);
 		
-		m_oSocket = i_oInSocket;
+		m_oInSocket = i_oInSocket;
 		m_oPoller = i_oContext.poller(1);
-		m_oPoller.register(m_oSocket, ZMQ.Poller.POLLIN);
+		m_oPoller.register(m_oInSocket, ZMQ.Poller.POLLIN);
 	}
 
 	@Override
@@ -24,7 +24,7 @@ public abstract class ZMQReceiveThread extends Thread {
 					execute();
 				}
 			}
-			m_oPoller.unregister(m_oSocket);
+			m_oPoller.unregister(m_oInSocket);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
