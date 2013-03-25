@@ -51,6 +51,8 @@ public class RemoteControlHelper implements IJoystickListener {
 	
 	private Joystick m_oJoystick;
 	
+	protected IRobotDevice m_oRobot;
+	
 	protected RemoteControlHelper(Activity i_oActivity) {
 		this.m_oActivity = i_oActivity;
 	}
@@ -59,6 +61,7 @@ public class RemoteControlHelper implements IJoystickListener {
 	// It is also possible to assign both
 	public RemoteControlHelper(Activity i_oActivity, IRobotDevice i_oRobot, IRemoteControlListener i_oListener) {
 		this(i_oActivity);
+		m_oRobot = i_oRobot;
 		
 		// one of the two parameters, RobotDevice or RemoteControlListener has to be assigned!
 		assert(!(i_oRobot == null && i_oListener == null));

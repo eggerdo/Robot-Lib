@@ -24,7 +24,7 @@ public class ZmqRemoteControlHelper extends RemoteControlHelper {
 	
 	private ZContext m_oZContext;
 	
-	private ZMQ.Socket m_oCmdReceiver;
+	private ZMQ.Socket m_oCmdRecvSocket;
 	
 	private CommandReceiveThread m_oReceiver;
 
@@ -36,16 +36,16 @@ public class ZmqRemoteControlHelper extends RemoteControlHelper {
 		
 		m_oZContext = ZmqHandler.getInstance().getContext();
 		
+		setupCommandConnections();
 	}
 	
 	public void setupCommandConnections() {
+		
+		m_oCmdRecvSocket = ZmqHandler.getInstance().obtainCommandRecvSocket();
+//		m_oCmdRecvSocket.subscribe(m_oRobot.getID().getBytes());
+		m_oCmdRecvSocket.subscribe("".getBytes());
 
-		m_oCmdReceiver = m_oZContext.createSocket(ZMQ.SUB);
-//		m_oCmdReceiver.bind(String.format("ipc://%s/remotectrl", ZmqHandler.getInstance().getIPCpath()));
-		m_oCmdReceiver.subscribe("".getBytes());
-		m_oCmdReceiver.connect(ZmqTypes.COMMAND_ADDRESS + "/in");
-
-		m_oReceiver = new CommandReceiveThread(m_oZContext.getContext(), m_oCmdReceiver, "ZmqRC:remote");
+		m_oReceiver = new CommandReceiveThread(m_oZContext.getContext(), m_oCmdRecvSocket, "ZmqRC:remote");
 		m_oReceiver.start();
 	}
 
@@ -75,7 +75,7 @@ public class ZmqRemoteControlHelper extends RemoteControlHelper {
 
 		@Override
 		protected void execute() {
-			ZMsg oZMsg = ZMsg.recvMsg(m_oCmdReceiver);
+			ZMsg oZMsg = ZMsg.recvMsg(m_oCmdRecvSocket);
 			if (oZMsg != null) {
 				// create a chat message out of the zmq message
 				RobotMessage oCmdMsg = RobotMessage.fromZMsg(oZMsg);

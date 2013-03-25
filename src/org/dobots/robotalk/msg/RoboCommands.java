@@ -86,6 +86,10 @@ public class RoboCommands {
 			return toJSON().toString();
 		}
 		
+		public String getRobotID() {
+			return strRobotID;
+		}
+		
 	}
 	
 	public class DriveCommand extends BaseCommand {

@@ -6,15 +6,18 @@ import org.dobots.robotalk.msg.RoboCommands.BaseCommand;
 import org.dobots.robotalk.msg.RoboCommands.CameraCommand;
 import org.dobots.robotalk.msg.RoboCommands.CameraCommandType;
 import org.dobots.robotalk.msg.RoboCommands.DriveCommand;
+import org.dobots.robotalk.zmq.ZMQUtils;
+import org.dobots.robotalk.zmq.ZmqHandler;
+import org.zeromq.ZMQ;
 
 public class ZmqRemoteListener implements IRemoteControlListener, ICameraControlListener {
 
 	private static final int BASE_SPEED = -1;
 	
-	private CommandHandler m_oCmdHandler;
-
-	public ZmqRemoteListener(CommandHandler i_oCommandHandler) {
-		m_oCmdHandler = i_oCommandHandler;
+	private ZMQ.Socket m_oCmdSendSocket;
+	
+	public ZmqRemoteListener() {
+		m_oCmdSendSocket = ZmqHandler.getInstance().obtainCommandSendSocket();
 	}
 
 	@Override
@@ -51,8 +54,8 @@ public class ZmqRemoteListener implements IRemoteControlListener, ICameraControl
 	}
 
 	private void sendCommand(BaseCommand i_oCmd) {
-		if (m_oCmdHandler != null) {
-			m_oCmdHandler.sendCommand(i_oCmd);
+		if (m_oCmdSendSocket != null) {
+			ZMQUtils.sendCommand(i_oCmd, m_oCmdSendSocket);
 		}
 	}
 
