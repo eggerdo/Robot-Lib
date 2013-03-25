@@ -36,17 +36,17 @@ public class ZmqRemoteListener implements IRemoteControlListener, ICameraControl
 	}
 
 	public void toggleCamera() {
-		CameraCommand oCmd = RoboCommands.createCameraCommand("", CameraCommandType.cameraToggle);
+		CameraCommand oCmd = RoboCommands.createCameraCommand("", CameraCommandType.TOGGLE);
 		sendCommand(oCmd);
 	}
 	
 	public void switchCameraOn() {
-		CameraCommand oCmd = RoboCommands.createCameraCommand("", CameraCommandType.cameraOn);
+		CameraCommand oCmd = RoboCommands.createCameraCommand("", CameraCommandType.ON);
 		sendCommand(oCmd);
 	}
 
 	public void switchCameraOff() {
-		CameraCommand oCmd = RoboCommands.createCameraCommand("", CameraCommandType.cameraOff);
+		CameraCommand oCmd = RoboCommands.createCameraCommand("", CameraCommandType.OFF);
 		sendCommand(oCmd);
 	}
 

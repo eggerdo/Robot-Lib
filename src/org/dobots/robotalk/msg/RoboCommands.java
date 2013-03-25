@@ -44,13 +44,15 @@ public class RoboCommands {
 		int nHeaderID;
 		int nTransactionID;
 		long lTimeStamp;
-		String strRobot;
+		String strRobotID;
+		String strVersion;
 		
 		public BaseCommand(int i_nID, String i_strRobot) {
 			nHeaderID = i_nID;
 			nTransactionID = TRANSACTION_ID++;
 			lTimeStamp = System.currentTimeMillis();
-			strRobot = i_strRobot;
+			strRobotID = i_strRobot;
+			strVersion = RoboCommandTypes.VERSION;
 		}
 		
 		public BaseCommand(JSONObject i_oObj) throws JSONException {
@@ -58,7 +60,8 @@ public class RoboCommands {
 			nHeaderID 		= header.getInt(RoboCommandTypes.F_HEADER_ID);
 			nTransactionID 	= header.getInt(RoboCommandTypes.F_TID);
 			lTimeStamp 		= header.getLong(RoboCommandTypes.F_TIMESTAMP);
-			strRobot		= header.getString(RoboCommandTypes.F_ROBOT);
+			strRobotID		= header.getString(RoboCommandTypes.F_ROBOT_ID);
+			strVersion		= header.getString(RoboCommandTypes.F_VERSION);
 		}
 		
 		public JSONObject toJSON() {
@@ -68,7 +71,8 @@ public class RoboCommands {
 				header.put(RoboCommandTypes.F_HEADER_ID, 	nHeaderID);
 				header.put(RoboCommandTypes.F_TID, 			nTransactionID);
 				header.put(RoboCommandTypes.F_TIMESTAMP, 	lTimeStamp);
-				header.put(RoboCommandTypes.F_ROBOT, 		strRobot);
+				header.put(RoboCommandTypes.F_ROBOT_ID, 	strRobotID);
+				header.put(RoboCommandTypes.F_VERSION,		strVersion);
 				obj.put(RoboCommandTypes.S_HEADER, header);
 				return obj;
 			} catch (JSONException e) {
@@ -88,14 +92,14 @@ public class RoboCommands {
 		
 		public RemoteControlHelper.Move eMove;
 		public double dblSpeed;
-		public double dblAngle;
+		public double dblRadius;
 		
 		public DriveCommand(String i_strRobot, RemoteControlHelper.Move i_eMove, double i_dblSpeed, double i_dblAngle) {
 			super(RoboCommandTypes.DRIVE_COMMAND, i_strRobot);
 			
 			this.eMove = i_eMove;
 			this.dblSpeed = i_dblSpeed; 
-			this.dblAngle = i_dblAngle;
+			this.dblRadius = i_dblAngle;
 		}
 		
 		public DriveCommand(JSONObject i_oObj) throws JSONException {
@@ -104,7 +108,7 @@ public class RoboCommands {
 			JSONObject data = i_oObj.getJSONObject(RoboCommandTypes.S_DATA);
 			eMove 		= RemoteControlHelper.Move.valueOf(data.getString(RoboCommandTypes.F_MOVE));
 			dblSpeed 	= data.getDouble(RoboCommandTypes.F_SPEED);
-			dblAngle 	= data.getDouble(RoboCommandTypes.F_ANGLE);
+			dblRadius 	= data.getDouble(RoboCommandTypes.F_RADIUS);
 		}
 		
 		public JSONObject toJSON() {
@@ -113,7 +117,7 @@ public class RoboCommands {
 			try {
 				data.put(RoboCommandTypes.F_MOVE, 	eMove.toString());
 				data.put(RoboCommandTypes.F_SPEED, 	dblSpeed);
-				data.put(RoboCommandTypes.F_ANGLE, 	dblAngle);
+				data.put(RoboCommandTypes.F_RADIUS, dblRadius);
 				obj.put(RoboCommandTypes.S_DATA, data);
 				return obj;
 			} catch (JSONException e) {
@@ -134,9 +138,9 @@ public class RoboCommands {
 	}
 
 	public enum CameraCommandType {
-		cameraToggle,
-		cameraOff,
-		cameraOn
+		TOGGLE,
+		OFF,
+		ON
 	}
 	
 	public class CameraCommand extends BaseCommand {

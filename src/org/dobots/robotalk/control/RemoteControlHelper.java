@@ -24,7 +24,7 @@ public class RemoteControlHelper implements IJoystickListener {
 	static final String TAG = "RemoteControlHelper";
 	
 	public enum Move {
-		NONE, STRAIGHT_FORWARD, FORWARD, STRAIGHT_BACKWARD, BACKWARD, LEFT, RIGHT
+		NONE, STRAIGHT_FORWARD, FORWARD, STRAIGHT_BACKWARD, BACKWARD, ROTATE_LEFT, ROTATE_RIGHT
 	}
 	
 	protected IRemoteControlListener m_oRemoteControlListener = null;
@@ -179,7 +179,7 @@ public class RemoteControlHelper implements IJoystickListener {
 					case MotionEvent.ACTION_POINTER_UP:
 						break;
 					case MotionEvent.ACTION_DOWN:
-						onMove(Move.LEFT);
+						onMove(Move.ROTATE_LEFT);
 						break;
 					case MotionEvent.ACTION_POINTER_DOWN:
 						break;					
@@ -204,7 +204,7 @@ public class RemoteControlHelper implements IJoystickListener {
 					case MotionEvent.ACTION_POINTER_UP:
 						break;
 					case MotionEvent.ACTION_DOWN:
-						onMove(Move.RIGHT);
+						onMove(Move.ROTATE_RIGHT);
 						break;
 					case MotionEvent.ACTION_POINTER_DOWN:
 						break;					
@@ -297,15 +297,15 @@ public class RemoteControlHelper implements IJoystickListener {
 				if (i_dblPercentage < threshold) {
 					return;
 				}
-			case LEFT:
-			case RIGHT:
+			case ROTATE_LEFT:
+			case ROTATE_RIGHT:
 				// if the last move was left (or right respectively) we use a window
 				// of +- 30 degrees, otherwise we switch to moving forward or backward
 				// depending on the angle
 				if (dblAbsAngle < ROTATE_THRESHOLD) {
-					thisMove = Move.RIGHT;
+					thisMove = Move.ROTATE_RIGHT;
 				} else if ((180 - dblAbsAngle) < ROTATE_THRESHOLD) {
-					thisMove = Move.LEFT;
+					thisMove = Move.ROTATE_LEFT;
 				} else if (i_dblAngle > 0) {
 					thisMove = Move.FORWARD;
 				} else if (i_dblAngle < 0) {
@@ -330,9 +330,9 @@ public class RemoteControlHelper implements IJoystickListener {
 					dblAbsAngle = 180;
 					thisMove = Move.BACKWARD;
 				} else if (i_dblAngle < DIRECTION_THRESHOLD_2) {
-					thisMove = Move.RIGHT;
+					thisMove = Move.ROTATE_RIGHT;
 				} else if (i_dblAngle > 180 - DIRECTION_THRESHOLD_2) {
-					thisMove = Move.LEFT;
+					thisMove = Move.ROTATE_LEFT;
 				} else {
 					thisMove = Move.FORWARD;
 				}
@@ -355,9 +355,9 @@ public class RemoteControlHelper implements IJoystickListener {
 					dblAbsAngle = 180;
 					thisMove = Move.FORWARD;
 				} else if (i_dblAngle > -DIRECTION_THRESHOLD_2) {
-					thisMove = Move.RIGHT;
+					thisMove = Move.ROTATE_RIGHT;
 				} else if (i_dblAngle < -(180 - DIRECTION_THRESHOLD_2)) {
-					thisMove = Move.LEFT;
+					thisMove = Move.ROTATE_LEFT;
 				} else {
 					thisMove = Move.BACKWARD;
 				}

@@ -15,12 +15,15 @@ public class RoboCommandTypes {
 	// S_ are names defining a section
 	// F_ are names defining a field
 	
+	public static final String VERSION = "0.1";
+	
 	/// HEADER
 	public static final String S_HEADER 	= "header";
 	public static final String F_HEADER_ID	= "id";
 	public static final String F_TID		= "tid";
 	public static final String F_TIMESTAMP	= "timestamp";
-	public static final String F_ROBOT 		= "robot";
+	public static final String F_ROBOT_ID 		= "robot";
+	public static final String F_VERSION	= "version";
 	
 	/// DATA
 	public static final String S_DATA		= "data";
@@ -28,7 +31,7 @@ public class RoboCommandTypes {
 	/// drive command data fields
 	public static final String F_MOVE		= "move";
 	public static final String F_SPEED 		= "speed";
-	public static final String F_ANGLE		= "angle";
+	public static final String F_RADIUS		= "radius";
 
 	/// camera command data fields
 	public static final String F_TYPE	 	= "type";

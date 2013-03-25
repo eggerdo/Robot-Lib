@@ -46,11 +46,11 @@ public class RobotRemoteListener implements IRemoteControlListener {
 			m_oRobot.moveForward(i_dblSpeed);
 			Log.i(TAG, String.format("fwd(s=%f)", i_dblSpeed));
 			break;
-		case LEFT:
+		case ROTATE_LEFT:
 			m_oRobot.rotateCounterClockwise(i_dblSpeed);
 			Log.i(TAG, String.format("c cw(s=%f)", i_dblSpeed));
 			break;
-		case RIGHT:
+		case ROTATE_RIGHT:
 			m_oRobot.rotateClockwise(i_dblSpeed);
 			Log.i(TAG, String.format("cw(s=%f)", i_dblSpeed));
 			break;
@@ -78,11 +78,11 @@ public class RobotRemoteListener implements IRemoteControlListener {
 			m_oRobot.moveForward();
 			Log.i(TAG, "fwd()");
 			break;
-		case LEFT:
+		case ROTATE_LEFT:
 			m_oRobot.rotateCounterClockwise();
 			Log.i(TAG, "c cw()");
 			break;
-		case RIGHT:
+		case ROTATE_RIGHT:
 			m_oRobot.rotateClockwise();
 			Log.i(TAG, "cw()");
 			break;

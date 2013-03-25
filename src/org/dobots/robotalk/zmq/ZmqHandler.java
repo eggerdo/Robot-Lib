@@ -1,7 +1,10 @@
 package org.dobots.robotalk.zmq;
 
+import org.dobots.robotalk.control.CommandHandler;
+import org.dobots.robotalk.control.CommandHandler.CommandListener;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
+import org.zeromq.ZMsg;
 import org.zeromq.ZMQ.Poller;
 
 import android.app.Activity;
@@ -21,6 +24,11 @@ public class ZmqHandler {
 	
 	private Poller m_oPoller;
 
+	private CommandHandler m_oCommandHandler;
+
+	private String m_strCommandOutAddr;
+	private String m_strCommandInAddr;
+	
 	public ZmqHandler(Activity i_oActivity) {
 		m_oActivity = i_oActivity;
 		
@@ -32,6 +40,23 @@ public class ZmqHandler {
 		
 		m_oSettings = new ZmqSettings(m_oActivity);
 		m_oSettings.checkSettings();
+		
+		m_oCommandHandler = new CommandHandler(this);
+		
+	}
+	
+	public void setupCommandConnections() {
+
+		m_strCommandOutAddr = ZmqTypes.COMMAND_ADDRESS + "/out";
+		ZMQ.Socket oCommandInternalSend = createSocket(ZMQ.PUB);
+		oCommandInternalSend.bind(m_strCommandOutAddr);
+
+		m_strCommandInAddr = ZmqTypes.COMMAND_ADDRESS + "/in";
+		ZMQ.Socket oCommandInternalRecv = createSocket(ZMQ.SUB);
+		oCommandInternalRecv.bind(m_strCommandInAddr);
+
+		m_oCommandHandler.setupConnections(oCommandInternalRecv, oCommandInternalSend);
+
 	}
 	
 	public static ZmqHandler getInstance() {
@@ -59,6 +84,18 @@ public class ZmqHandler {
 			m_oPoller = m_oZmqContext.getContext().poller();
 		}
 		return m_oPoller;
+	}
+
+	public CommandHandler getCommandHandler() {
+		return m_oCommandHandler;
+	}
+	
+	public String getCommandOutAddr() {
+		return m_strCommandOutAddr;
+	}
+	
+	public String getCommandInAddr() {
+		return m_strCommandInAddr;
 	}
 
 }

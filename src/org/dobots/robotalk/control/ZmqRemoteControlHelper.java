@@ -7,6 +7,7 @@ import org.dobots.robotalk.msg.RoboCommands.DriveCommand;
 import org.dobots.robotalk.msg.RobotMessage;
 import org.dobots.robotalk.zmq.ZmqHandler;
 import org.dobots.robotalk.zmq.ZmqReceiveThread;
+import org.dobots.robotalk.zmq.ZmqTypes;
 import org.dobots.utilities.Utils;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
@@ -17,9 +18,11 @@ import org.zeromq.ZMsg;
 import robots.IRobotDevice;
 import android.app.Activity;
 
-public class ZmqRemoteControl extends RemoteControlHelper {
+public class ZmqRemoteControlHelper extends RemoteControlHelper {
 
 	private static final String TAG = "ZmqRemoteControl";
+	
+	private ZContext m_oZContext;
 	
 	private ZMQ.Socket m_oCmdReceiver;
 	
@@ -27,20 +30,22 @@ public class ZmqRemoteControl extends RemoteControlHelper {
 
 	private ICameraControlListener m_oCameraListener;
 	
-	public ZmqRemoteControl(Activity i_oActivity, IRobotDevice i_oRobot,
+	public ZmqRemoteControlHelper(Activity i_oActivity, IRobotDevice i_oRobot,
 			IRemoteControlListener i_oListener) {
 		super(i_oActivity, i_oRobot, i_oListener);
 		
-		ZContext context = ZmqHandler.getInstance().getContext();
+		m_oZContext = ZmqHandler.getInstance().getContext();
 		
-		String strCommandAddr = CommandHandler.getInstance().getIntCommandAddr();
-		
-		m_oCmdReceiver = context.createSocket(ZMQ.SUB);
+	}
+	
+	public void setupCommandConnections() {
+
+		m_oCmdReceiver = m_oZContext.createSocket(ZMQ.SUB);
 //		m_oCmdReceiver.bind(String.format("ipc://%s/remotectrl", ZmqHandler.getInstance().getIPCpath()));
 		m_oCmdReceiver.subscribe("".getBytes());
-		m_oCmdReceiver.connect(strCommandAddr);
-		
-		m_oReceiver = new CommandReceiveThread(context.getContext(), m_oCmdReceiver, "ZmqRC:remote");
+		m_oCmdReceiver.connect(ZmqTypes.COMMAND_ADDRESS + "/in");
+
+		m_oReceiver = new CommandReceiveThread(m_oZContext.getContext(), m_oCmdReceiver, "ZmqRC:remote");
 		m_oReceiver.start();
 	}
 
@@ -59,7 +64,7 @@ public class ZmqRemoteControl extends RemoteControlHelper {
 	public void switchCameraOff() {
 		m_oCameraListener.switchCameraOff();
 	}
-
+	
 	// in contrast to a normal RemoteControlHelper, the ZmqRemoteControl can receive remote commands
 	// over Zmq messages. 
 	class CommandReceiveThread extends ZmqReceiveThread {
@@ -81,18 +86,18 @@ public class ZmqRemoteControl extends RemoteControlHelper {
 				if (oCmd instanceof DriveCommand) {
 					
 					DriveCommand oDriveCmd = (DriveCommand)oCmd;
-					m_oRemoteControlListener.onMove(oDriveCmd.eMove, oDriveCmd.dblSpeed, oDriveCmd.dblAngle);
+					m_oRemoteControlListener.onMove(oDriveCmd.eMove, oDriveCmd.dblSpeed, oDriveCmd.dblRadius);
 					
 				} else if (oCmd instanceof CameraCommand) {
 					CameraCommand oCameraCmd = (CameraCommand)oCmd;
 					switch(oCameraCmd.eType) {
-					case cameraOff:
+					case OFF:
 						switchCameraOff();
 						break;
-					case cameraOn:
+					case ON:
 						switchCameraOn();
 						break;
-					case cameraToggle:
+					case TOGGLE:
 						toggleCamera();
 						break;
 					}

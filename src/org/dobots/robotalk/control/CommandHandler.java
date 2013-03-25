@@ -4,52 +4,42 @@ import org.dobots.robotalk.msg.RoboCommands.BaseCommand;
 import org.dobots.robotalk.msg.RobotMessage;
 import org.dobots.robotalk.zmq.ZmqForwarderThread;
 import org.dobots.robotalk.zmq.ZmqHandler;
+import org.dobots.robotalk.zmq.ZmqReceiveThread;
 import org.dobots.robotalk.zmq.ZmqSettings;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
+import org.zeromq.ZMQ.Context;
+import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMsg;
 
 public class CommandHandler {
 	
-	private static CommandHandler INSTANCE;
-
+	public interface CommandListener {
+		public void onCommand(ZMsg i_oMsg);
+	}
+	
 	private ZContext m_oZContext;
 	private ZmqSettings m_oSettings;
 	
 	// the channel on which messages are sent out
-	private ZMQ.Socket m_oExt_CommandOut = null;
+	private ZMQ.Socket m_oOutSocket = null;
 	// the channel on which messages are coming in
-	private ZMQ.Socket m_oExt_CommandIn = null;
-	
-	private ZMQ.Socket m_oInt_CommandOut = null;
-	private String m_strIntCommandAddr;
+	private ZMQ.Socket m_oInSocket = null;
 	
 //	private CommandReceiveThread m_oCommandRecvThread;
-	private ZmqForwarderThread m_oCmdRecvThread = null;
+	private CommandReceiveThread m_oCmdRecvThread = null;
 	
 	private ICommandReceiveListener m_oCommandListener;
 	
 	private ZMQ.Socket m_oDriveCmdPublisher = null;
-	private boolean m_bReceiverConnected;
-	private boolean m_bSenderConnected;
+	private boolean m_bOutConnected;
+	private boolean m_bInConnected;
+	
+	private CommandListener m_oCommandReceiveListener;
 
 	public CommandHandler(ZmqHandler i_oZmqHandler) {
 		m_oZContext = i_oZmqHandler.getContext();
 		m_oSettings = i_oZmqHandler.getSettings();
-		
-		INSTANCE = this;
-		
-		m_strIntCommandAddr = "inproc://command";
-		m_oInt_CommandOut = i_oZmqHandler.createSocket(ZMQ.PUB);
-		m_oInt_CommandOut.bind(m_strIntCommandAddr);
-	}
-
-	public static CommandHandler getInstance() {
-		return INSTANCE;
-	}
-	
-	public String getIntCommandAddr() {
-		return m_strIntCommandAddr;
 	}
 
 	/**
@@ -60,50 +50,80 @@ public class CommandHandler {
 	public void setupConnections(ZMQ.Socket i_oInSocket, ZMQ.Socket i_oOutSocket) {
 		
 		if (i_oInSocket != null) {
-			m_oExt_CommandIn = i_oInSocket;
+			m_oInSocket = i_oInSocket;
 
-			m_bReceiverConnected = true;
+			m_bOutConnected = true;
 			
-			m_oCmdRecvThread = new ZmqForwarderThread(m_oZContext.getContext(), m_oExt_CommandIn, m_oInt_CommandOut, "IncomingCommandForwarder");
+			m_oCmdRecvThread = new CommandReceiveThread(m_oZContext.getContext(), m_oInSocket, "IncomingCommandForwarder");
 			m_oCmdRecvThread.start();
 		}
 		
 		if (i_oOutSocket != null) {
-			m_oExt_CommandOut = i_oOutSocket;
+			m_oOutSocket = i_oOutSocket;
 			
-			m_bSenderConnected = true;
+			m_bInConnected = true;
 		}
 	}
-	
+
+	public void setCommandListener(CommandListener i_oListener) {
+		if (m_oCmdRecvThread != null) {
+			m_oCmdRecvThread.setCommandListener(i_oListener);
+		}
+	}
+
+	public class CommandReceiveThread extends ZmqReceiveThread {
+		
+		private CommandListener m_oCommandReceiveListener;
+
+		public CommandReceiveThread(Context i_oContext, Socket i_oInSocket,
+				String i_strThreadName) {
+			super(i_oContext, i_oInSocket, i_strThreadName);
+		}
+		
+		public void setCommandListener(CommandListener i_oListener) {
+			m_oCommandReceiveListener = i_oListener;
+		}
+
+		@Override
+		protected void execute() {
+			ZMsg msg = ZMsg.recvMsg(m_oInSocket);
+			if (msg != null) {
+				if (m_oCommandReceiveListener != null) {
+					m_oCommandReceiveListener.onCommand(msg);
+				}
+			}
+		}
+		
+	}
 
 	public void closeConnections() {
 
-		m_bReceiverConnected = false;
-		m_bSenderConnected = false;
+		m_bOutConnected = false;
+		m_bInConnected = false;
 		
-		if (m_oExt_CommandOut != null) {
-			m_oExt_CommandOut.close();
-			m_oExt_CommandOut = null;
+		if (m_oOutSocket != null) {
+			m_oOutSocket.close();
+			m_oOutSocket = null;
 		}
 		
-		if (m_oExt_CommandIn != null) {
-			m_oExt_CommandIn.close();
-			m_oExt_CommandIn = null;
+		if (m_oInSocket != null) {
+			m_oInSocket.close();
+			m_oInSocket = null;
 		}
 
 	}
 
 	public void sendCommand(BaseCommand i_oCmd) {
-		if (m_bSenderConnected) {
+		if (m_bInConnected) {
 			String strJSON = i_oCmd.toJSONString();
 			RobotMessage oMsg = new RobotMessage(m_oSettings.getRobotName(), strJSON.getBytes());
 			ZMsg oZMsg = oMsg.toZmsg();
-			oZMsg.send(m_oExt_CommandOut);
+			oZMsg.send(m_oOutSocket);
 		}
 	}
 
-	public void setReceiveListener(ICommandReceiveListener i_oListener) {
-		m_oCommandListener = i_oListener;
+	public void sendZmsg(ZMsg i_oMsg) {
+		i_oMsg.send(m_oOutSocket);
 	}
 
 }

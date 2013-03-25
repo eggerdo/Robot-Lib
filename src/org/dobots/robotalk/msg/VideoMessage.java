@@ -1,4 +1,4 @@
-package org.dobots.robotalk.video;
+package org.dobots.robotalk.msg;
 
 import java.io.ByteArrayOutputStream;
 
