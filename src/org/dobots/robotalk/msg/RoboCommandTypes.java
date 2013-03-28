@@ -22,7 +22,7 @@ public class RoboCommandTypes {
 	public static final String F_HEADER_ID	= "id";
 	public static final String F_TID		= "tid";
 	public static final String F_TIMESTAMP	= "timestamp";
-	public static final String F_ROBOT_ID 		= "robot";
+	public static final String F_ROBOT_ID 	= "robot_id";
 	public static final String F_VERSION	= "version";
 	
 	/// DATA
