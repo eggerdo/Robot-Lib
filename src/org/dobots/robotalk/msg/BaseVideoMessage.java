@@ -9,8 +9,8 @@ public abstract class BaseVideoMessage {
 
 	public static int TRANSACTION_ID = 0;
 	
-	public static final int RAW_VIDEO = 0xae;
-	public static final int BASE64_VIDEO = 0xaf;
+	public static final int RAW_VIDEO = 0xb5;
+	public static final int BASE64_VIDEO = 0xb6;
 
 	public int nHeaderID;
 	public int nTransactionID;
