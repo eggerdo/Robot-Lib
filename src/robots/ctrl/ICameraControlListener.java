@@ -1,4 +1,4 @@
-package org.dobots.robotalk.control;
+package robots.ctrl;
 
 public interface ICameraControlListener {
 	

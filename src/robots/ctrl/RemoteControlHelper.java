@@ -1,4 +1,4 @@
-package org.dobots.robotalk.control;
+package robots.ctrl;
 
 import org.dobots.robotalk.R;
 import org.dobots.utilities.LockableScrollView;
@@ -6,8 +6,6 @@ import org.dobots.utilities.Utils;
 import org.dobots.utilities.joystick.IJoystickListener;
 import org.dobots.utilities.joystick.Joystick;
 
-import robots.IRobotDevice;
-import robots.RobotRemoteListener;
 import android.app.Activity;
 import android.os.SystemClock;
 import android.util.Log;
@@ -53,29 +51,19 @@ public class RemoteControlHelper implements IJoystickListener {
 	
 	protected IRobotDevice m_oRobot;
 	
-	protected RemoteControlHelper(Activity i_oActivity) {
-		this.m_oActivity = i_oActivity;
+	protected RemoteControlHelper(IRemoteControlListener i_oListener) {
+
+		// by default, this class is handling the move commands triggered either by the remote control buttons
+		// or by the joystick. However it is possible to overwrite the listener so that move commands
+		// can be individually handled
+		m_oRemoteControlListener = i_oListener;
 	}
 
 	// At least one of the parameters i_oRobot or i_oListener has to be assigned! the other can be null.
 	// It is also possible to assign both
-	public RemoteControlHelper(Activity i_oActivity, IRobotDevice i_oRobot, IRemoteControlListener i_oListener) {
-		this(i_oActivity);
-		m_oRobot = i_oRobot;
-		
-		// one of the two parameters, RobotDevice or RemoteControlListener has to be assigned!
-		assert(!(i_oRobot == null && i_oListener == null));
-		
-		if (i_oRobot != null) {
-			m_oRemoteControlListener = new RobotRemoteListener(i_oRobot);
-		}
-		
-		// by default, this class is handling the move commands triggered either by the remote control buttons
-		// or by the joystick. However it is possible to overwrite the listener so that move commands
-		// can be individually handled
-		if (i_oListener != null) {
-			m_oRemoteControlListener = i_oListener;
-		}
+	public RemoteControlHelper(Activity i_oActivity, IRemoteControlListener i_oListener) {
+		this(i_oListener);
+		this.m_oActivity = i_oActivity;
 	}
 	
 	public void setRemoteControlListener(IRemoteControlListener i_oListener) {
@@ -93,6 +81,8 @@ public class RemoteControlHelper implements IJoystickListener {
 	}
 	
 	public void setProperties() {
+		if (m_oActivity == null) 
+			return;
 		
 		m_oScrollView = (LockableScrollView) m_oActivity.findViewById(R.id.scrollview);
 		

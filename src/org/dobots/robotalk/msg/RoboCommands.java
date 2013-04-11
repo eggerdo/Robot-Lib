@@ -1,9 +1,10 @@
 package org.dobots.robotalk.msg;
 
-import org.dobots.robotalk.control.RemoteControlHelper;
 import org.dobots.robotalk.msg.RoboCommandTypes.Request;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import robots.ctrl.RemoteControlHelper;
 
 public class RoboCommands {
 
@@ -41,11 +42,11 @@ public class RoboCommands {
 	}
 	
 	public abstract class BaseCommand {
-		int nHeaderID;
-		int nTransactionID;
-		long lTimeStamp;
-		String strRobotID;
-		String strVersion;
+		public int nHeaderID;
+		public int nTransactionID;
+		public long lTimeStamp;
+		public String strRobotID;
+		public String strVersion;
 		
 		public BaseCommand(int i_nID, String i_strRobot) {
 			nHeaderID = i_nID;

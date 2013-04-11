@@ -1,9 +1,7 @@
 package org.dobots.robotalk.zmq;
 
-import org.dobots.robotalk.zmq.ZmqMessageHandler.ZmqMessageListener;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
-import org.zeromq.ZMsg;
 import org.zeromq.ZMQ.Poller;
 
 import android.app.Activity;
@@ -32,6 +30,11 @@ public class ZmqHandler {
 	
 	private String m_strVideoOutAddr;
 	private String m_strVideoInAddr;
+
+	private String m_strVideoBase64OutAddr;
+	private String m_strVideoBase64InAddr;
+
+	private ZmqMessageHandler m_oVideoBase64Handler;
 	
 	public ZmqHandler(Activity i_oActivity) {
 		m_oActivity = i_oActivity;
@@ -49,6 +52,7 @@ public class ZmqHandler {
 		setupCommandConnections();
 		
 		m_oVideoHandler = new ZmqMessageHandler();
+		m_oVideoBase64Handler = new ZmqMessageHandler();
 		setupVideoConnections();
 	}
 	
@@ -79,7 +83,18 @@ public class ZmqHandler {
 		oVideoRecvSocket.bind(m_strVideoInAddr);
 
 		m_oVideoHandler.setupConnections(oVideoRecvSocket, oVideoSendSocket);
+		
+		m_strVideoBase64OutAddr = ZmqTypes.VIDEO_BASE64_ADDRESS + "/out";
+		ZMQ.Socket oVideoBase64SendSocket = createSocket(ZMQ.PUB);
+		oVideoBase64SendSocket.bind(m_strVideoBase64OutAddr);
 
+		m_strVideoBase64InAddr = ZmqTypes.VIDEO_BASE64_ADDRESS + "/in";
+		ZMQ.Socket oVideoBase64RecvSocket = createSocket(ZMQ.SUB);
+		oVideoBase64RecvSocket.subscribe("".getBytes());
+		oVideoBase64RecvSocket.bind(m_strVideoBase64InAddr);
+
+		m_oVideoBase64Handler.setupConnections(oVideoBase64RecvSocket, oVideoBase64SendSocket);
+		
 	}
 	
 	public static ZmqHandler getInstance() {
@@ -147,6 +162,26 @@ public class ZmqHandler {
 	public ZMQ.Socket obtainVideoRecvSocket() {
 		ZMQ.Socket socket = createSocket(ZMQ.SUB);
 		socket.connect(m_strVideoOutAddr);
+		return socket;
+	}
+
+	public ZmqMessageHandler getVideoBase64Handler() {
+		return m_oVideoBase64Handler;
+	}
+
+	// creates and returns a socket to which an internal module
+	// can send video (connects to the In Socket of the Video Handler)
+	public ZMQ.Socket obtainVideoBase64SendSocket() {
+		ZMQ.Socket socket = createSocket(ZMQ.PUB);
+		socket.connect(m_strVideoBase64InAddr);
+		return socket;
+	}
+
+	// creates and returns a socket from which an internal module
+	// can receive video (connects to the Out Socket of the Video Handler)
+	public ZMQ.Socket obtainVideoBase64RecvSocket() {
+		ZMQ.Socket socket = createSocket(ZMQ.SUB);
+		socket.connect(m_strVideoBase64OutAddr);
 		return socket;
 	}
 	

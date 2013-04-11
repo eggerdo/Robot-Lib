@@ -1,88 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:stretchColumns="1">
+    android:orientation="vertical" >
 
-    <TableRow>
+    <TableLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tblGeneralSettings"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:stretchColumns="1" >
 
-        <TextView
-            android:paddingLeft="6dip"
-            android:paddingRight="6dip"
-            android:text="@string/nick_name"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+        <TableRow>
 
-        <EditText
-            android:id="@+id/txtNickName"
-            android:layout_marginRight="6dip"
-            android:inputType="text"
-            android:singleLine="true" >
+            <TextView
+                android:paddingLeft="6dip"
+                android:paddingRight="6dip"
+                android:text="@string/video_port"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
-            <requestFocus />
-        </EditText>
-    </TableRow>
+            <EditText
+                android:id="@+id/txtVideoPort"
+                android:layout_marginRight="6dip"
+                android:inputType="numberDecimal"
+                android:singleLine="true" />
+        </TableRow>
 
-    <TableRow>
+        <TableRow>
 
-        <TextView
-            android:paddingLeft="6dip"
-            android:paddingRight="6dip"
-            android:text="@string/address"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            <TextView
+                android:paddingLeft="6dip"
+                android:paddingRight="6dip"
+                android:text="@string/command_port"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <EditText
-            android:id="@+id/txtAddress"
-            android:layout_marginRight="6dip"
-            android:inputType="textUri"
-            android:singleLine="true" />
+            <EditText
+                android:id="@+id/txtCommandPort"
+                android:layout_marginRight="6dip"
+                android:inputType="numberDecimal"
+                android:singleLine="true" >
+            </EditText>
+        </TableRow>
 
-    </TableRow>
-    <TableRow>
+        <TableRow>
 
-        <TextView
-            android:paddingLeft="6dip"
-            android:paddingRight="6dip"
-            android:text="@string/command_port"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            <TextView
+                android:paddingLeft="6dip"
+                android:paddingRight="6dip"
+                android:text="@string/event_port"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <EditText
-            android:id="@+id/txtCommandPort"
-            android:layout_marginRight="6dip"
-            android:inputType="numberDecimal"
-            android:singleLine="true" />
+            <EditText
+                android:id="@+id/txtEventPort"
+                android:layout_marginRight="6dip"
+                android:inputType="numberDecimal"
+                android:singleLine="true" />
+        </TableRow>
 
-    </TableRow>
-
-    <TableRow>
-
-        <TextView
-            android:paddingLeft="6dip"
-            android:paddingRight="6dip"
-            android:text="@string/video_port"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <EditText
-            android:id="@+id/txtVideoPort"
-            android:layout_marginRight="6dip"
-            android:inputType="numberDecimal"
-            android:singleLine="true" />
-
-    </TableRow>
-
-    <TableRow>
-
-        <TextView
-            android:paddingLeft="6dip"
-            android:paddingRight="6dip"
-            android:text="@string/event_port"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <EditText
-            android:id="@+id/txtEventPort"
-            android:layout_marginRight="6dip"
-            android:inputType="numberDecimal"
-            android:singleLine="true" />
-
-    </TableRow>
-</TableLayout>
+    </TableLayout>
     
+	<RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="vertical">
+	    
+	    <RadioButton
+	        android:id="@+id/rbLocal"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/local" />
+	
+	    <RadioButton
+	        android:id="@+id/rbRemote"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/remote" />
+	    
+    </RadioGroup>
+
+	<TableLayout
+	    xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:id="@+id/tblRemoteSettings"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+		android:layout_marginLeft="20dp"
+	    android:stretchColumns="1" >
+
+		<TableRow>
+
+		    <TextView
+		        android:paddingLeft="6dip"
+		        android:paddingRight="6dip"
+		        android:text="@string/address"
+		        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+		    <EditText
+		        android:id="@+id/txtAddress"
+		        android:paddingRight="6dip"
+		        android:inputType="textUri"
+		        android:singleLine="true" />
+		</TableRow>
+
+	</TableLayout>
+
+</LinearLayout>

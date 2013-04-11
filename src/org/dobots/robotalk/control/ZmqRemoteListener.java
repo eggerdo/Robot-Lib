@@ -1,14 +1,17 @@
 package org.dobots.robotalk.control;
 
-import org.dobots.robotalk.control.RemoteControlHelper.Move;
 import org.dobots.robotalk.msg.RoboCommands;
 import org.dobots.robotalk.msg.RoboCommands.BaseCommand;
 import org.dobots.robotalk.msg.RoboCommands.CameraCommand;
 import org.dobots.robotalk.msg.RoboCommands.CameraCommandType;
 import org.dobots.robotalk.msg.RoboCommands.DriveCommand;
-import org.dobots.robotalk.zmq.ZMQUtils;
+import org.dobots.robotalk.zmq.ZmqUtils;
 import org.dobots.robotalk.zmq.ZmqHandler;
 import org.zeromq.ZMQ;
+
+import robots.ctrl.ICameraControlListener;
+import robots.ctrl.IRemoteControlListener;
+import robots.ctrl.RemoteControlHelper.Move;
 
 public class ZmqRemoteListener implements IRemoteControlListener, ICameraControlListener {
 
@@ -55,12 +58,20 @@ public class ZmqRemoteListener implements IRemoteControlListener, ICameraControl
 
 	private void sendCommand(BaseCommand i_oCmd) {
 		if (m_oCmdSendSocket != null) {
-			ZMQUtils.sendCommand(i_oCmd, m_oCmdSendSocket);
+			ZmqUtils.sendCommand(i_oCmd, m_oCmdSendSocket);
 		}
 	}
 
 	@Override
 	public void enableControl(boolean i_bEnable) {
 		// TODO Auto-generated method stub
+	}
+	
+	public void toggleInvertDrive() {
+		
+	}
+
+	public void close() {
+		m_oCmdSendSocket.close();
 	}
 }

@@ -1,6 +1,6 @@
-package org.dobots.robotalk.control;
+package robots.ctrl;
 
-import org.dobots.robotalk.control.RemoteControlHelper.Move;
+import robots.ctrl.RemoteControlHelper.Move;
 
 public interface IRemoteControlListener {
 	
@@ -9,5 +9,7 @@ public interface IRemoteControlListener {
 	void onMove(Move i_oMove);
 	
 	void enableControl(boolean i_bEnable);
+	
+	void toggleInvertDrive();
 	
 }

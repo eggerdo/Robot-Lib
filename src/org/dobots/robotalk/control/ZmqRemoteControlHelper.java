@@ -7,7 +7,6 @@ import org.dobots.robotalk.msg.RoboCommands.DriveCommand;
 import org.dobots.robotalk.msg.RobotMessage;
 import org.dobots.robotalk.zmq.ZmqHandler;
 import org.dobots.robotalk.zmq.ZmqReceiveThread;
-import org.dobots.robotalk.zmq.ZmqTypes;
 import org.dobots.utilities.Utils;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
@@ -15,7 +14,10 @@ import org.zeromq.ZMQ.Context;
 import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMsg;
 
-import robots.IRobotDevice;
+import robots.ctrl.ICameraControlListener;
+import robots.ctrl.IRemoteControlListener;
+import robots.ctrl.RemoteControlHelper;
+
 import android.app.Activity;
 
 public class ZmqRemoteControlHelper extends RemoteControlHelper {
@@ -30,22 +32,29 @@ public class ZmqRemoteControlHelper extends RemoteControlHelper {
 
 	private ICameraControlListener m_oCameraListener;
 	
-	public ZmqRemoteControlHelper(Activity i_oActivity, IRobotDevice i_oRobot,
-			IRemoteControlListener i_oListener) {
-		super(i_oActivity, i_oRobot, i_oListener);
+	public ZmqRemoteControlHelper(Activity i_oActivity, IRemoteControlListener i_oListener, String i_strName) {
+		super(i_oActivity, i_oListener);
 		
 		m_oZContext = ZmqHandler.getInstance().getContext();
 		
-		setupCommandConnections();
+		setupCommandConnections(i_strName);
 	}
 	
-	public void setupCommandConnections() {
+	public ZmqRemoteControlHelper(IRemoteControlListener i_oListener, String i_strName) {
+		super(i_oListener);
+		
+		m_oZContext = ZmqHandler.getInstance().getContext();
+		
+		setupCommandConnections(i_strName);
+	}
+	
+	public void setupCommandConnections(String i_strName) {
 		
 		m_oCmdRecvSocket = ZmqHandler.getInstance().obtainCommandRecvSocket();
 //		m_oCmdRecvSocket.subscribe(m_oRobot.getID().getBytes());
 		m_oCmdRecvSocket.subscribe("".getBytes());
 
-		m_oReceiver = new CommandReceiveThread(m_oZContext.getContext(), m_oCmdRecvSocket, "ZmqRC:remote");
+		m_oReceiver = new CommandReceiveThread(m_oZContext.getContext(), m_oCmdRecvSocket, i_strName + "ZmqRC");
 		m_oReceiver.start();
 	}
 
@@ -54,15 +63,33 @@ public class ZmqRemoteControlHelper extends RemoteControlHelper {
 	}
 	
 	public void toggleCamera() {
-		m_oCameraListener.toggleCamera();
+		if (m_oCameraListener != null) {
+			m_oCameraListener.toggleCamera();
+		}
 	}
 	
 	public void switchCameraOn() {
-		m_oCameraListener.switchCameraOn();
+		if (m_oCameraListener != null) {
+			m_oCameraListener.switchCameraOn();
+		}
 	}
 
 	public void switchCameraOff() {
-		m_oCameraListener.switchCameraOff();
+		if (m_oCameraListener != null) {
+			m_oCameraListener.switchCameraOff();
+		}
+	}
+	
+	public void doMove(Move i_eMove, double i_dblSpeed, double i_dblRadius) {
+		if (m_oRemoteControlListener != null) {
+			m_oRemoteControlListener.onMove(i_eMove, i_dblSpeed, i_dblRadius);
+		}
+	}
+	
+	public void toggleInvertDrive() {
+		if (m_oRemoteControlListener != null) {
+			m_oRemoteControlListener.toggleInvertDrive();
+		}
 	}
 	
 	// in contrast to a normal RemoteControlHelper, the ZmqRemoteControl can receive remote commands
@@ -84,11 +111,12 @@ public class ZmqRemoteControlHelper extends RemoteControlHelper {
 				BaseCommand oCmd = RoboCommands.decodeCommand(strJson);
 				
 				if (oCmd instanceof DriveCommand) {
-					
+				
 					DriveCommand oDriveCmd = (DriveCommand)oCmd;
-					m_oRemoteControlListener.onMove(oDriveCmd.eMove, oDriveCmd.dblSpeed, oDriveCmd.dblRadius);
+					doMove(oDriveCmd.eMove, oDriveCmd.dblSpeed, oDriveCmd.dblRadius);
 					
 				} else if (oCmd instanceof CameraCommand) {
+					
 					CameraCommand oCameraCmd = (CameraCommand)oCmd;
 					switch(oCameraCmd.eType) {
 					case OFF:
@@ -98,6 +126,7 @@ public class ZmqRemoteControlHelper extends RemoteControlHelper {
 						switchCameraOn();
 						break;
 					case TOGGLE:
+						toggleInvertDrive();
 						toggleCamera();
 						break;
 					}
@@ -105,6 +134,11 @@ public class ZmqRemoteControlHelper extends RemoteControlHelper {
 			}
 		}
 		
+	}
+
+	public void close() {
+		m_oCmdRecvSocket.close();
+		m_oReceiver.close();
 	}
 
 

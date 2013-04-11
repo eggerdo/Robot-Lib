@@ -25,6 +25,8 @@ public class RoboCommandTypes {
 	public static final String F_ROBOT_ID 	= "robot_id";
 	public static final String F_VERSION	= "version";
 	
+	public static final String F_ROTATION	= "rotation";
+	
 	/// DATA
 	public static final String S_DATA		= "data";
 	

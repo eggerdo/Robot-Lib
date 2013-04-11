@@ -1,6 +1,8 @@
-package robots;
+package robots.ctrl;
 
 import java.io.IOException;
+
+import robots.RobotType;
 
 public interface IRobotDevice {
 	
@@ -19,6 +21,7 @@ public interface IRobotDevice {
 	
 	// enable robot to receive remote control commands (if necessary)
 	public void enableControl(boolean i_bEnable);
+	public void toggleInvertDrive();
 	
 	public void moveForward(double i_dblSpeed);
 	public void moveForward(double i_dblSpeed, int i_nRadius);

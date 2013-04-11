@@ -15,6 +15,8 @@
     <string name="control_left">Left</string>    
     <string name="control_bwd">Bwd</string>    
     <string name="control_right">Right</string> 
-    <string name="control">Remote Control</string>
+    <string name="control">Remote Control</string> 
+    <string name="local">Local</string> 
+    <string name="remote">Remote</string>
     
 </resources>

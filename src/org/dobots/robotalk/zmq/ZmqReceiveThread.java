@@ -18,18 +18,22 @@ public abstract class ZmqReceiveThread extends Thread {
 
 	@Override
 	public void run() {
-		try {
 			while(!Thread.currentThread().isInterrupted()) {
-				if (m_oPoller.poll() > 0) {
-					execute();
+				try {
+					if (m_oPoller.poll() > 0) {
+						execute();
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 			m_oPoller.unregister(m_oInSocket);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 	
 	protected abstract void execute();
+	
+	public void close() {
+		interrupt();
+	}
 	
 }

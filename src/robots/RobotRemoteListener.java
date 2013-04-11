@@ -1,8 +1,9 @@
 package robots;
 
-import org.dobots.robotalk.control.IRemoteControlListener;
-import org.dobots.robotalk.control.RemoteControlHelper.Move;
 
+import robots.ctrl.IRemoteControlListener;
+import robots.ctrl.IRobotDevice;
+import robots.ctrl.RemoteControlHelper.Move;
 import android.util.Log;
 
 public class RobotRemoteListener implements IRemoteControlListener {
@@ -92,6 +93,10 @@ public class RobotRemoteListener implements IRemoteControlListener {
 	@Override
 	public void enableControl(boolean i_bEnable) {
 		m_oRobot.enableControl(i_bEnable);
+	}
+	
+	public void toggleInvertDrive() {
+		m_oRobot.toggleInvertDrive();
 	}
 	
 }
