@@ -5,8 +5,8 @@ import org.dobots.robotalk.msg.RoboCommands.BaseCommand;
 import org.dobots.robotalk.msg.RoboCommands.CameraCommand;
 import org.dobots.robotalk.msg.RoboCommands.CameraCommandType;
 import org.dobots.robotalk.msg.RoboCommands.DriveCommand;
-import org.dobots.robotalk.zmq.ZmqUtils;
 import org.dobots.robotalk.zmq.ZmqHandler;
+import org.dobots.robotalk.zmq.ZmqUtils;
 import org.zeromq.ZMQ;
 
 import robots.ctrl.ICameraControlListener;

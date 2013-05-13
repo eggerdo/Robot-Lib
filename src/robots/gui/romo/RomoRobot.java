@@ -1,6 +1,6 @@
 package robots.gui.romo;
 
-import org.dobots.robotalk.R;
+import org.dobots.R;
 import org.dobots.robotalk.control.ZmqRemoteControlHelper;
 import org.dobots.robotalk.control.ZmqRemoteListener;
 import org.dobots.utilities.CameraPreview;

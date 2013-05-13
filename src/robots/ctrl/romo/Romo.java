@@ -74,8 +74,9 @@ public class Romo extends DifferentialRobot {
 		// nothing to do, control always enabled
 	}
 	
-	public void toggleInvertDrive() {
+	public boolean toggleInvertDrive() {
 		m_bInverted = !m_bInverted;
+		return true;
 	}
 	
 	private void sendMotorCommand(int i_nLeftVel, int i_nRightVel) {

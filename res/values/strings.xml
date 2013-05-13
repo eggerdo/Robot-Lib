@@ -18,5 +18,13 @@
     <string name="control">Remote Control</string> 
     <string name="local">Local</string> 
     <string name="remote">Remote</string>
+      
+    <!--  AC13 Rover -->
+    <string name="ac13rover_title">AC13 Rover</string>
+    <string name="ac13rover_commands">AC13 Rover Commands</string>
+    <string name="ar13rover_infrared">Infrared</string>
+  
+    <string name="rover_res640x480">640 x 480</string>
+    <string name="rover_res320x240">320 x 240</string>
     
 </resources>

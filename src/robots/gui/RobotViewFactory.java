@@ -62,6 +62,8 @@ public class RobotViewFactory {
 //			return AC13RoverTypes.SSID_FILTER;
 		case RBT_ROMO:
 			return RomoTypes.SSID_FILTER;
+		case RBT_ROVER2:
+			return "";
 		default:
 			return null;
 		}

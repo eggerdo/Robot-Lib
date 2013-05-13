@@ -1,6 +1,6 @@
 package robots.ctrl;
 
-import org.dobots.robotalk.R;
+import org.dobots.R;
 import org.dobots.utilities.LockableScrollView;
 import org.dobots.utilities.Utils;
 import org.dobots.utilities.joystick.IJoystickListener;

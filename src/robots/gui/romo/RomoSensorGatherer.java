@@ -1,6 +1,6 @@
 package robots.gui.romo;
 
-import org.dobots.robotalk.R;
+import org.dobots.R;
 import org.dobots.robotalk.msg.RawVideoMessage;
 import org.dobots.robotalk.msg.RobotVideoMessage;
 import org.dobots.robotalk.zmq.ZmqHandler;

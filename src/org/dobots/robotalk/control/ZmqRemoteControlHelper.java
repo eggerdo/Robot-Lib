@@ -17,7 +17,6 @@ import org.zeromq.ZMsg;
 import robots.ctrl.ICameraControlListener;
 import robots.ctrl.IRemoteControlListener;
 import robots.ctrl.RemoteControlHelper;
-
 import android.app.Activity;
 
 public class ZmqRemoteControlHelper extends RemoteControlHelper {

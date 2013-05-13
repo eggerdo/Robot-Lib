@@ -1,6 +1,6 @@
 package org.dobots.robotalk.zmq;
 
-import org.dobots.robotalk.R;
+import org.dobots.R;
 import org.dobots.utilities.Utils;
 
 import android.app.Activity;
@@ -128,7 +128,7 @@ public class ZmqSettings {
 				@Override
 				public void onClick(View paramView) {
 					m_bRemote = false;
-					enableDisableView(table, false);
+//					enableDisableView(table, false);
 				}
 			});
     		
@@ -138,7 +138,7 @@ public class ZmqSettings {
 				@Override
 				public void onClick(View paramView) {
 					m_bRemote = true;
-					enableDisableView(table, true);
+//					enableDisableView(table, true);
 				}
 			});
     		
@@ -246,58 +246,78 @@ public class ZmqSettings {
 
 	public String getVideoReceiveAddress() {
 		
-		if (m_strVideoRecvAddress == null) {
+//		if (m_strVideoRecvAddress == null) {
 			// obtain command ports from settings
 			// receive port is always equal to send port + 1
-			int nVideoRecvPort = getVideoPort() + 1;
+			int nVideoRecvPort;
+			if (isRemote()) {
+				nVideoRecvPort = getVideoPort() + 1;
+			} else {
+				nVideoRecvPort = getVideoPort();
+			}
 
 			m_strVideoRecvAddress = assembleAddress(isRemote(), nVideoRecvPort);
-		}
+//		}
 		return m_strVideoRecvAddress;
 	}
 
 	public String getVideoSendAddress() {
 		
-		if (m_strVideoSendAddress == null) {
+//		if (m_strVideoSendAddress == null) {
 			// obtain command ports from settings
 			// receive port is always equal to send port + 1
-			int nVideoSendPort = getVideoPort();
+			int nVideoSendPort;
+			if (isRemote()) {
+				nVideoSendPort = getVideoPort();
+			} else {
+				nVideoSendPort = getVideoPort() + 1;
+			}
 
 			m_strVideoSendAddress = assembleAddress(isRemote(), nVideoSendPort);
-		}
+//		}
 		return m_strVideoSendAddress;
 	}
 	
 	public String getCommandReceiveAddress() {
 		
-		if (m_strCommandReceiveAddress == null) {
+//		if (m_strCommandReceiveAddress == null) {
 			// obtain command ports from settings
 			// receive port is always equal to send port + 1
-			int nCommandRecvPort = getCommandPort() + 1;
+			int nCommandRecvPort;
+			if (isRemote()) {
+				nCommandRecvPort = getCommandPort() + 1;
+			} else {
+				nCommandRecvPort = getCommandPort();
+			}
 
 			m_strCommandReceiveAddress = assembleAddress(isRemote(), nCommandRecvPort);
-		}
+//		}
 		return m_strCommandReceiveAddress;
 	}
 
 	public String getCommandSendAddress() {
 		
-		if (m_strCommandSendAddress == null) {
+//		if (m_strCommandSendAddress == null) {
 			// obtain command ports from settings
 			// receive port is always equal to send port + 1
-			int nCommandSendPort = getCommandPort();
+			int nCommandSendPort;
+			if (isRemote()) {
+				nCommandSendPort = getCommandPort();
+			} else {
+				nCommandSendPort = getCommandPort() + 1;
+			}
 			
 			m_strCommandSendAddress = assembleAddress(isRemote(), nCommandSendPort);
-		}
+//		}
 		return m_strCommandSendAddress;
 	}
 	
 	public String assembleAddress(boolean i_bRemote, int i_nPort) {
-		if (i_bRemote) {
+//		if (i_bRemote) {
 			return String.format("tcp://%s:%d", getAddress(), i_nPort);
-		} else {
-			return String.format("tcp://127.0.0.1:%d", i_nPort);
-		}
+//		} else {
+//			return String.format("tcp://127.0.0.1:%d", i_nPort);
+//		}
 	}
 	
 }

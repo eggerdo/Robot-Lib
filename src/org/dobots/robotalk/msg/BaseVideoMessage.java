@@ -37,7 +37,7 @@ public abstract class BaseVideoMessage {
 		strVersion		= i_oHeader.getString(RoboCommandTypes.F_VERSION);
 	}
 	
-	private JSONObject toJSON() {
+	private JSONObject toJSON() { 
 		JSONObject header = new JSONObject();
 		try {
 			header.put(RoboCommandTypes.F_HEADER_ID, 	nHeaderID);

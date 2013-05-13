@@ -9,6 +9,8 @@ public enum RobotType {
 	RBT_ROBOSCOOPER	("RoboScooper", 	true),
 	RBT_SPYKEE		("Spykee", 			true), 
 	RBT_AC13ROVER	("AC13 Rover",		true),
+	RBT_ROVER2		("Rover 2.0",		true),
+	RBT_ROBO40		("Robo 40",			true),
 	RBT_FINCH		("Finch", 			false),
 	RBT_SURVEYOR	("Surveyor", 		false),
 	RBT_TRAKR		("Trakr", 			false),

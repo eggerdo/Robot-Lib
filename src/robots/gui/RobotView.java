@@ -118,7 +118,7 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
     protected void onStart() {
     	super.onStart();
 
-    	getSensorGatherer().startThread();
+//    	getSensorGatherer().startThread();
     }
     
 	@Override
@@ -140,7 +140,7 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
     protected void onStop() {
     	super.onStop();
 
-    	getSensorGatherer().pauseThread();
+//    	getSensorGatherer().pauseThread();
     	
     	if (!m_bKeepAlive) {
     		disconnect();
@@ -151,7 +151,7 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
     public void onDestroy() {
     	super.onDestroy();
     	
-    	getSensorGatherer().stopThread();
+//    	getSensorGatherer().stopThread();
 
     	shutDown();
     	
