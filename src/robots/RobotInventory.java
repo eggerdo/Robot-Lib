@@ -30,5 +30,9 @@ public class RobotInventory {
 		IRobotDevice oRobot = m_oRobotList.remove(i_strRobotID);
 		oRobot.destroy();
 	}
+	
+	public boolean containsRobot(String i_strRobotID) {
+		return m_oRobotList.containsKey(i_strRobotID);
+	}
 
 }

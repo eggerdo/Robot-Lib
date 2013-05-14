@@ -46,10 +46,7 @@ public class RomoRobot extends RobotView implements ICameraControlListener, ILog
 		
         CONTEXT = this;
         
-        m_strRobotID = (String) getIntent().getExtras().get("RobotID");
-        m_bOwnsRobot = (Boolean) getIntent().getExtras().get("OwnsRobot");
-        
-        Romo oRomo = (Romo) RobotInventory.getInstance().getRobot(m_strRobotID);
+        Romo oRomo = (Romo) getRobot();
         oRomo.setDebug(true);
         oRomo.setLogListener(this);
 
@@ -155,12 +152,6 @@ public class RomoRobot extends RobotView implements ICameraControlListener, ILog
 	protected void updateButtons(boolean i_bEnabled) {
 		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	protected IRobotDevice getRobot() {
-		// TODO Auto-generated method stub
-		return RobotInventory.getInstance().getRobot(m_strRobotID);
 	}
 
 	@Override

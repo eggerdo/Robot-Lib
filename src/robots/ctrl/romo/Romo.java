@@ -45,11 +45,6 @@ public class Romo extends DifferentialRobot {
 	}
 
 	@Override
-	public String getID() {
-		return getType().toString();
-	}
-	
-	@Override
 	public void destroy() {
 		m_oRemoteHelper.close();
 	}
