@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<org.dobots.utilities.LockableScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scrollview"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="fill" >
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:id="@+id/layRemote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="bottom|fill" >
+
+            <ToggleButton
+                android:id="@+id/btnRemoteControl"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="Remote Control"
+                android:textOff="Remote Control"
+                android:textOn="Remote Control" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layControl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="bottom|fill" >
+
+            <ToggleButton
+                android:id="@+id/btnInfrared"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="@string/rover_infrared"
+                android:textOff="@string/rover_infrared"
+                android:textOn="@string/rover_infrared" />
+
+            <ToggleButton
+                android:id="@+id/btnLight"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="Light"
+                android:textOff="Light"
+                android:textOn="Light" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layCameraControl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="bottom|fill" >
+
+            <Button
+                android:id="@+id/btnCameraUp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Camera Up" />
+
+            <Button
+                android:id="@+id/btnCameraDown"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="CameraDown" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="20dp" />
+
+        <FrameLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/layCamera"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical" >
+
+            <ProgressBar
+                android:id="@+id/pbLoading"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:indeterminate="true"
+                android:indeterminateBehavior="repeat"
+                android:visibility="invisible" />
+
+            <org.dobots.utilities.ScalableImageView
+                android:id="@+id/ivCamera"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:visibility="visible" />
+		            
+		    <TextView 
+		        android:id="@+id/lblFPS"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:textColor="#e0ff0000"
+		        android:layout_marginTop="10dp"
+		        android:layout_marginLeft="10dp"
+		        android:textSize="24sp" />
+		    
+        </FrameLayout>
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="20dp" />
+
+        <include
+            android:id="@+id/layRemoteControl"
+            layout="@layout/remote_control" />
+    </LinearLayout>
+
+</org.dobots.utilities.LockableScrollView>

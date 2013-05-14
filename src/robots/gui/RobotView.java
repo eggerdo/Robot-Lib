@@ -5,8 +5,10 @@ import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.IAccelerometerListener;
 import org.dobots.utilities.ProgressDlg;
 
+import robots.RobotInventory;
 import robots.RobotType;
 import robots.ctrl.IRobotDevice;
+import robots.ctrl.rover.RoverBase;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -30,6 +32,11 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
 	protected BaseActivity m_oActivity;
 	protected RobotType m_eRobot;
 
+	protected String m_strRobotID;
+	protected Boolean m_bOwnsRobot;
+	
+	private IRobotDevice m_oRobot;
+
 	protected String m_strAddress = "";
 
 	protected ProgressDlg progress;
@@ -45,8 +52,6 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
 
 	protected Toast reusableToast;
 	
-	protected boolean m_bKeepAlive = false;
-
 	protected ProgressDialog connectingProgressDialog;
 
 	protected boolean btErrorPending = false;
@@ -105,7 +110,12 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
     	super.onCreate(savedInstanceState);
     	
 		this.m_oActivity = this;
+		
 		m_eRobot = (RobotType) getIntent().getExtras().get("RobotType");
+        m_strRobotID = (String) getIntent().getExtras().get("RobotID");
+        m_bOwnsRobot = (Boolean) getIntent().getExtras().get("OwnsRobot");
+        
+        m_oRobot = RobotInventory.getInstance().getRobot(m_strRobotID);
 		
 		reusableToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
 		
@@ -140,9 +150,9 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
     protected void onStop() {
     	super.onStop();
 
-//    	getSensorGatherer().pauseThread();
+    	getSensorGatherer().pauseThread();
     	
-    	if (!m_bKeepAlive) {
+    	if (m_bOwnsRobot) {
     		disconnect();
     	}
     }
@@ -151,7 +161,7 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
     public void onDestroy() {
     	super.onDestroy();
     	
-//    	getSensorGatherer().stopThread();
+    	getSensorGatherer().stopThread();
 
     	shutDown();
     	
@@ -295,6 +305,10 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
     	return m_oUiHandler;
     }
 
+	protected IRobotDevice getRobot() {
+		return m_oRobot;
+	}
+
     @Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
     	switch (requestCode) {
@@ -305,6 +319,10 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
 	protected abstract void setProperties(RobotType i_eRobot);
 	
 	protected void shutDown() {
+		
+		if (m_bOwnsRobot) {
+			getRobot().destroy();
+		}
 		
 //		if (!m_bKeepAlive) {
 //			getRobot().destroy();
@@ -354,7 +372,6 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
 	protected abstract void resetLayout();
 	protected abstract void updateButtons(boolean i_bEnabled);
 	
-	protected abstract IRobotDevice getRobot();
 	protected abstract SensorGatherer getSensorGatherer();
 	
 	public static String getMacFilter() {
