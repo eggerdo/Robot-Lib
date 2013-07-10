@@ -11,6 +11,19 @@
         android:layout_height="match_parent"
         android:orientation="vertical" >
 
+		<TextView
+		    android:id="@+id/lblRobot"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:text="@string/rover2_title"
+		    android:textAppearance="?android:attr/textAppearanceLarge" />
+	
+	    <TextView
+	        android:id="@+id/lblCommands"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/rover2_commands" />
+
         <LinearLayout
             android:id="@+id/layRemote"
             android:layout_width="match_parent"
@@ -24,9 +37,9 @@
                 android:layout_gravity="center"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
-                android:text="Remote Control"
-                android:textOff="Remote Control"
-                android:textOn="Remote Control" />
+                android:text="@string/control"
+                android:textOff="@string/control"
+                android:textOn="@string/control" />
         </LinearLayout>
 
         <LinearLayout
@@ -54,9 +67,9 @@
                 android:layout_weight="1"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
-                android:text="Light"
-                android:textOff="Light"
-                android:textOn="Light" />
+                android:text="@string/rover2_light"
+                android:textOff="@string/rover2_light"
+                android:textOn="@string/rover2_light" />
         </LinearLayout>
 
         <LinearLayout
@@ -70,14 +83,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Camera Up" />
+                android:text="@string/rover2_cameraup" />
 
             <Button
                 android:id="@+id/btnCameraDown"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="CameraDown" />
+                android:text="@string/rover2_cameradown" />
         </LinearLayout>
 
         <View

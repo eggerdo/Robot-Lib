@@ -6,5 +6,9 @@ public interface ICameraControlListener {
 	
 	public void switchCameraOn();
 	public void switchCameraOff();
+	
+	public void cameraUp();
+	public void cameraDown();
+	public void cameraStop();
 
 }

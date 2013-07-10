@@ -3,7 +3,8 @@ package robots.gui;
 import robots.RobotInventory;
 import robots.RobotType;
 import robots.ctrl.IRobotDevice;
-import robots.ctrl.romo.Romo;
+import robots.ctrl.RobotDeviceFactory;
+import robots.romo.ctrl.Romo;
 import android.app.Activity;
 import android.content.Intent;
 
@@ -28,7 +29,7 @@ public class RobotLaunchHelper {
 	}
 	
 	public static String createRobot(RobotType i_eType) throws Exception {
-		IRobotDevice oRobot = new Romo();
+		IRobotDevice oRobot = RobotDeviceFactory.createRobotDevice(i_eType);
 		String i_strRobotID = RobotInventory.getInstance().addRobot(oRobot);
 		return i_strRobotID;
 	}

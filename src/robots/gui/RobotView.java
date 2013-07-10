@@ -8,7 +8,6 @@ import org.dobots.utilities.ProgressDlg;
 import robots.RobotInventory;
 import robots.RobotType;
 import robots.ctrl.IRobotDevice;
-import robots.ctrl.rover.RoverBase;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;

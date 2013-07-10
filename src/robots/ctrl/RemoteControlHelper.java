@@ -49,8 +49,6 @@ public class RemoteControlHelper implements IJoystickListener {
 	
 	private Joystick m_oJoystick;
 	
-	protected IRobotDevice m_oRobot;
-	
 	protected RemoteControlHelper(IRemoteControlListener i_oListener) {
 
 		// by default, this class is handling the move commands triggered either by the remote control buttons

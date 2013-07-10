@@ -1,8 +1,9 @@
 package robots.gui;
 
 import robots.RobotType;
-import robots.ctrl.romo.RomoTypes;
-import robots.gui.romo.RomoRobot;
+import robots.romo.ctrl.RomoTypes;
+import robots.romo.gui.RomoRobot;
+import robots.rover.rover2.gui.Rover2Robot;
 
 //import org.dobots.robots.dotty.DottyTypes;
 //import org.dobots.robots.nxt.NXTTypes;
@@ -38,6 +39,8 @@ public class RobotViewFactory {
 //			return AC13RoverRobot.class;
 		case RBT_ROMO:
 			return RomoRobot.class;
+		case RBT_ROVER2:
+			return Rover2Robot.class;
 		default:
 			return null;
 //			return UnimplementedRobot.class;

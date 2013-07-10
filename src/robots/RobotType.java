@@ -1,28 +1,33 @@
 package robots;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+
 public enum RobotType {
 	
-	RBT_ROOMBA		("Roomba", 			true),
-	RBT_NXT			("Mindstorm NXT", 	true),
-	RBT_DOTTY		("Dotty", 			true), 
-	RBT_PARROT		("AR Drone", 		true),
-	RBT_ROBOSCOOPER	("RoboScooper", 	true),
-	RBT_SPYKEE		("Spykee", 			true), 
-	RBT_AC13ROVER	("AC13 Rover",		true),
-	RBT_ROVER2		("Rover 2.0",		true),
-	RBT_ROBO40		("Robo 40",			true),
-	RBT_FINCH		("Finch", 			false),
-	RBT_SURVEYOR	("Surveyor", 		false),
-	RBT_TRAKR		("Trakr", 			false),
-	RBT_ROMO		("Romo",			false);
+	RBT_ROOMBA		("Roomba", 			true,	true),
+	RBT_NXT			("Mindstorm NXT", 	true,	true),
+	RBT_DOTTY		("Dotty", 			true,	true), 
+	RBT_PARROT		("AR Drone", 		true,	true),
+	RBT_ROBOSCOOPER	("RoboScooper", 	true,	true),
+	RBT_SPYKEE		("Spykee", 			true,	true), 
+	RBT_AC13ROVER	("AC13 Rover",		true,	true),
+	RBT_ROVER2		("Rover 2.0",		true,	true),
+	RBT_ROBO40		("Robo 40",			true,	false),
+	RBT_FINCH		("Finch", 			false,	true),
+	RBT_SURVEYOR	("Surveyor", 		false,	true),
+	RBT_TRAKR		("Trakr", 			false,	true),
+	RBT_ROMO		("Romo",			false,	true);
 	
 	private String strDisplayName;
 	// enabled means that the robot is implemented and can be selected
 	private boolean bEnabled;
+	private boolean bAvailable;
 	
-	private RobotType(String i_strDisplayName, boolean i_bEnabled) {
+	private RobotType(String i_strDisplayName, boolean i_bEnabled, boolean i_bAvailable) {
 		this.strDisplayName = i_strDisplayName;
 		this.bEnabled = i_bEnabled;
+		this.bAvailable = i_bAvailable;
 	}
 	
 	@Override
@@ -32,6 +37,24 @@ public enum RobotType {
 	
 	public boolean isEnabled() {
 		return bEnabled;
+	}
+	
+	public boolean isAvailable() {
+		return bAvailable;
+	}
+	
+	public static RobotType[] getRobots() {
+		RobotType[] values = RobotType.values();
+		LinkedList<RobotType> temp = new LinkedList<RobotType>();
+		
+		for (RobotType item : values) {
+			if (item.isAvailable()) {
+				temp.add(item);
+			} else {
+				int i = 0;
+			}
+		}
+		return temp.toArray(new RobotType[temp.size()]);
 	}
 
 }

@@ -28,5 +28,12 @@
     <string name="ac13rover_title">AC13 Rover</string>
     <string name="ac13rover_commands">AC13 Rover Commands</string>
     
+    <!--  Rover 2 -->
+    <string name="rover2_title">Rover 2.0</string>
+    <string name="rover2_commands">Rover 2.0 Commands</string>
+    <string name="rover2_light">Light</string>
+    <string name="rover2_cameraup">Camera Up</string>
+    <string name="rover2_cameradown">Camera Down</string>
+    
     
 </resources>
