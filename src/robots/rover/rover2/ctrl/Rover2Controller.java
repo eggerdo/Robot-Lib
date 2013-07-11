@@ -80,7 +80,6 @@ public class Rover2Controller extends RoverBaseController {
 				}
 			}
 		};
-		m_oBatteryTimer.schedule(m_oBatteryTask, 1000, 1000);
 	}
 
 	@Override
@@ -107,6 +106,11 @@ public class Rover2Controller extends RoverBaseController {
 //		Log.d(TAG, "startKeepAliveTask");
 //		keepAliveTimer.schedule(keepAliveTask, 1000, 30000);
 //	}
+	
+	public void startBatteryTask() {
+		Log.d(TAG, "startBatteryTask");
+		m_oBatteryTimer.schedule(m_oBatteryTask, 1000, 1000);
+	}
 
 	private Socket createSocket(String host, int port) throws IOException {
 		Socket localSocket = SocketFactory.getDefault().createSocket();
@@ -261,7 +265,8 @@ public class Rover2Controller extends RoverBaseController {
 	public void verifyCommand() throws IOException {
 		byte[] request = CommandEncoder.cmdVerifyReq(this, getKey(), reverse_challenge);
 		send(request);
-
+		
+		startBatteryTask();
 //		startKeepAliveTask();
 		requestAllParameters();
 		return;
