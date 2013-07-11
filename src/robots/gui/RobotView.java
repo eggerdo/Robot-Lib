@@ -127,7 +127,6 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
     protected void onStart() {
     	super.onStart();
 
-//    	getSensorGatherer().startThread();
     }
     
 	@Override
@@ -136,6 +135,8 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
 		if (AccelerometerManager.isSupported(this)) {
 			AccelerometerManager.startListening(this, this);
 		}
+
+    	getSensorGatherer().startThread();
 	}
 	
     @Override

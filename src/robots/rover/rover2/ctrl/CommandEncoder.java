@@ -44,6 +44,7 @@ public class CommandEncoder {
 	private static final int BATTERY_POWER_REQ_LEN = 0;
 	
 	private static final int BATTERY_POWER_RESP = 252;
+	private static final int MAX_BATTERY_LEVEL = 7;
 	
 	private static final int KEEP_ALIVE = 255;
 	private static final int KEEP_ALIVE_LEN = 0;
@@ -136,9 +137,10 @@ public class CommandEncoder {
 
 	public static void parseBatteryPowerResp(Rover2Controller controller, Message response) throws IOException
 	{
-		int battery = response.getContent().get(BATTERY_IDX);
+		int raw_battery = response.getContent().get(BATTERY_IDX);
+		double battery = 100.0 * raw_battery / MAX_BATTERY_LEVEL;
 		controller.setBatteryPower(battery);
-		Log.i(TAG, "battery value:" + battery);
+		Log.i(TAG, String.format("battery value: %d (raw), %.3f (%%)", raw_battery, battery));
 	}
 
 	public static boolean parseLoginResp(Rover2Controller controller, Message response)

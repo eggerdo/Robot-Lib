@@ -15,24 +15,29 @@ import robots.rover.ac13.gui.AC13RoverRobot;
 import robots.rover.ctrl.RoverBase;
 import robots.rover.ctrl.RoverBaseTypes.VideoResolution;
 import robots.rover.rover2.ctrl.Rover2;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.ToggleButton;
 
 public abstract class RoverBaseRobot extends WifiRobot {
 
-	protected static final int DIALOG_SETTINGS_ID = 1;
+	protected static final int DIALOG_VIDEO_SETTINGS_ID = 1;
+	protected static final int DIALOG_CONNECTION_SETTINGS_ID = DIALOG_VIDEO_SETTINGS_ID + 1;
 	
-	protected static final int ACCEL_ID = CONNECT_ID + 1;
+	protected static final int CONNECTION_SETTINGS_ID = CONNECT_ID + 1;
+	protected static final int ACCEL_ID = CONNECTION_SETTINGS_ID + 1;
 	protected static final int ADVANCED_CONTROL_ID = ACCEL_ID + 1;
 	protected static final int VIDEO_ID = ADVANCED_CONTROL_ID + 1;
 	protected static final int VIDEO_SETTINGS_ID = VIDEO_ID + 1;
@@ -49,9 +54,11 @@ public abstract class RoverBaseRobot extends WifiRobot {
 
 	protected double m_dblSpeed;
 
-	private AlertDialog m_dlgSettingsDialog;
+	protected AlertDialog m_dlgSettingsDialog;
 
 	private ToggleButton m_btnInfrared;
+
+	protected int m_nPort;
 
 	public RoverBaseRobot(BaseActivity i_oOwner) {
 		super(i_oOwner);
@@ -80,6 +87,9 @@ public abstract class RoverBaseRobot extends WifiRobot {
         
         updateButtons(false);
 
+    	checkConnectionSettings();
+    	m_oRover.setConnection(m_strAddress, m_nPort);
+
         if (m_oRover.isConnected()) {
 			updateButtons(true);
 		} else {
@@ -91,6 +101,8 @@ public abstract class RoverBaseRobot extends WifiRobot {
     @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
+		
+		menu.add(GENERAL_GRP, CONNECTION_SETTINGS_ID, CONNECTION_SETTINGS_ID, "Connection Settings");
 
 		menu.add(REMOTE_CTRL_GRP, ACCEL_ID, ACCEL_ID, "Accelerometer");
 		menu.add(REMOTE_CTRL_GRP, ADVANCED_CONTROL_ID, ADVANCED_CONTROL_ID, "Advanced Control");
@@ -118,8 +130,11 @@ public abstract class RoverBaseRobot extends WifiRobot {
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		switch (item.getItemId()) {
+		case CONNECTION_SETTINGS_ID:
+			showDialog(DIALOG_CONNECTION_SETTINGS_ID);
+			break;
 		case VIDEO_SETTINGS_ID:
-    		showDialog(DIALOG_SETTINGS_ID);
+    		showDialog(DIALOG_VIDEO_SETTINGS_ID);
     		break;
 		case ACCEL_ID:
 			m_bAccelerometer = !m_bAccelerometer;
@@ -209,45 +224,79 @@ public abstract class RoverBaseRobot extends WifiRobot {
      */
     @Override
     protected Dialog onCreateDialog(int id) {
-    	LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-    	View layout;
-    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
     	switch (id) {
-    	case DIALOG_SETTINGS_ID:
-        	layout = inflater.inflate(R.layout.rover_videosettings, null);
-        	builder.setTitle("Video Resolution");
-        	builder.setView(layout);
-        	builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
-    			public void onClick(DialogInterface arg0, int arg1) {
-    				adjustVideoResolution();
-    			}
-    		});
-        	m_dlgSettingsDialog = builder.create();
-        	return m_dlgSettingsDialog;
+    	case DIALOG_VIDEO_SETTINGS_ID:
+        	return createVideoSettingsDialog();
+    	case DIALOG_CONNECTION_SETTINGS_ID:
+    		return createConnectionSettingsDialog();
     	}
     	return null;
     }
-
+    
+    private Dialog createVideoSettingsDialog() {
+    	LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    	View layout = inflater.inflate(R.layout.rover_videosettings, null);
+    	builder.setTitle("Video Resolution");
+    	builder.setView(layout);
+    	builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface arg0, int arg1) {
+				adjustVideoResolution();
+			}
+		});
+    	m_dlgSettingsDialog = builder.create();
+    	return m_dlgSettingsDialog;
+    }
+    
+    private Dialog createConnectionSettingsDialog() {
+    	LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    	View layout = inflater.inflate(R.layout.connection_settings, null);
+    	builder.setTitle("Connection Settings");
+    	builder.setView(layout);
+    	builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface arg0, int arg1) {
+				adjustConnectionSettings();
+			}
+		});
+    	m_dlgSettingsDialog = builder.create();
+    	return m_dlgSettingsDialog;
+    }
     /**
      * This is called each time a dialog is shown.
      */
     @Override
     protected void onPrepareDialog(int id, Dialog dialog) {
-    	if (id == DIALOG_SETTINGS_ID) {
-    		switch (m_oRover.getResolution()) {
-    		case res_320x240:
-    			((RadioButton) dialog.findViewById(R.id.rb320x240)).setChecked(true);
-    			break;
-    		case res_640x480:
-    			((RadioButton) dialog.findViewById(R.id.rb640x480)).setChecked(true);
-    			break;
-    		default:
-    			((RadioGroup) dialog.findViewById(R.id.rgVideoResolution)).clearCheck();
-    			break;
-    		}
+    	switch(id) {
+    	case DIALOG_VIDEO_SETTINGS_ID:
+    		prepareVideoSettingsDialog(dialog);
+    		break;
+    	case DIALOG_CONNECTION_SETTINGS_ID:
+    		prepareConnectionSettingsDialog(dialog);
+    		break;
     	}
     }
     
+    private void prepareVideoSettingsDialog(Dialog dialog) {
+    	switch (m_oRover.getResolution()) {
+		case res_320x240:
+			((RadioButton) dialog.findViewById(R.id.rb320x240)).setChecked(true);
+			break;
+		case res_640x480:
+			((RadioButton) dialog.findViewById(R.id.rb640x480)).setChecked(true);
+			break;
+		default:
+			((RadioGroup) dialog.findViewById(R.id.rgVideoResolution)).clearCheck();
+			break;
+		}
+    }
+    
+    protected abstract void prepareConnectionSettingsDialog(Dialog dialog);
+
+	protected abstract void checkConnectionSettings();
+
+	protected abstract void adjustConnectionSettings();
+	
     private void adjustVideoResolution() {
 		new Thread(new Runnable() {
 			

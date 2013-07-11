@@ -46,14 +46,14 @@ public class Rover2Controller extends RoverBaseController {
 	
 	private Timer m_oBatteryTimer;
 	private TimerTask m_oBatteryTask;
-	private int m_nBatteryPower;
+	private double m_dblBatteryPower;
 
 	public Rover2Controller() {
 
 		INSTANCE = this;
 
-		m_strTargetHost = Rover2Types.ADDRESS;
-		m_strTargetPort = Rover2Types.PORT;
+//		m_strTargetHost = Rover2Types.ADDRESS;
+//		m_nTargetPort = Rover2Types.PORT;
 		targetId = Rover2Types.ID;
 		targetPassword = Rover2Types.PWD;
 
@@ -80,6 +80,7 @@ public class Rover2Controller extends RoverBaseController {
 				}
 			}
 		};
+		m_oBatteryTimer.schedule(m_oBatteryTask, 1000, 1000);
 	}
 
 	@Override
@@ -106,11 +107,6 @@ public class Rover2Controller extends RoverBaseController {
 //		Log.d(TAG, "startKeepAliveTask");
 //		keepAliveTimer.schedule(keepAliveTask, 1000, 30000);
 //	}
-
-	public void startBatteryTask() {
-		Log.d(TAG, "startBatteryTask");
-		m_oBatteryTimer.schedule(m_oBatteryTask, 1000, 5000);
-	}
 
 	private Socket createSocket(String host, int port) throws IOException {
 		Socket localSocket = SocketFactory.getDefault().createSocket();
@@ -162,7 +158,10 @@ public class Rover2Controller extends RoverBaseController {
 	}
 
 	private void connectCommand() throws IOException {
-		m_oCommandSocket = createSocket(m_strTargetHost, m_strTargetPort);
+		if (m_strTargetHost == null)
+			throw new IOException("Address not defined!");
+		
+		m_oCommandSocket = createSocket(m_strTargetHost, m_nTargetPort);
 		m_oDataOut = new DataOutputStream(m_oCommandSocket.getOutputStream());
 		m_oDataIn = new DataInputStream(m_oCommandSocket.getInputStream());
 
@@ -215,7 +214,10 @@ public class Rover2Controller extends RoverBaseController {
 	}
 
 	public void connectMediaReceiver(int nID) throws IOException {
-		m_oMediaSocket = createSocket(m_strTargetHost, m_strTargetPort);
+		if (m_strTargetHost == null)
+			throw new IOException("Address not defined!");
+		
+		m_oMediaSocket = createSocket(m_strTargetHost, m_nTargetPort);
 		m_oMediaOut = new DataOutputStream(m_oMediaSocket.getOutputStream());
 		m_oMediaIn = new DataInputStream(m_oMediaSocket.getInputStream());
 
@@ -260,7 +262,6 @@ public class Rover2Controller extends RoverBaseController {
 		byte[] request = CommandEncoder.cmdVerifyReq(this, getKey(), reverse_challenge);
 		send(request);
 
-		startBatteryTask();
 //		startKeepAliveTask();
 		requestAllParameters();
 		return;
@@ -383,7 +384,6 @@ public class Rover2Controller extends RoverBaseController {
 	public boolean disconnect() {
 		try {
 			if (m_bConnected) {
-				m_oBatteryTimer.cancel();
 //				keepAliveTimer.cancel();
 
 				m_bConnected = false;
@@ -412,12 +412,12 @@ public class Rover2Controller extends RoverBaseController {
 		return false;
 	}
 
-	public void setBatteryPower(int value) {
-		m_nBatteryPower = value;
+	public void setBatteryPower(double value) {
+		m_dblBatteryPower = value;
 	}
 
-	public int getBatteryPower() {
-		return m_nBatteryPower;
+	public double getBatteryPower() {
+		return m_dblBatteryPower;
 	}
 
 	public void setDeviceId(String id) {

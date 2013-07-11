@@ -9,6 +9,7 @@
     <string name="command_port">Command Port</string>
     <string name="video_port">Video Port</string>
     <string name="event_port">Event Port</string>
+    <string name="port">Port</string>
           
     <!--  Remote Control -->
     <string name="control_fwd">Fwd</string>    
@@ -34,6 +35,7 @@
     <string name="rover2_light">Light</string>
     <string name="rover2_cameraup">Camera Up</string>
     <string name="rover2_cameradown">Camera Down</string>
+    <string name="battery">Battery</string>
     
     
 </resources>

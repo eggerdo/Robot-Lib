@@ -30,8 +30,8 @@ public abstract class RoverBaseController extends Loggable {
 
 	protected RoverParameters parameters;
 
-	protected String m_strTargetHost;
-	protected int m_strTargetPort;
+	protected String m_strTargetHost = null;
+	protected int m_nTargetPort;
 	protected String targetId;
 	protected String targetPassword;
 
@@ -52,6 +52,11 @@ public abstract class RoverBaseController extends Loggable {
 		if (this.oVideoListener == listener) {
 			this.oVideoListener = null;
 		}
+	}
+
+	public void setConnection(String address, int port) {
+		m_strTargetHost = address;
+		m_nTargetPort = port;
 	}
 
 	public void moveForward(int i_nVelocity) {
@@ -135,7 +140,7 @@ public abstract class RoverBaseController extends Loggable {
 		public void run() {
 			try {
 				HttpClient mClient= new DefaultHttpClient();
-				String strCommand = String.format("http://%s:%d/set_params.cgi?resolution=%s", m_strTargetHost, m_strTargetPort, command);
+				String strCommand = String.format("http://%s:%d/set_params.cgi?resolution=%s", m_strTargetHost, m_nTargetPort, command);
 				HttpGet get = new HttpGet(strCommand);
 				get.addHeader(BasicScheme.authenticate(new UsernamePasswordCredentials(targetId, targetPassword), "UTF-8", false));
 
@@ -178,7 +183,7 @@ public abstract class RoverBaseController extends Loggable {
 				ArrayList<String> params = new ArrayList<String>();
 
 				HttpClient mClient= new DefaultHttpClient();
-				HttpGet get = new HttpGet(String.format("http://%s:%d/get_params.cgi", m_strTargetHost, m_strTargetPort));
+				HttpGet get = new HttpGet(String.format("http://%s:%d/get_params.cgi", m_strTargetHost, m_nTargetPort));
 				get.addHeader(BasicScheme.authenticate(new UsernamePasswordCredentials(targetId, targetPassword),"UTF-8", false));
 
 				mClient.execute(get);
@@ -198,6 +203,5 @@ public abstract class RoverBaseController extends Loggable {
 			}
 		}
 	}
-
 	
 }

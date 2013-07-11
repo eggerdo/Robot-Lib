@@ -1,14 +1,19 @@
 package robots.rover.ac13.gui;
 
-import org.dobots.R;
+import org.dobots.R; 
 import org.dobots.utilities.BaseActivity;
 
 import robots.RobotRemoteListener;
 import robots.RobotType;
 import robots.ctrl.RemoteControlHelper;
 import robots.rover.ac13.ctrl.AC13Rover;
+import robots.rover.ac13.ctrl.AC13RoverTypes;
 import robots.rover.gui.RoverBaseRobot;
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.widget.EditText;
 
 public class AC13RoverRobot extends RoverBaseRobot {
 
@@ -45,4 +50,43 @@ public class AC13RoverRobot extends RoverBaseRobot {
     	super.setProperties(i_eRobot);
 	}
 
+	@Override
+    protected void prepareConnectionSettingsDialog(Dialog dialog) {
+		EditText editText;
+		
+		editText = (EditText) dialog.findViewById(R.id.txtAddress);
+		editText.setText(m_strAddress);
+		
+		editText = (EditText) dialog.findViewById(R.id.txtPort);
+		editText.setText(Integer.valueOf(m_nPort));
+    }
+
+	@Override
+	protected void checkConnectionSettings() {
+		SharedPreferences prefs = m_oActivity.getPreferences(Activity.MODE_PRIVATE);
+		m_strAddress = prefs.getString(AC13RoverTypes.PREFS_AC13_ADDRESS, AC13RoverTypes.DEFAULT_ADDRESS);
+		m_nPort = prefs.getInt(AC13RoverTypes.PREFS_AC13_PORT, AC13RoverTypes.DEFAULT_PORT);
+	}
+
+	@Override
+	protected void adjustConnectionSettings() {
+
+    	EditText editText;
+    	
+    	editText = (EditText) m_dlgSettingsDialog.findViewById(R.id.txtAddress);
+		m_strAddress = editText.getText().toString();
+		
+		editText = (EditText) m_dlgSettingsDialog.findViewById(R.id.txtPort);
+		m_nPort = Integer.valueOf(editText.getText().toString());
+
+		getRover().setConnection(m_strAddress, m_nPort);
+		connect();
+		
+		SharedPreferences prefs = m_oActivity.getPreferences(Activity.MODE_PRIVATE);
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putString(AC13RoverTypes.PREFS_AC13_ADDRESS, m_strAddress);
+		editor.putInt(AC13RoverTypes.PREFS_AC13_PORT, m_nPort);
+		editor.commit();
+		
+	}
 }

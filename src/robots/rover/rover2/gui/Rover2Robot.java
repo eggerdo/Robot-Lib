@@ -9,13 +9,19 @@ import org.dobots.utilities.Utils;
 import robots.RobotType;
 import robots.rover.gui.RoverBaseRobot;
 import robots.rover.rover2.ctrl.Rover2;
+import robots.rover.rover2.ctrl.Rover2Types;
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 
 public class Rover2Robot extends RoverBaseRobot {
@@ -31,8 +37,6 @@ public class Rover2Robot extends RoverBaseRobot {
 	private static final int SENSOR_GRP = REMOTE_CTRL_GRP + 1;
 	private static final int VIDEO_GRP = SENSOR_GRP + 1	;
 	
-	private AlertDialog m_dlgSettingsDialog;
-
 	private ZmqRemoteListener m_oZmqRemoteListener;
 
 	private static Rover2Robot instance;
@@ -52,7 +56,7 @@ public class Rover2Robot extends RoverBaseRobot {
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
-
+    	
 		instance = this;
 		
         m_oSensorGatherer = new Rover2SensorGatherer(this, getRover());
@@ -134,5 +138,44 @@ public class Rover2Robot extends RoverBaseRobot {
 		// TODO Auto-generated method stub
 		return instance;
 	}
-    
+
+	@Override
+    protected void prepareConnectionSettingsDialog(Dialog dialog) {
+		EditText editText;
+		
+		editText = (EditText) dialog.findViewById(R.id.txtAddress);
+		editText.setText(m_strAddress);
+		
+		editText = (EditText) dialog.findViewById(R.id.txtPort);
+		editText.setText(Integer.toString(m_nPort));
+    }
+
+	@Override
+	protected void checkConnectionSettings() {
+		SharedPreferences prefs = m_oActivity.getPreferences(Activity.MODE_PRIVATE);
+		m_strAddress = prefs.getString(Rover2Types.PREFS_ROVER2_ADDRESS, Rover2Types.DEFAULT_ADDRESS);
+		m_nPort = prefs.getInt(Rover2Types.PREFS_ROVER2_PORT, Rover2Types.DEFAULT_PORT);
+	}
+
+	@Override
+	protected void adjustConnectionSettings() {
+
+    	EditText editText;
+    	
+    	editText = (EditText) m_dlgSettingsDialog.findViewById(R.id.txtAddress);
+		m_strAddress = editText.getText().toString();
+		
+		editText = (EditText) m_dlgSettingsDialog.findViewById(R.id.txtPort);
+		m_nPort = Integer.valueOf(editText.getText().toString());
+
+		getRover().setConnection(m_strAddress, m_nPort);
+		connect();
+		
+		SharedPreferences prefs = m_oActivity.getPreferences(Activity.MODE_PRIVATE);
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putString(Rover2Types.PREFS_ROVER2_ADDRESS, m_strAddress);
+		editor.putInt(Rover2Types.PREFS_ROVER2_PORT, m_nPort);
+		editor.commit();
+		
+	}
 }

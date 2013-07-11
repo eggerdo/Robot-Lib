@@ -41,7 +41,7 @@ public class AC13Controller extends RoverBaseController {
 	public AC13Controller() {
 
 		m_strTargetHost = AC13RoverTypes.ADDRESS;
-		m_strTargetPort = AC13RoverTypes.PORT;
+		m_nTargetPort = AC13RoverTypes.PORT;
 		targetId = AC13RoverTypes.ID;
 		targetPassword = AC13RoverTypes.PWD;
 
@@ -68,8 +68,13 @@ public class AC13Controller extends RoverBaseController {
 		try {
 			debug(TAG, "connecting...");
 			
+			if (m_strTargetHost == null) {
+				error(TAG, "address not defined");
+				return false;
+			}
+			
 			//Initializing command socket
-			SocketAddress sockaddr = new InetSocketAddress(AC13RoverTypes.ADDRESS, AC13RoverTypes.PORT);
+			SocketAddress sockaddr = new InetSocketAddress(m_strTargetHost, m_nTargetPort);
 			cSock = new Socket();
 			cSock.connect(sockaddr, 10000);
 				

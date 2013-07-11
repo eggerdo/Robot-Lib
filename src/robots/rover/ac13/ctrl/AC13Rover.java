@@ -37,7 +37,11 @@ public class AC13Rover extends RoverBase {
 	private AC13Controller getController() {
 		return (AC13Controller) m_oController;
 	}
-	
+
+	public void setConnection(String address, int port) {
+		m_oController.setConnection(address, port);
+	}
+
 	public void toggleInfrared() {
 		getController().switchInfrared();
 	}

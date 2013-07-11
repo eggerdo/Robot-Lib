@@ -87,7 +87,7 @@ public class ZmqSettings {
     	AlertDialog.Builder builder = new AlertDialog.Builder(context);
     	switch (id) {
     	case DIALOG_SETTINGS_ID:
-        	layout = inflater.inflate(R.layout.connection_settings, null);
+        	layout = inflater.inflate(R.layout.zmq_connection_settings, null);
         	builder.setTitle("Connection Settings");
         	builder.setView(layout);
         	builder.setOnCancelListener(new DialogInterface.OnCancelListener() {

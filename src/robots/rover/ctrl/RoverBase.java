@@ -73,7 +73,9 @@ public abstract class RoverBase extends DifferentialRobot implements IMoveRepeat
 	public abstract boolean isStreaming();
 	public abstract boolean startVideo();
 	public abstract void stopVideo();
-
+	
+	public abstract void setConnection(String address, int port);
+	
 	@Override
 	public void destroy() {
 		m_oKeepAliveTimer.cancel();

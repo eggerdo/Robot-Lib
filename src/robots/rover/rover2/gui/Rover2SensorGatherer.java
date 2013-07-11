@@ -1,5 +1,6 @@
 package robots.rover.rover2.gui;
 
+import org.dobots.R;
 import org.dobots.communication.video.VideoDisplayThread;
 import org.dobots.communication.video.VideoDisplayThread.FPSListener;
 import org.dobots.communication.video.VideoDisplayThread.VideoListener;
@@ -11,15 +12,40 @@ import org.zeromq.ZMQ;
 import robots.rover.gui.RoverBaseSensorGatherer;
 import robots.rover.rover2.ctrl.Rover2;
 import android.graphics.Bitmap;
+import android.widget.TextView;
 
 public class Rover2SensorGatherer extends RoverBaseSensorGatherer  implements VideoListener, FPSListener {
 
 	private VideoDisplayThread m_oVideoDisplayer;
+	private TextView m_txtBattery;
 
 	public Rover2SensorGatherer(BaseActivity i_oActivity, Rover2 i_oRover) {
 		super(i_oActivity, i_oRover, "Rover2SensorGatherer");
+		
+		setProperties();
+		
+		startThread();
 	}
+	
+	@Override
+	protected void setProperties() {
+		super.setProperties();
 
+    	m_txtBattery = (TextView) m_oActivity.findViewById(R.id.txtBattery);
+	}
+	
+	@Override
+	protected void execute() {
+		final double battery = ((Rover2)m_oRover).getBatteryPower();
+		
+		Utils.runAsyncUiTask(new Runnable() {
+			@Override
+			public void run() {
+				m_txtBattery.setText(String.format("%.0f %%", battery));
+			}
+		});
+	}
+	
 	@Override
 	protected void startVideo() {
 		super.startVideo();
