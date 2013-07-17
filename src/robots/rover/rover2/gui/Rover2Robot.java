@@ -153,8 +153,8 @@ public class Rover2Robot extends RoverBaseRobot {
 	@Override
 	protected void checkConnectionSettings() {
 		SharedPreferences prefs = m_oActivity.getPreferences(Activity.MODE_PRIVATE);
-		m_strAddress = prefs.getString(Rover2Types.PREFS_ROVER2_ADDRESS, Rover2Types.DEFAULT_ADDRESS);
-		m_nPort = prefs.getInt(Rover2Types.PREFS_ROVER2_PORT, Rover2Types.DEFAULT_PORT);
+		m_strAddress = prefs.getString(Rover2Types.PREFS_ROVER2_ADDRESS, Rover2Types.ADDRESS);
+		m_nPort = prefs.getInt(Rover2Types.PREFS_ROVER2_PORT, Rover2Types.PORT);
 	}
 
 	@Override

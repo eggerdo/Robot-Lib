@@ -5,9 +5,9 @@ import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.dobots.communication.video.VideoDisplayThread.VideoListener;
 import org.dobots.utilities.Utils;
 
-import robots.IVideoListener;
 import robots.ctrl.DifferentialRobot;
 import robots.ctrl.IMoveRepeaterListener;
 import robots.ctrl.MoveRepeater;
@@ -332,11 +332,11 @@ public abstract class RoverBase extends DifferentialRobot implements IMoveRepeat
 		return m_eResolution;
 	}
 	
-	public void setVideoListener(IVideoListener i_oListener) {
+	public void setVideoListener(VideoListener i_oListener) {
 		m_oController.setVideoListener(i_oListener);
 	}
 	
-	public void removeVideoListener(IVideoListener i_oListener) {
+	public void removeVideoListener(VideoListener i_oListener) {
 		m_oController.removeVideoListener(i_oListener);
 	}
 

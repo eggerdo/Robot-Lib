@@ -10,9 +10,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.dobots.communication.video.VideoDisplayThread.VideoListener;
 import org.dobots.utilities.log.Loggable;
 
-import robots.IVideoListener;
 import robots.rover.ctrl.RoverBaseTypes.RoverParameters;
 
 public abstract class RoverBaseController extends Loggable {
@@ -26,7 +26,7 @@ public abstract class RoverBaseController extends Loggable {
 	protected boolean m_bStreaming = false;
 	
 	// receives new frame events
-	protected IVideoListener oVideoListener = null;
+	protected VideoListener oVideoListener = null;
 
 	protected RoverParameters parameters;
 
@@ -44,11 +44,11 @@ public abstract class RoverBaseController extends Loggable {
 
 	public abstract boolean isConnected();
 
-	public void setVideoListener(IVideoListener listener) {
+	public void setVideoListener(VideoListener listener) {
 		this.oVideoListener = listener;
 	}
 	
-	public void removeVideoListener(IVideoListener listener) {
+	public void removeVideoListener(VideoListener listener) {
 		if (this.oVideoListener == listener) {
 			this.oVideoListener = null;
 		}

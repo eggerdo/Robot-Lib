@@ -19,6 +19,8 @@
     <string name="control">Remote Control</string> 
     <string name="local">Local</string> 
     <string name="remote">Remote</string>
+    <string name="cameraup">Camera Up</string>
+    <string name="cameradown">Camera Down</string>
       
     <!--  Rover Base -->
     <string name="rover_infrared">Infrared</string>
@@ -33,9 +35,11 @@
     <string name="rover2_title">Rover 2.0</string>
     <string name="rover2_commands">Rover 2.0 Commands</string>
     <string name="rover2_light">Light</string>
-    <string name="rover2_cameraup">Camera Up</string>
-    <string name="rover2_cameradown">Camera Down</string>
     <string name="battery">Battery</string>
+    
+    <!--  Spy Tank -->
+    <string name="spytank_title">I-Spy Tank</string>
+    <string name="spytank_commands">I-Spy Tank Commands</string>
     
     
 </resources>

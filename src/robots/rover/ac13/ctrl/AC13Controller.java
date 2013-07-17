@@ -284,7 +284,7 @@ public class AC13Controller extends RoverBaseController {
 					byte[] rgb = Arrays.copyOfRange(imageBuffer, imagePtr + 36, imageLength - 36);
 //					if (rawmap != null) {
 						if (oVideoListener != null) {
-							oVideoListener.frameReceived(rgb);
+							oVideoListener.onFrame(rgb, 0);
 						}
 //					}
 					if (newPtr > maxImageBuffer / 2) {

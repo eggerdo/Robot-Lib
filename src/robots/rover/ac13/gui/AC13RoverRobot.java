@@ -64,8 +64,8 @@ public class AC13RoverRobot extends RoverBaseRobot {
 	@Override
 	protected void checkConnectionSettings() {
 		SharedPreferences prefs = m_oActivity.getPreferences(Activity.MODE_PRIVATE);
-		m_strAddress = prefs.getString(AC13RoverTypes.PREFS_AC13_ADDRESS, AC13RoverTypes.DEFAULT_ADDRESS);
-		m_nPort = prefs.getInt(AC13RoverTypes.PREFS_AC13_PORT, AC13RoverTypes.DEFAULT_PORT);
+		m_strAddress = prefs.getString(AC13RoverTypes.PREFS_AC13_ADDRESS, AC13RoverTypes.ADDRESS);
+		m_nPort = prefs.getInt(AC13RoverTypes.PREFS_AC13_PORT, AC13RoverTypes.PORT);
 	}
 
 	@Override

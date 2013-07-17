@@ -1,15 +1,14 @@
 package robots.rover.ac13.gui;
 
+import org.dobots.communication.video.VideoDisplayThread.VideoListener;
 import org.dobots.utilities.BaseActivity;
 
+import robots.rover.ac13.ctrl.AC13Rover;
+import robots.rover.gui.RoverBaseSensorGatherer;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import robots.IVideoListener;
-import robots.rover.ac13.ctrl.AC13Rover;
-import robots.rover.gui.RoverBaseSensorGatherer;
-
-public class AC13RoverSensorGatherer extends RoverBaseSensorGatherer implements IVideoListener {
+public class AC13RoverSensorGatherer extends RoverBaseSensorGatherer implements VideoListener {
 
 	// debug frame counters
     int m_nFpsCounter = 0;
@@ -32,7 +31,7 @@ public class AC13RoverSensorGatherer extends RoverBaseSensorGatherer implements 
 	}
 
 	@Override
-	public void frameReceived(byte[] rgb) {
+	public void onFrame(byte[] rgb, int rotation) {
 
 		final Bitmap bmp = BitmapFactory.decodeByteArray(rgb, 0, rgb.length);
 		

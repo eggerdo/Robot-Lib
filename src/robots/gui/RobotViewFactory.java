@@ -1,6 +1,7 @@
 package robots.gui;
 
 import robots.RobotType;
+import robots.ispytank.gui.SpyTankRobot;
 import robots.romo.ctrl.RomoTypes;
 import robots.romo.gui.RomoRobot;
 import robots.rover.rover2.gui.Rover2Robot;
@@ -41,6 +42,8 @@ public class RobotViewFactory {
 			return RomoRobot.class;
 		case RBT_ROVER2:
 			return Rover2Robot.class;
+		case RBT_SPYTANK:
+			return SpyTankRobot.class;
 		default:
 			return null;
 //			return UnimplementedRobot.class;
@@ -65,10 +68,8 @@ public class RobotViewFactory {
 //			return AC13RoverTypes.SSID_FILTER;
 		case RBT_ROMO:
 			return RomoTypes.SSID_FILTER;
-		case RBT_ROVER2:
-			return "";
 		default:
-			return null;
+			return "";
 		}
 	}
 

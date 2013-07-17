@@ -3,6 +3,7 @@ package robots.rover.rover2.gui;
 import org.dobots.R;
 import org.dobots.communication.video.VideoDisplayThread;
 import org.dobots.communication.video.VideoDisplayThread.FPSListener;
+import org.dobots.communication.video.VideoDisplayThread.IVideoListener;
 import org.dobots.communication.video.VideoDisplayThread.VideoListener;
 import org.dobots.communication.zmq.ZmqHandler;
 import org.dobots.utilities.BaseActivity;
@@ -12,9 +13,10 @@ import org.zeromq.ZMQ;
 import robots.rover.gui.RoverBaseSensorGatherer;
 import robots.rover.rover2.ctrl.Rover2;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.widget.TextView;
 
-public class Rover2SensorGatherer extends RoverBaseSensorGatherer  implements VideoListener, FPSListener {
+public class Rover2SensorGatherer extends RoverBaseSensorGatherer  implements VideoListener, FPSListener, IVideoListener {
 
 	private VideoDisplayThread m_oVideoDisplayer;
 	private TextView m_txtBattery;
@@ -75,7 +77,8 @@ public class Rover2SensorGatherer extends RoverBaseSensorGatherer  implements Vi
 
 		// start a video display thread which receives video frames from the socket and displays them
 		m_oVideoDisplayer = new VideoDisplayThread(ZmqHandler.getInstance().getContext().getContext(), oVideoRecvSocket);
-		m_oVideoDisplayer.setVideoListner(this);
+//		m_oVideoDisplayer.setVideoListner(this);
+		m_oVideoDisplayer.m_oBmpListener = this;
 		m_oVideoDisplayer.setFPSListener(this);
 		m_oVideoDisplayer.start();
 	}
@@ -94,30 +97,44 @@ public class Rover2SensorGatherer extends RoverBaseSensorGatherer  implements Vi
 	}
 
 	@Override
-	public void onFrame(final Bitmap i_oBmp, int i_nRotation) {
+	public void onFrame(final byte[] rgb, int rotation) {
 
-		Utils.runAsyncUiTask(new Runnable() {
-
-			@Override
-			public void run() {
-				if (!m_bVideoStopped) {
-					if (!m_bVideoConnected) {
-						m_oSensorDataUiUpdater.removeCallbacks(m_oTimeoutRunnable);
-						m_bVideoConnected = true;
-						showVideoLoading(false);
-					}
-
-					m_ivVideo.setImageBitmap(i_oBmp);
-				}
-			}
-			
-		});
+//		Utils.runAsyncUiTask(new Runnable() {
+//
+//			@Override
+//			public void run() {
+//				if (!m_bVideoStopped) {
+//					if (!m_bVideoConnected) {
+//						m_oSensorDataUiUpdater.removeCallbacks(m_oTimeoutRunnable);
+//						m_bVideoConnected = true;
+//						showVideoLoading(false);
+//					}
+//
+//					Bitmap bmp = BitmapFactory.decodeByteArray(rgb, 0, rgb.length);
+//					m_ivVideo.setImageBitmap(bmp);
+//				}
+//			}
+//			
+//		});
 	}
 	
 	@Override
 	public void shutDown() {
 		if (m_oVideoDisplayer != null) {
 			m_oVideoDisplayer.close();
+		}
+	}
+
+	@Override
+	public void onFrame(Bitmap bmp, int rotation) {
+		if (!m_bVideoStopped) {
+			if (!m_bVideoConnected) {
+				m_oSensorDataUiUpdater.removeCallbacks(m_oTimeoutRunnable);
+				m_bVideoConnected = true;
+				showVideoLoading(false);
+			}
+
+			m_ivVideo.setImageBitmap(bmp);
 		}
 	}
     

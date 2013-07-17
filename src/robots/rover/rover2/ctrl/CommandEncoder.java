@@ -353,7 +353,7 @@ public class CommandEncoder {
 		byte[] data = new byte[dataLength];
 		content.position(VIDEO_DATA_IDX);
 		content.get(data);
-		controller.receiveVideo(data);
+		controller.onVideoReceived(data);
 	}
 
 	public static byte[] cmdVideoEnd() throws IOException

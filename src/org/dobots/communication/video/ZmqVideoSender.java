@@ -1,13 +1,12 @@
 package org.dobots.communication.video;
 
 import org.dobots.communication.msg.VideoMessage;
+import org.dobots.communication.video.VideoDisplayThread.VideoListener;
 import org.dobots.communication.zmq.ZmqHandler;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMsg;
 
-import robots.IVideoListener;
-
-public class ZmqVideoSender implements IVideoListener {
+public class ZmqVideoSender implements VideoListener {
 
 	private ZMQ.Socket m_oVideoSocket;
 	
@@ -20,9 +19,9 @@ public class ZmqVideoSender implements IVideoListener {
 	}
 
 	@Override
-	public void frameReceived(byte[] rgb) {
+	public void onFrame(byte[] rgb, int rotation) {
 
-		VideoMessage oMsg = new VideoMessage(robotID, rgb, 0);
+		VideoMessage oMsg = new VideoMessage(robotID, rgb, rotation);
 		
 		ZMsg zmsg = oMsg.toZmsg();
 		zmsg.send(m_oVideoSocket);

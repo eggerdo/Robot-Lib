@@ -71,8 +71,8 @@ public class Rover2Controller extends RoverBaseController {
 			public void run() {
 				try {
 					if (m_bConnected) {
-						byte[] arrayOfByte = CommandEncoder.cmdBatteryPowerReq();
-						send(arrayOfByte);
+						byte[] request = CommandEncoder.cmdBatteryPowerReq();
+						send(request);
 						return;
 					}
 				} catch (IOException e) {
@@ -86,8 +86,8 @@ public class Rover2Controller extends RoverBaseController {
 	public void keepAlive() {
 		try {
 			if (m_bConnected) {
-				byte[] arrayOfByte = CommandEncoder.cmdKeepAlive();
-				send(arrayOfByte);
+				byte[] request = CommandEncoder.cmdKeepAlive();
+				send(request);
 				return;
 			}
 		} catch (IOException e) {
@@ -272,9 +272,9 @@ public class Rover2Controller extends RoverBaseController {
 		return;
 	}
 
-	public void receiveVideo(byte[] data) {
+	public void onVideoReceived(byte[] data) {
 		if (oVideoListener != null) {
-			oVideoListener.frameReceived(data);
+			oVideoListener.onFrame(data, 0);
 		}
 	}
 
@@ -448,31 +448,31 @@ public class Rover2Controller extends RoverBaseController {
 	// FORWARD
 
 	protected void moveRightForward(int i_nVelocity) {
-		move(1, i_nVelocity);
+		move(Rover2Types.RIGHT_FWD, i_nVelocity);
 	}
 
 	protected void moveLeftForward(int i_nVelocity) {
-		move(4, i_nVelocity);
+		move(Rover2Types.LEFT_FWD, i_nVelocity);
 	}
 
 	// BACKWARD
 
 	protected void moveRightBackward(int i_nVelocity) {
-		move(2, i_nVelocity);
+		move(Rover2Types.RIGHT_BWD, i_nVelocity);
 	}
 
 	protected void moveLeftBackward(int i_nVelocity) {
-		move(5, i_nVelocity);
+		move(Rover2Types.LEFT_BWD, i_nVelocity);
 	}
 
 	// STOP
 
 	protected void moveRightStop() {
-		move(0, 0);
+		move(Rover2Types.RIGHT_STOP, 0);
 	}
 
 	protected void moveLeftStop() {
-		move(3, 0);
+		move(Rover2Types.LEFT_STOP, 0);
 	}
 
 }

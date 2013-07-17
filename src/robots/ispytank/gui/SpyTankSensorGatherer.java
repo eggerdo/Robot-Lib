@@ -1,14 +1,18 @@
-package robots.rover.gui;
+package robots.ispytank.gui;
 
 import org.dobots.R;
+import org.dobots.communication.video.VideoDisplayThread;
+import org.dobots.communication.video.VideoDisplayThread.FPSListener;
+import org.dobots.communication.video.VideoDisplayThread.IVideoListener;
+import org.dobots.communication.video.VideoDisplayThread.VideoListener;
+import org.dobots.communication.zmq.ZmqHandler;
 import org.dobots.utilities.BaseActivity;
-import org.dobots.utilities.ScalableImageView;
 import org.dobots.utilities.Utils;
+import org.zeromq.ZMQ;
 import org.zeromq.ZMQ.Socket;
 
 import robots.gui.SensorGatherer;
-import robots.rover.ctrl.RoverBase;
-import robots.rover.ctrl.RoverBaseTypes.VideoResolution;
+import robots.ispytank.ctrl.SpyTank;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.Handler;
@@ -17,9 +21,9 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public abstract class RoverBaseSensorGatherer extends SensorGatherer {
+public class SpyTankSensorGatherer extends SensorGatherer implements VideoListener, FPSListener, IVideoListener {
 
-	protected RoverBase m_oRover;
+	protected SpyTank m_oSpyTank;
 
 	protected boolean m_bVideoEnabled = true;
 	protected boolean m_bVideoConnected = false;
@@ -27,7 +31,7 @@ public abstract class RoverBaseSensorGatherer extends SensorGatherer {
 	protected boolean m_bVideoStopped = false;
 
 	private ProgressBar m_pbLoading;
-	protected ScalableImageView m_ivVideo;
+	private VideoView mVideo;
 	
 	private FrameLayout m_layCamera;
 
@@ -37,20 +41,19 @@ public abstract class RoverBaseSensorGatherer extends SensorGatherer {
 
 	protected TextView m_lblFPS;
 
-	public RoverBaseSensorGatherer(BaseActivity i_oActivity, RoverBase i_oRover, String i_strThreadName) {
-		super(i_oActivity, i_strThreadName);
-		m_oRover = i_oRover;
+	private VideoDisplayThread m_oVideoDisplayer;
+
+	public SpyTankSensorGatherer(BaseActivity i_oActivity, SpyTank spyTank) {
+		super(i_oActivity, "SpyTankSensorGatherer");
 		
-//		videoSocket = ZmqHandler.getInstance().getContext().createSocket(ZMQ.PUSH);
-//		videoSocket.bind("inproc://video");
+		m_oSpyTank = spyTank;
+//		spyTank.setVideoListener(this);
 		
 		setProperties();
 
 		initialize();
-		
-		start();
 	}
-	
+
 	private void initialize() {
 		m_bVideoConnected = false;
 	}
@@ -58,12 +61,12 @@ public abstract class RoverBaseSensorGatherer extends SensorGatherer {
 	public void resetLayout() {
 		initialize();
 		
-		showView(m_ivVideo, false);
+		showView(mVideo, false);
 	}
 	
 	protected void setProperties() {
 		m_pbLoading = (ProgressBar) m_oActivity.findViewById(R.id.pbLoading);
-		m_ivVideo = (ScalableImageView) m_oActivity.findViewById(R.id.ivCamera);
+		mVideo = (VideoView) m_oActivity.findViewById(R.id.ivCamera);
 		
 		m_layCamera = (FrameLayout) m_oActivity.findViewById(R.id.layCamera);
 
@@ -74,7 +77,7 @@ public abstract class RoverBaseSensorGatherer extends SensorGatherer {
 		m_oSensorDataUiUpdater.post(new Runnable() {
 			@Override
 			public void run() {
-				showView(m_ivVideo, !i_bShow);
+				showView(mVideo, !i_bShow);
 				showView(m_pbLoading, i_bShow);
 			}
 		});
@@ -101,17 +104,21 @@ public abstract class RoverBaseSensorGatherer extends SensorGatherer {
 	}
 	
 	protected void stopVideo() {
-		m_oRover.stopVideo();
+		m_oSpyTank.switchCameraOff();
 		m_bVideoStopped = true;
 		showVideoMsg("");
+
+		setVideoListening(false);
 	}
 	
 	protected void startVideo() {
-		m_oRover.startVideo();
+		m_oSpyTank.switchCameraOn();
 		m_bVideoConnected = false;
 		m_bVideoStopped = false;
 		showVideoLoading(true);
 		m_oSensorDataUiUpdater.postDelayed(m_oTimeoutRunnable, 15000);
+
+		setVideoListening(true);
 	}
 	
 	protected Runnable m_oTimeoutRunnable = new Runnable() {
@@ -136,7 +143,8 @@ public abstract class RoverBaseSensorGatherer extends SensorGatherer {
 		
 		Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
 		Utils.writeToCanvas(m_oActivity, new Canvas(bmp), i_strMsg, true);
-		m_ivVideo.setImageBitmap(bmp);
+		mVideo.setImageBitmap(bmp);
+
 	}
 
 	public void onConnect() {
@@ -157,11 +165,77 @@ public abstract class RoverBaseSensorGatherer extends SensorGatherer {
 
 	public void setVideoScaled(boolean i_bScaled) {
 		m_bVideoScaled = i_bScaled;
-		m_ivVideo.setScale(i_bScaled);
+		mVideo.setScale(i_bScaled);
 	}
 
-	public void setResolution(final VideoResolution i_eResolution) {
-		m_oRover.setResolution(i_eResolution);
+	private void setVideoListening(boolean i_bListening) {
+		if (i_bListening) {
+			setupVideoDisplay();
+		} else {
+			if (m_oVideoDisplayer != null) {
+				m_oVideoDisplayer.close();
+			}
+		}
+	}
+
+    private void setupVideoDisplay() {
+    	
+		ZMQ.Socket oVideoRecvSocket = ZmqHandler.getInstance().obtainVideoRecvSocket();
+		oVideoRecvSocket.subscribe(m_oSpyTank.getID().getBytes());
+
+		// start a video display thread which receives video frames from the socket and displays them
+		m_oVideoDisplayer = new VideoDisplayThread(ZmqHandler.getInstance().getContext().getContext(), oVideoRecvSocket);
+//		m_oVideoDisplayer.setVideoListner(this);
+		m_oVideoDisplayer.m_oBmpListener = this;
+		m_oVideoDisplayer.setFPSListener(this);
+		m_oVideoDisplayer.start();
+	}
+
+	@Override
+	public void onFPS(final int i_nFPS) {
+//		Utils.runAsyncUiTask(new Runnable() {
+//
+//			@Override
+//			public void run() {
+				if (!m_bVideoStopped) {
+					m_lblFPS.setText("FPS: " + String.valueOf(i_nFPS));
+				}
+//			}
+//		});
+	}
+
+	@Override
+	public void onFrame(byte[] rgb, int rotation) {
+		
+		if (!m_bVideoStopped) {
+			if (!m_bVideoConnected) {
+				m_oSensorDataUiUpdater.removeCallbacks(m_oTimeoutRunnable);
+				m_bVideoConnected = true;
+				showVideoLoading(false);
+			}
+
+			mVideo.onFrame(rgb, rotation);
+		}
+	}
+
+	@Override
+	public void shutDown() {
+		if (m_oVideoDisplayer != null) {
+			m_oVideoDisplayer.close();
+		}
+	}
+
+	@Override
+	public void onFrame(Bitmap bmp, int rotation) {
+		if (!m_bVideoStopped) {
+			if (!m_bVideoConnected) {
+				m_oSensorDataUiUpdater.removeCallbacks(m_oTimeoutRunnable);
+				m_bVideoConnected = true;
+				showVideoLoading(false);
+			}
+
+			mVideo.onFrame(bmp, rotation);
+		}
 	}
 
 }
