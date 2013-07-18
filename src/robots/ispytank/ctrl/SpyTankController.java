@@ -13,7 +13,7 @@ import java.util.TimerTask;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.dobots.communication.video.VideoDisplayThread.VideoListener;
+import org.dobots.communication.video.IRawVideoListener;
 
 import robots.ctrl.BaseWifi;
 import android.util.Log;
@@ -27,7 +27,7 @@ public class SpyTankController extends BaseWifi {
 	Socket m_oMediaSocket;
 	DataInputStream m_oMediaIn;
 
-	private VideoListener oVideoListener = null;
+	private IRawVideoListener oVideoListener = null;
 
 	private boolean m_bRun = true;
 	private boolean m_bStreaming = false;
@@ -51,11 +51,11 @@ public class SpyTankController extends BaseWifi {
 		
 	};
 
-	public void setVideoListener(VideoListener listener) {
+	public void setVideoListener(IRawVideoListener listener) {
 		this.oVideoListener = listener;
 	}
 	
-	public void removeVideoListener(VideoListener listener) {
+	public void removeVideoListener(IRawVideoListener listener) {
 		if (this.oVideoListener == listener) {
 			this.oVideoListener = null;
 		}
@@ -72,10 +72,7 @@ public class SpyTankController extends BaseWifi {
 		return false;
 	}
 
-	// debug frame counters
-    int m_nFpsCounter = 0;
-    long m_lLastTime = System.currentTimeMillis();
-
+	long start, end;
 	private void connectMedia() throws IOException {
 		DefaultHttpClient mediaClient = new DefaultHttpClient();
 		URI address = URI.create(String.format("http://%s:%d", SpyTankTypes.ADDRESS, SpyTankTypes.MEDIA_PORT));
@@ -94,17 +91,11 @@ public class SpyTankController extends BaseWifi {
 							return;
 						}
 						
+						start = System.currentTimeMillis();
 						byte[] data = readFrame();
 						onVideoReceived(data);
-						
-			            ++m_nFpsCounter;
-			            long now = System.currentTimeMillis();
-			            if ((now - m_lLastTime) >= 1000) {
-			            	Log.i(TAG, String.format("FPS incoming: %d", m_nFpsCounter));
-
-			                m_lLastTime = now;
-			                m_nFpsCounter = 0;
-			            }
+						end = System.currentTimeMillis();
+						Log.w(TAG, String.format("dt %d", (end - start)));
 
 					} catch (IOException e) {
 						e.printStackTrace();

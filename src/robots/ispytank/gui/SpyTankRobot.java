@@ -6,19 +6,16 @@ import org.dobots.communication.control.ZmqRemoteListener;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
 
-import android.os.Bundle;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-
 import robots.RobotType;
 import robots.ctrl.RemoteControlHelper;
 import robots.gui.SensorGatherer;
 import robots.gui.WifiRobot;
 import robots.ispytank.ctrl.SpyTank;
-import robots.rover.rover2.ctrl.Rover2;
-import robots.rover.rover2.gui.Rover2SensorGatherer;
+import android.os.Bundle;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 
 public class SpyTankRobot extends WifiRobot {
 	

@@ -6,61 +6,37 @@ import org.zeromq.ZMQ;
 import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMsg;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.os.Handler;
-import android.os.Message;
 
+/**
+ * The VideoDisplayThread supports two different video listeners:
+ * 		1. RawVideoListener
+ * 				On reception of a new frame, the onFrame callback will be triggered which
+ * 				sends the frame as an byte array
+ * 				Note: this will not be called in the main UI thread
+ * 		2. VideoListener
+ * 				On reception of a new frame, the onFrame callback will be triggered which
+ * 				sends the frame as a bitmap
+ * 				Note: this is called in the main UI thread and can be displayed directly.
+ * 
+ * It also provides a fps listener for debug purposes which is NOT called in the main UI thread.
+ * 
+ * Note that UI elements can only be changed in the main thread. so if the callback is not done
+ * in the main thread directly, the callback function has to defer the work to the main thread
+ * see Utils.runAsyncUITask
+ * 
+ */
 public class VideoDisplayThread extends ZmqReceiveThread {
 	
-	public interface VideoListener {
-		/**
-		 * NOTE THAT CHANGING UI ELEMENTS HAVE TO BE DONE IN THE MAIN THREAD, HOWEVER
-		 * THIS FUNCTION IS NOT CALLED IN THE MAIN THREAD.
-		 * @param i_oBmp
-		 */
-		public void onFrame(byte[] rgb, int rotation);
-	}
+	private IRawVideoListener m_oRawVideoListener;
+	private IVideoListener m_oVideoListener;
 	
-	public interface IVideoListener {
-		/**
-		 * NOTE THAT CHANGING UI ELEMENTS HAVE TO BE DONE IN THE MAIN THREAD, HOWEVER
-		 * THIS FUNCTION IS NOT CALLED IN THE MAIN THREAD.
-		 * @param i_oBmp
-		 */
-		public void onFrame(Bitmap bmp, int rotation);
-	}
-	
-	public interface FPSListener {
-		/**
-		 * NOTE THAT CHANGING UI ELEMENTS HAVE TO BE DONE IN THE MAIN THREAD, HOWEVER
-		 * THIS FUNCTION IS NOT CALLED IN THE MAIN THREAD.
-		 * @param i_nFPS
-		 */
-		public void onFPS(int i_nFPS);
-	}
-
-	private VideoListener m_oVideoListener;
-	private FPSListener m_oFPSListener;
-	public IVideoListener m_oBmpListener;
-	
-	private Handler m_oUiHandler;
-
-	// debug frame counters
-    int m_nFpsCounter = 0;
-    long m_lLastTime = System.currentTimeMillis();
-
-	public VideoDisplayThread(ZMQ.Context i_oContext, Socket i_oInSocket, Handler i_oUiHandler) {
-		super(i_oContext, i_oInSocket, "VideoDisplayer");
-		
-		m_oUiHandler = i_oUiHandler;
-	}
+	private FpsCounter mFpsCounter = new FpsCounter();
 
 	public VideoDisplayThread(ZMQ.Context i_oContext, Socket i_oInSocket) {
 		super(i_oContext, i_oInSocket, "VideoDisplayer");
 	}
-
+	
 	@Override
 	protected void execute() {
 		ZMsg oMsg = ZMsg.recvMsg(m_oInSocket);
@@ -70,51 +46,18 @@ public class VideoDisplayThread extends ZmqReceiveThread {
 			
 			if (oVideoMsg != null) {
 				
-				(new BmpDecoder()).execute(oVideoMsg);
-
-//				if (m_oVideoListener != null) {
-//					m_oVideoListener.onFrame(oVideoMsg.getVideoData(), oVideoMsg.nRotation);
-//				}
-				
-				// decoding the rgb array to a bmp slows down the zmq receiver.
-				// we continue with the rgb array until we want to display. then we
-				// can do the decoding in an AsyncTask
-				//				if (m_oVideoListener != null) {
-				//					Bitmap bmp = oVideoMsg.getAsBmp();
-				//					m_oVideoListener.onFrame(bmp, oVideoMsg.nRotation);
-				//				}
-				//				if (m_oUiHandler != null) {
-				//					Message uiMsg = m_oUiHandler.obtainMessage();
-				//					uiMsg.what = VideoTypes.INCOMING_VIDEO_MSG;
-				//					uiMsg.obj = bmp;
-				//					m_oUiHandler.dispatchMessage(uiMsg);
-				//				}
-			
-//	            ++m_nFpsCounter;
-//	            long now = System.currentTimeMillis();
-//	            if ((now - m_lLastTime) >= 1000)
-//	            {
-//	            	if (m_oFPSListener != null) {
-//	            		m_oFPSListener.onFPS(m_nFpsCounter);
-//	            	}
-//	            	if (m_oUiHandler != null) {
-//	            		Message uiMsg = m_oUiHandler.obtainMessage();
-//	    	        	uiMsg.what = VideoTypes.SET_FPS;
-//	    	        	uiMsg.obj = m_nFpsCounter;
-//	    	        	m_oUiHandler.dispatchMessage(uiMsg);
-//	            	}
-//		            
-//	                m_lLastTime = now;
-//	                m_nFpsCounter = 0;
-//	            }
+				if (m_oVideoListener != null) {
+					(new FrameDecoder()).execute(oVideoMsg);
+				}
 			}
 		}
 	}
 
-	private class BmpDecoder extends AsyncTask<VideoMessage, Integer, VideoMessage> {
+	private class FrameDecoder extends AsyncTask<VideoMessage, Integer, VideoMessage> {
 
 		@Override
 		protected VideoMessage doInBackground(VideoMessage... params) {
+			// this will trigger the frame to be decoded as a bmp
 			params[0].getAsBmp();
 			return params[0];
 		}
@@ -122,37 +65,27 @@ public class VideoDisplayThread extends ZmqReceiveThread {
 		@Override
 		protected void onPostExecute(VideoMessage result) {
 
-			if (m_oBmpListener != null) {
-				m_oBmpListener.onFrame(result.getAsBmp(), result.getRotation());
+			if (m_oVideoListener != null) {
+				// because we triggered the decoding in the background task we can now
+				//  obtain the bmp
+				m_oVideoListener.onFrame(result.getAsBmp(), result.getRotation());
 			}
-
-            ++m_nFpsCounter;
-            long now = System.currentTimeMillis();
-            if ((now - m_lLastTime) >= 1000)
-            {
-            	if (m_oFPSListener != null) {
-            		m_oFPSListener.onFPS(m_nFpsCounter);
-            	}
-            	if (m_oUiHandler != null) {
-            		Message uiMsg = m_oUiHandler.obtainMessage();
-    	        	uiMsg.what = VideoTypes.SET_FPS;
-    	        	uiMsg.obj = m_nFpsCounter;
-    	        	m_oUiHandler.dispatchMessage(uiMsg);
-            	}
-	            
-                m_lLastTime = now;
-                m_nFpsCounter = 0;
-            }
+			
+			// notify the fps counter about the new frame
+			mFpsCounter.tick();
 		}
-
 	}
 	
-	public void setVideoListner(VideoListener i_oListener) {
+	public void setRawVideoListner(IRawVideoListener i_oListener) {
+		m_oRawVideoListener = i_oListener;
+	}
+	
+	public void setVideoListener(IVideoListener i_oListener) {
 		m_oVideoListener = i_oListener;
 	}
 	
-	public void setFPSListener(FPSListener i_oListener) {
-		m_oFPSListener = i_oListener;
+	public void setFPSListener(IFpsListener i_oListener) {
+		mFpsCounter.setListener(i_oListener);
 	}
 	
 }

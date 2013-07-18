@@ -1,6 +1,6 @@
 package robots.rover.ac13.gui;
 
-import org.dobots.communication.video.VideoDisplayThread.VideoListener;
+import org.dobots.communication.video.IRawVideoListener;
 import org.dobots.utilities.BaseActivity;
 
 import robots.rover.ac13.ctrl.AC13Rover;
@@ -8,7 +8,7 @@ import robots.rover.gui.RoverBaseSensorGatherer;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-public class AC13RoverSensorGatherer extends RoverBaseSensorGatherer implements VideoListener {
+public class AC13RoverSensorGatherer extends RoverBaseSensorGatherer implements IRawVideoListener {
 
 	// debug frame counters
     int m_nFpsCounter = 0;

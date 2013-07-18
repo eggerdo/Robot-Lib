@@ -1,7 +1,9 @@
 package robots.ispytank.gui;
 
-import org.dobots.communication.video.VideoDisplayThread.IVideoListener;
-import org.dobots.communication.video.VideoDisplayThread.VideoListener;
+import org.dobots.communication.video.FpsCounter;
+import org.dobots.communication.video.IFpsListener;
+import org.dobots.communication.video.IRawVideoListener;
+import org.dobots.communication.video.IVideoListener;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -9,9 +11,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.os.AsyncTask;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.ImageView;
 
-public class VideoView extends ImageView implements IVideoListener, VideoListener {
+public class VideoView extends ImageView implements IVideoListener, IRawVideoListener {
 
 	public static final String TAG = "VideoView";
 
@@ -89,13 +92,26 @@ public class VideoView extends ImageView implements IVideoListener, VideoListene
 
 	@Override
 	public void onFrame(byte[] rgb, int rotation) {
-//		(new BmpDecoder()).execute(rgb);
+		(new BmpDecoder()).execute(rgb);
 	}
 
+	FpsCounter counter = new FpsCounter(new IFpsListener() {
+		
+		@Override
+		public void onFPS(int i_nFPS) {
+			Log.i("ZmqVideo", String.format("fps dec: %d", i_nFPS));
+		}
+	});
+
+	long dec_sum = 0;
+	long dec_count = 0;
 	private class BmpDecoder extends AsyncTask<byte[], Integer, Bitmap> {
 
+		long start, end;
+		
 		@Override
 		protected Bitmap doInBackground(byte[]... params) {
+			start = System.currentTimeMillis();
 			Bitmap frame = BitmapFactory.decodeByteArray(params[0], 0, params[0].length);
 			return frame;
 		}
@@ -111,6 +127,14 @@ public class VideoView extends ImageView implements IVideoListener, VideoListene
 				mCurrentFrame = result;
 				setImageBitmap(mCurrentFrame);
 			}
+			
+			counter.tick();
+			
+            end = System.currentTimeMillis();
+            long dt = end - start;
+            dec_sum += dt;
+            dec_count += 1;
+            Log.d("ZmqVideo", String.format("dec dt: %d (%.3f)", dt, (double)dec_sum / dec_count));
 		}
 
 	}

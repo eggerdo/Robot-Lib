@@ -11,6 +11,9 @@ import android.content.Context;
 
 public class ZmqHandler {
 	
+	// !! IMPORTANT: Zmq HWM has to be set before calling connect, otherwise it doesn't
+	//    have any effect !!
+	
 	private static ZmqHandler INSTANCE;
 	
 	private ZContext m_oZmqContext;
@@ -171,8 +174,8 @@ public class ZmqHandler {
 	// can send video (connects to the In Socket of the Video Handler)
 	public ZMQ.Socket obtainVideoSendSocket() {
 		ZMQ.Socket socket = createSocket(ZMQ.PUB);
-		socket.connect(m_strVideoInAddr);
 		socket.setHWM(1);
+		socket.connect(m_strVideoInAddr);
 		return socket;
 	}
 
@@ -180,8 +183,8 @@ public class ZmqHandler {
 	// can receive video (connects to the Out Socket of the Video Handler)
 	public ZMQ.Socket obtainVideoRecvSocket() {
 		ZMQ.Socket socket = createSocket(ZMQ.SUB);
-		socket.connect(m_strVideoOutAddr);
 		socket.setHWM(1);
+		socket.connect(m_strVideoOutAddr);
 		return socket;
 	}
 

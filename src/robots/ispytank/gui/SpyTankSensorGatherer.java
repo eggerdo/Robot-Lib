@@ -1,10 +1,11 @@
 package robots.ispytank.gui;
 
 import org.dobots.R;
+import org.dobots.communication.video.FpsCounter;
+import org.dobots.communication.video.IFpsListener;
+import org.dobots.communication.video.IRawVideoListener;
+import org.dobots.communication.video.IVideoListener;
 import org.dobots.communication.video.VideoDisplayThread;
-import org.dobots.communication.video.VideoDisplayThread.FPSListener;
-import org.dobots.communication.video.VideoDisplayThread.IVideoListener;
-import org.dobots.communication.video.VideoDisplayThread.VideoListener;
 import org.dobots.communication.zmq.ZmqHandler;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
@@ -16,12 +17,13 @@ import robots.ispytank.ctrl.SpyTank;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class SpyTankSensorGatherer extends SensorGatherer implements VideoListener, FPSListener, IVideoListener {
+public class SpyTankSensorGatherer extends SensorGatherer implements IFpsListener, IVideoListener {
 
 	protected SpyTank m_oSpyTank;
 
@@ -185,44 +187,25 @@ public class SpyTankSensorGatherer extends SensorGatherer implements VideoListen
 
 		// start a video display thread which receives video frames from the socket and displays them
 		m_oVideoDisplayer = new VideoDisplayThread(ZmqHandler.getInstance().getContext().getContext(), oVideoRecvSocket);
-//		m_oVideoDisplayer.setVideoListner(this);
-		m_oVideoDisplayer.m_oBmpListener = this;
+		m_oVideoDisplayer.setVideoListener(this);
 		m_oVideoDisplayer.setFPSListener(this);
 		m_oVideoDisplayer.start();
 	}
 
 	@Override
 	public void onFPS(final int i_nFPS) {
-//		Utils.runAsyncUiTask(new Runnable() {
-//
-//			@Override
-//			public void run() {
+
+		// since the function is not called from the main thread we have to call the main thread from
+		// here in order to update the fps display
+		Utils.runAsyncUiTask(new Runnable() {
+
+			@Override
+			public void run() {
 				if (!m_bVideoStopped) {
 					m_lblFPS.setText("FPS: " + String.valueOf(i_nFPS));
 				}
-//			}
-//		});
-	}
-
-	@Override
-	public void onFrame(byte[] rgb, int rotation) {
-		
-		if (!m_bVideoStopped) {
-			if (!m_bVideoConnected) {
-				m_oSensorDataUiUpdater.removeCallbacks(m_oTimeoutRunnable);
-				m_bVideoConnected = true;
-				showVideoLoading(false);
 			}
-
-			mVideo.onFrame(rgb, rotation);
-		}
-	}
-
-	@Override
-	public void shutDown() {
-		if (m_oVideoDisplayer != null) {
-			m_oVideoDisplayer.close();
-		}
+		});
 	}
 
 	@Override
@@ -235,6 +218,13 @@ public class SpyTankSensorGatherer extends SensorGatherer implements VideoListen
 			}
 
 			mVideo.onFrame(bmp, rotation);
+		}
+	}
+
+	@Override
+	public void shutDown() {
+		if (m_oVideoDisplayer != null) {
+			m_oVideoDisplayer.close();
 		}
 	}
 

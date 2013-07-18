@@ -5,7 +5,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.dobots.communication.control.ZmqRemoteControlHelper;
-import org.dobots.communication.video.VideoDisplayThread.VideoListener;
+import org.dobots.communication.video.IRawVideoListener;
 import org.dobots.communication.video.ZmqVideoSender;
 
 import robots.RobotRemoteListener;
@@ -41,11 +41,11 @@ public class SpyTank extends DifferentialRobot implements ICameraControlListener
 		m_oController.setReceiveHandler(m_oUiHandler);
 	}
 
-	public void setVideoListener(VideoListener listener) {
+	public void setVideoListener(IRawVideoListener listener) {
 		m_oController.setVideoListener(listener);
 	}
 	
-	public void removeVideoListener(VideoListener listener) {
+	public void removeVideoListener(IRawVideoListener listener) {
 		m_oController.removeVideoListener(listener);
 	}
 

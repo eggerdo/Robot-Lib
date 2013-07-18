@@ -1,12 +1,11 @@
 package org.dobots.communication.video;
 
 import org.dobots.communication.msg.VideoMessage;
-import org.dobots.communication.video.VideoDisplayThread.VideoListener;
 import org.dobots.communication.zmq.ZmqHandler;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMsg;
 
-public class ZmqVideoSender implements VideoListener {
+public class ZmqVideoSender implements IRawVideoListener {
 
 	private ZMQ.Socket m_oVideoSocket;
 	

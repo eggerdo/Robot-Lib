@@ -1,7 +1,7 @@
 package org.dobots.communication.zmq;
 
-import org.dobots.communication.msg.RobotMessage;
 import org.dobots.communication.msg.RoboCommands.BaseCommand;
+import org.dobots.communication.msg.RobotMessage;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMsg;
 

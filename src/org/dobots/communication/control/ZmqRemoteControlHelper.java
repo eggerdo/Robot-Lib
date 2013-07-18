@@ -1,10 +1,10 @@
 package org.dobots.communication.control;
 
 import org.dobots.communication.msg.RoboCommands;
-import org.dobots.communication.msg.RobotMessage;
 import org.dobots.communication.msg.RoboCommands.BaseCommand;
 import org.dobots.communication.msg.RoboCommands.CameraCommand;
 import org.dobots.communication.msg.RoboCommands.DriveCommand;
+import org.dobots.communication.msg.RobotMessage;
 import org.dobots.communication.zmq.ZmqHandler;
 import org.dobots.communication.zmq.ZmqReceiveThread;
 import org.dobots.utilities.Utils;

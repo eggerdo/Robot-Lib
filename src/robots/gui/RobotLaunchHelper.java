@@ -4,7 +4,6 @@ import robots.RobotInventory;
 import robots.RobotType;
 import robots.ctrl.IRobotDevice;
 import robots.ctrl.RobotDeviceFactory;
-import robots.romo.ctrl.Romo;
 import android.app.Activity;
 import android.content.Intent;
 
