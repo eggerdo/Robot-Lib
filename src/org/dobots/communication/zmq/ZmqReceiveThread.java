@@ -3,6 +3,8 @@ package org.dobots.communication.zmq;
 import org.dobots.utilities.Utils;
 import org.zeromq.ZMQ;
 
+import android.os.Looper;
+
 public abstract class ZmqReceiveThread extends Thread {
 
 	protected ZMQ.Socket m_oInSocket;
@@ -21,20 +23,21 @@ public abstract class ZmqReceiveThread extends Thread {
 
 	@Override
 	public void run() {
-			while(!Thread.currentThread().isInterrupted()) {
-				try {
-					if (!bPause) {
-						if (m_oPoller.poll() > 0) {
-							execute();
-						}
-					} else {
-						Utils.waitSomeTime(10);
+		Looper.prepare();
+		while(!Thread.currentThread().isInterrupted()) {
+			try {
+				if (!bPause) {
+					if (m_oPoller.poll() > 0) {
+						execute();
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
+				} else {
+					Utils.waitSomeTime(10);
 				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			m_oPoller.unregister(m_oInSocket);
+		}
+		m_oPoller.unregister(m_oInSocket);
 	}
 	
 	protected abstract void execute();

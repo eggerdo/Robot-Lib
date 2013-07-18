@@ -5,14 +5,18 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.net.URI;
+import java.net.URL;
+import java.nio.BufferUnderflowException;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.ByteArrayBuffer;
 import org.dobots.communication.video.IRawVideoListener;
 
 import robots.ctrl.BaseWifi;
@@ -72,30 +76,28 @@ public class SpyTankController extends BaseWifi {
 		return false;
 	}
 
-	long start, end;
 	private void connectMedia() throws IOException {
-		DefaultHttpClient mediaClient = new DefaultHttpClient();
-		URI address = URI.create(String.format("http://%s:%d", SpyTankTypes.ADDRESS, SpyTankTypes.MEDIA_PORT));
-		InputStream is = mediaClient.execute(new HttpGet(address)).getEntity().getContent();
-		m_oMediaIn = new DataInputStream(new BufferedInputStream(is, SpyTankTypes.FRAME_MAX_LENGTH));
-		m_bRun = true;
+		URL url = new URL(String.format("http://%s:%d", SpyTankTypes.ADDRESS, SpyTankTypes.MEDIA_PORT));
+		HttpURLConnection mediaCon = (HttpURLConnection) url.openConnection();
+		InputStream is = new BufferedInputStream(mediaCon.getInputStream(), SpyTankTypes.FRAME_MAX_LENGTH);
+		m_oMediaIn = new DataInputStream(is);
 		
 		Thread localThread = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
+				ByteArrayBuffer arrayBuffer = new ByteArrayBuffer(1048576);
+				arrayBuffer.clear();
 
 				while (m_bRun) {
 					try {
+						int nCount;
 						if (!m_bStreaming) {
 							return;
 						}
-						
-						start = System.currentTimeMillis();
+
 						byte[] data = readFrame();
 						onVideoReceived(data);
-						end = System.currentTimeMillis();
-						Log.w(TAG, String.format("dt %d", (end - start)));
 
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -140,6 +142,7 @@ public class SpyTankController extends BaseWifi {
 	private byte[] readFrame() throws IOException {
 		m_oMediaIn.mark(SpyTankTypes.FRAME_MAX_LENGTH);
 		int index = getStartOfSequence(m_oMediaIn, SpyTankTypes.SOI_MARKER);
+		Log.w(TAG, String.format("idx: %d", index));
 		if (index == -1) {
 			throw new IOException("read Error");
 		}
@@ -173,7 +176,8 @@ public class SpyTankController extends BaseWifi {
 	private int getEndOfSequence(InputStream is, byte[] sequence) throws IOException {
 		int index = 0;
 		for (int i = 0; i < SpyTankTypes.FRAME_MAX_LENGTH; ++i) {
-			if ((byte)is.read() == sequence[index]) {
+			byte in = (byte)is.read();
+			if (in == sequence[index]) {
 				index++;
 				if (index == sequence.length) {
 					return i + 1;
