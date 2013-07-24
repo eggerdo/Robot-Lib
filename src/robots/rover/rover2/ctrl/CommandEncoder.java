@@ -212,7 +212,8 @@ public class CommandEncoder {
 			Log.d(TAG, "loginResp(challenge):" + challenge_1 + "," + challenge_2 + "," + challenge_3 + "," + challenge_4);
 			Log.d(TAG, "loginResp(verification ):" + verify_1 + "," + verify_2 + "," + verify_3 + "," + verify_4);
 			Log.d(TAG, "===============================");
-			if ((challenge_1.equals(verify_1)) && (challenge_2.equals(verify_2)) && (challenge_3.equals(verify_3)) && (challenge_4.equals(verify_4)))
+			if ((challenge_1.equals(verify_1)) && (challenge_2.equals(verify_2)) && 
+				(challenge_3.equals(verify_3)) && (challenge_4.equals(verify_4)))
 			{
 				controller.verifyCommand();
 				return true;

@@ -114,8 +114,7 @@ public class Rover2Controller extends RoverBaseController {
 
 	private Socket createSocket(String host, int port) throws IOException {
 		Socket localSocket = SocketFactory.getDefault().createSocket();
-		InetSocketAddress localInetSocketAddress = new InetSocketAddress(host,
-				port);
+		InetSocketAddress localInetSocketAddress = new InetSocketAddress(host, port);
 		localSocket.connect(localInetSocketAddress, 5000);
 		return localSocket;
 	}
@@ -154,10 +153,6 @@ public class Rover2Controller extends RoverBaseController {
 		newChallenge[1] = r.nextInt();
 		newChallenge[2] = r.nextInt();
 		newChallenge[3] = r.nextInt();
-//		newChallenge[0] = -402456576;
-//		newChallenge[1] = -804847616;
-//		newChallenge[2] = 3000;
-//		newChallenge[3] = 4000;
 		return newChallenge;
 	}
 
@@ -172,9 +167,8 @@ public class Rover2Controller extends RoverBaseController {
 		challenge = createChallenge();
 		byte[] request = CommandEncoder.cmdLoginReq(challenge);
 		send(request);
-		
 
-		Thread localThread = new Thread(new Runnable() {
+		Thread commandReceiver = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
@@ -213,8 +207,8 @@ public class Rover2Controller extends RoverBaseController {
 			}
 		});
 
-		localThread.setName("Rover 2 Command Thread");
-		localThread.start();
+		commandReceiver.setName("Rover 2 Command Thread");
+		commandReceiver.start();
 	}
 
 	public void connectMediaReceiver(int nID) throws IOException {
@@ -229,7 +223,8 @@ public class Rover2Controller extends RoverBaseController {
 		m_oMediaOut.write(request);
 		m_oMediaOut.flush();
 
-		Thread localThread = new Thread(new Runnable() {
+		Thread mediaReceiver = new Thread(new Runnable() {
+			
 			@Override
 			public void run() {
 				ByteArrayBuffer arrayBuffer = new ByteArrayBuffer(BUFFER_SIZE);
@@ -257,8 +252,8 @@ public class Rover2Controller extends RoverBaseController {
 				}
 			}
 		});
-		localThread.setName("Rover 2 Media Thread");
-		localThread.start();
+		mediaReceiver.setName("Rover 2 Media Thread");
+		mediaReceiver.start();
 		return;
 	}
 

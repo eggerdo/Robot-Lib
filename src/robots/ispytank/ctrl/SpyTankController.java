@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.net.URI;
 import java.net.URL;
 import java.nio.BufferUnderflowException;
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -79,25 +80,23 @@ public class SpyTankController extends BaseWifi {
 	private void connectMedia() throws IOException {
 		URL url = new URL(String.format("http://%s:%d", SpyTankTypes.ADDRESS, SpyTankTypes.MEDIA_PORT));
 		HttpURLConnection mediaCon = (HttpURLConnection) url.openConnection();
-		InputStream is = new BufferedInputStream(mediaCon.getInputStream(), SpyTankTypes.FRAME_MAX_LENGTH);
-		m_oMediaIn = new DataInputStream(is);
+		m_oMediaIn = new DataInputStream(new BufferedInputStream(mediaCon.getInputStream()));
 		
 		Thread localThread = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
-				ByteArrayBuffer arrayBuffer = new ByteArrayBuffer(1048576);
-				arrayBuffer.clear();
-
 				while (m_bRun) {
 					try {
-						int nCount;
 						if (!m_bStreaming) {
 							return;
 						}
 
 						byte[] data = readFrame();
-						onVideoReceived(data);
+						
+						if (oVideoListener  != null) {
+							oVideoListener.onFrame(data, 0);
+						}
 
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -133,16 +132,9 @@ public class SpyTankController extends BaseWifi {
 		m_bRun = false;
 	}
 
-	public void onVideoReceived(byte[] data) {
-		if (oVideoListener  != null) {
-			oVideoListener.onFrame(data, 0);
-		}
-	}
-
 	private byte[] readFrame() throws IOException {
 		m_oMediaIn.mark(SpyTankTypes.FRAME_MAX_LENGTH);
 		int index = getStartOfSequence(m_oMediaIn, SpyTankTypes.SOI_MARKER);
-		Log.w(TAG, String.format("idx: %d", index));
 		if (index == -1) {
 			throw new IOException("read Error");
 		}
@@ -188,7 +180,7 @@ public class SpyTankController extends BaseWifi {
 		}
 		return -1;
 	}
-
+	
 	public void startVideo() {
 		if (!m_bStreaming && connected) {
 			Log.d(TAG, "startVideo");
