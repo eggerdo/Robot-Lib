@@ -115,7 +115,7 @@ public class Rover2Controller extends RoverBaseController {
 	private Socket createSocket(String host, int port) throws IOException {
 		Socket localSocket = SocketFactory.getDefault().createSocket();
 		InetSocketAddress localInetSocketAddress = new InetSocketAddress(host, port);
-		localSocket.connect(localInetSocketAddress, 5000);
+		localSocket.connect(localInetSocketAddress, CONNECT_TIMEOUT);
 		return localSocket;
 	}
 

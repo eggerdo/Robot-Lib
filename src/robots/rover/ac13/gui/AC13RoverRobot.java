@@ -50,17 +50,6 @@ public class AC13RoverRobot extends RoverBaseRobot {
 	}
 
 	@Override
-    protected void prepareConnectionSettingsDialog(Dialog dialog) {
-		EditText editText;
-		
-		editText = (EditText) dialog.findViewById(R.id.txtAddress);
-		editText.setText(m_strAddress);
-		
-		editText = (EditText) dialog.findViewById(R.id.txtPort);
-		editText.setText(Integer.valueOf(m_nPort));
-    }
-
-	@Override
 	protected void checkConnectionSettings() {
 		SharedPreferences prefs = m_oActivity.getPreferences(Activity.MODE_PRIVATE);
 		m_strAddress = prefs.getString(AC13RoverTypes.PREFS_AC13_ADDRESS, AC13RoverTypes.ADDRESS);

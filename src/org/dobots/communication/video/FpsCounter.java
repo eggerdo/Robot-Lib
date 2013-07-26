@@ -28,7 +28,7 @@ public class FpsCounter {
         if ((now - m_lLastTime) >= 1000)
         {
         	if (m_oListener != null) {
-        		m_oListener.onFPS(m_nFpsCounter);
+//        		m_oListener.onFPS(m_nFpsCounter);
         	}
             m_lLastTime = now;
             m_nFpsCounter = 0;

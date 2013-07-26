@@ -19,10 +19,6 @@ public class Rover2 extends RoverBase implements ICameraControlListener {
 	
 	private ZmqVideoSender m_oVideoSender;
 
-	private RobotRemoteListener m_oRemoteListener;
-
-	private ZmqRemoteControlHelper m_oRemoteHelper;
-
 	public Rover2() {
 		super(Rover2Types.AXLE_WIDTH, Rover2Types.MIN_SPEED, Rover2Types.MAX_SPEED, Rover2Types.MIN_RADIUS, Rover2Types.MAX_RADIUS);
 
@@ -31,9 +27,6 @@ public class Rover2 extends RoverBase implements ICameraControlListener {
 		m_oVideoSender = new ZmqVideoSender(getID());
 		m_oController.setVideoListener(m_oVideoSender);
 
-		m_oRemoteListener = new RobotRemoteListener(this);
-		m_oRemoteHelper = new ZmqRemoteControlHelper(m_oRemoteListener, getID());
-		m_oRemoteHelper.setRemoteControlListener(m_oRemoteListener);
 		m_oRemoteHelper.setCameraControlListener(this);
 	}
 
@@ -44,7 +37,7 @@ public class Rover2 extends RoverBase implements ICameraControlListener {
 
 	@Override
 	public String getAddress() {
-		return null;
+		return m_oController.getAddress();
 	}
 
 	private Rover2Controller getController() {

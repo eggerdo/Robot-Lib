@@ -19,6 +19,8 @@ public abstract class RoverBaseController extends Loggable {
 
 	protected static final String TAG = "RoverBaseController";
 	
+	protected static final int CONNECT_TIMEOUT = 10000; // 10 seconds
+	
 	// Flags to store state of the connection
 	protected boolean m_bConnected;
 
@@ -43,6 +45,10 @@ public abstract class RoverBaseController extends Loggable {
 	public abstract boolean disconnect();
 
 	public abstract boolean isConnected();
+	
+	public String getAddress() {
+		return m_strTargetHost;
+	}
 
 	public void setVideoListener(IRawVideoListener listener) {
 		this.oVideoListener = listener;

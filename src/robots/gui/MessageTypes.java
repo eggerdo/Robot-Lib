@@ -18,6 +18,6 @@ public class MessageTypes {
 	public static final int STATE_DISCONNECTED = 906;
 
 	
-	public static final int USER = 1000;
+	public static final int USER = 2000;
 
 }

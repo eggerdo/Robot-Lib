@@ -7,8 +7,11 @@ import robots.rover.ac13.ctrl.AC13Rover;
 import robots.rover.gui.RoverBaseSensorGatherer;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 public class AC13RoverSensorGatherer extends RoverBaseSensorGatherer implements IRawVideoListener {
+	
+	public static final String TAG = "AC13RoverSensorGatherer";
 
 	// debug frame counters
     int m_nFpsCounter = 0;
@@ -51,7 +54,11 @@ public class AC13RoverSensorGatherer extends RoverBaseSensorGatherer implements 
 						showVideoLoading(false);
 					}
 					
-					m_ivVideo.setImageBitmap(bmp);
+					if (bmp != null) {
+						m_ivVideo.setImageBitmap(bmp);
+					} else {
+						Log.w(TAG, "decode failed");
+					}
 
 		            ++m_nFpsCounter;
 		            long now = System.currentTimeMillis();

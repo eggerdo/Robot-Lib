@@ -13,6 +13,10 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.Arrays;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
+
 import robots.rover.ctrl.RoverBaseController;
 import robots.rover.ctrl.RoverBaseTypes;
 
@@ -76,7 +80,7 @@ public class AC13Controller extends RoverBaseController {
 			//Initializing command socket
 			SocketAddress sockaddr = new InetSocketAddress(m_strTargetHost, m_nTargetPort);
 			cSock = new Socket();
-			cSock.connect(sockaddr, 10000);
+			cSock.connect(sockaddr, CONNECT_TIMEOUT);
 				
 			//Setting the connection
 			writeStart();
@@ -86,7 +90,7 @@ public class AC13Controller extends RoverBaseController {
 			
 			//Reinitializing the command socket
 			cSock = new Socket();
-			cSock.connect(sockaddr, 10000);
+			cSock.connect(sockaddr, CONNECT_TIMEOUT);
 			
 			byte[] buffer = new byte[2048];
 			
@@ -102,7 +106,7 @@ public class AC13Controller extends RoverBaseController {
 				imgid[i] = buffer[i + 25];
 
 			vSock = new Socket();
-			vSock.connect(sockaddr, 10000);
+			vSock.connect(sockaddr, CONNECT_TIMEOUT);
 			writeCmd(4, imgid);
 
 			requestAllParameters();
@@ -254,10 +258,10 @@ public class AC13Controller extends RoverBaseController {
 
 	private void receiveImage() {
 		debug("ReceiveImage", "Get image");
+		int len = 0;
+		int newPtr = tcpPtr;
+		int imageLength = 0;
 		try {
-			int len = 0;
-			int newPtr = tcpPtr;
-			int imageLength = 0;
 			boolean fnew = false;
 			while (!fnew && newPtr < maxImageBuffer - maxTCPBuffer) {
 				len = vSock.getInputStream().read(imageBuffer, newPtr,
@@ -279,14 +283,14 @@ public class AC13Controller extends RoverBaseController {
 					debug(TAG, "Total image size is "
 							+ (imageLength - 36));
 
-//					Bitmap rawmap = BitmapFactory.decodeByteArray(
-//							imageBuffer, imagePtr + 36, imageLength - 36);
-					byte[] rgb = Arrays.copyOfRange(imageBuffer, imagePtr + 36, imageLength - 36);
-//					if (rawmap != null) {
+					byte[] rgb = new byte[imageLength - 36];
+					Log.w(TAG, String.format("imagelen: %d", rgb.length));
+					System.arraycopy(imageBuffer, imagePtr + 36, rgb, 0, rgb.length);
+					if (rgb.length > 0) {
 						if (oVideoListener != null) {
 							oVideoListener.onFrame(rgb, 0);
 						}
-//					}
+					}
 					if (newPtr > maxImageBuffer / 2) {
 						// copy first chunk of new arrived image to start of
 						// array

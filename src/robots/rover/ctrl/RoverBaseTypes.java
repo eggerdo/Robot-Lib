@@ -11,7 +11,7 @@ public class RoverBaseTypes {
 	public static final String PWD			= "AC13";
 	
 	public static final int MIN_SPEED		= 0;
-	public static final int MAX_SPEED 		= 10;
+	public static final int MAX_SPEED 		= 9;
 	public static final int MIN_RADIUS 		= 1;
 	public static final int MAX_RADIUS 		= 1000;
 	public static final double AXLE_WIDTH  	= 230.0; // mm

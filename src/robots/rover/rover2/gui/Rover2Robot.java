@@ -34,8 +34,6 @@ public class Rover2Robot extends RoverBaseRobot {
 	private static final int SENSOR_GRP = REMOTE_CTRL_GRP + 1;
 	private static final int VIDEO_GRP = SENSOR_GRP + 1	;
 	
-	private ZmqRemoteListener m_oZmqRemoteListener;
-
 	private static Rover2Robot instance;
 
 	public Rover2Robot(BaseActivity i_oOwner) {
@@ -57,10 +55,6 @@ public class Rover2Robot extends RoverBaseRobot {
 		instance = this;
 		
         m_oSensorGatherer = new Rover2SensorGatherer(this, getRover());
-
-    	m_oZmqRemoteListener = new ZmqRemoteListener();
-
-    	m_oRemoteCtrl.setRemoteControlListener(m_oZmqRemoteListener);
     }
 
 	@Override
@@ -118,12 +112,6 @@ public class Rover2Robot extends RoverBaseRobot {
 	}
 
 	@Override
-	protected void onConnectError() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	protected void updateButtons(boolean i_bEnabled) {
 		super.updateButtons(i_bEnabled);
 		
@@ -135,17 +123,6 @@ public class Rover2Robot extends RoverBaseRobot {
 		// TODO Auto-generated method stub
 		return instance;
 	}
-
-	@Override
-    protected void prepareConnectionSettingsDialog(Dialog dialog) {
-		EditText editText;
-		
-		editText = (EditText) dialog.findViewById(R.id.txtAddress);
-		editText.setText(m_strAddress);
-		
-		editText = (EditText) dialog.findViewById(R.id.txtPort);
-		editText.setText(Integer.toString(m_nPort));
-    }
 
 	@Override
 	protected void checkConnectionSettings() {

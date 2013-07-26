@@ -5,9 +5,11 @@ import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.dobots.communication.control.ZmqRemoteControlHelper;
 import org.dobots.communication.video.IRawVideoListener;
 import org.dobots.utilities.Utils;
 
+import robots.RobotRemoteListener;
 import robots.ctrl.DifferentialRobot;
 import robots.ctrl.IMoveRepeaterListener;
 import robots.ctrl.MoveRepeater;
@@ -31,10 +33,13 @@ public abstract class RoverBase extends DifferentialRobot implements IMoveRepeat
 
 	protected Timer m_oKeepAliveTimer;
 
-	protected double m_dblBaseSpeed = 50.0;
+	protected double m_dblBaseSpeed = 100.0;
 
 	protected MoveRepeater m_oRepeater;
-	
+
+	protected RobotRemoteListener m_oRemoteListener;
+	protected ZmqRemoteControlHelper m_oRemoteHelper;
+
 	public RoverBase(double i_dblAxleWidth, int i_nMinVelocity, int i_nMaxVelocity, int i_nMinRadius, int i_nMaxRadius) {
 		super(i_dblAxleWidth, i_nMinVelocity, i_nMaxVelocity, i_nMinRadius, i_nMaxRadius);
 
@@ -42,6 +47,9 @@ public abstract class RoverBase extends DifferentialRobot implements IMoveRepeat
 		m_oKeepAliveTimer.schedule(m_oKeepAliveTask, 60000, 60000);
 
 		m_oRepeater = new MoveRepeater(this, 500);
+
+		m_oRemoteListener = new RobotRemoteListener(this);
+		m_oRemoteHelper = new ZmqRemoteControlHelper(m_oRemoteListener, getID());
 	}
 
 	private final TimerTask m_oKeepAliveTask = new TimerTask() {

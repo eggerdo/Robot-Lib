@@ -13,9 +13,9 @@ public class AC13Rover extends RoverBase {
 	public AC13Rover() {
 		super(AC13RoverTypes.AXLE_WIDTH, AC13RoverTypes.MIN_SPEED, AC13RoverTypes.MAX_SPEED, AC13RoverTypes.MIN_RADIUS, AC13RoverTypes.MAX_RADIUS);
 		
-//		m_oController = new AC13Comunicator();
 		m_oController = new AC13Controller();
 		m_oController.setLogListener(m_oLogListener);
+		
 	}
 
 	// Default Robot Device Functions =========================================
@@ -28,8 +28,7 @@ public class AC13Rover extends RoverBase {
 
 	@Override
 	public String getAddress() {
-		// TODO Auto-generated method stub
-		return AC13RoverTypes.ADDRESS;
+		return m_oController.getAddress();
 	}
 
 	// Custom AC 13 Rover Functions ====================================================

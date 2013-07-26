@@ -25,8 +25,10 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
 	protected static final int CONNECT_ID = Menu.FIRST;
 
 	protected static final int GENERAL_GRP = 0;
-	
+
 	protected static String TAG = "RobotDevice";
+	
+	public static String VIEW_LOADED = "robotview.action.LOADED";
 	
 	protected BaseActivity m_oActivity;
 	protected RobotType m_eRobot;
@@ -121,7 +123,15 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
 		getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
 		
         setProperties(m_eRobot);
+        
+        onLoad();
 	}
+    
+    private void onLoad() {
+    	Intent intent = new Intent(RobotView.VIEW_LOADED);
+    	intent.putExtra("RobotType", m_eRobot);
+    	m_oActivity.sendBroadcast(intent);
+    }
     
     @Override
     protected void onStart() {

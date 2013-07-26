@@ -2,6 +2,7 @@ package robots.rover.gui;
 
 import org.dobots.R;
 import org.dobots.communication.control.ZmqRemoteControlHelper;
+import org.dobots.communication.control.ZmqRemoteListener;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
 
@@ -23,6 +24,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.ToggleButton;
@@ -45,6 +47,7 @@ public abstract class RoverBaseRobot extends WifiRobot {
 	private RoverBase m_oRover;
 	protected RoverBaseSensorGatherer m_oSensorGatherer;
 	protected RemoteControlHelper m_oRemoteCtrl;
+	private ZmqRemoteListener m_oZmqRemoteListener;
 
 	protected boolean connected;
 
@@ -72,13 +75,13 @@ public abstract class RoverBaseRobot extends WifiRobot {
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
 
-    	m_oRover = (Rover2) getRobot();
+    	m_oRover = (RoverBase) getRobot();
         m_oRover.setHandler(m_oUiHandler);
         
 		m_dblSpeed = m_oRover.getBaseSped();
 
-		m_oRemoteCtrl = new ZmqRemoteControlHelper(m_oActivity, null, getRobot().getID());
-//		m_oRemoteCtrl = new ZmqRemoteControlHelper(m_oActivity, null, "Rover2GUI");
+    	m_oZmqRemoteListener = new ZmqRemoteListener();
+		m_oRemoteCtrl = new ZmqRemoteControlHelper(m_oActivity, m_oZmqRemoteListener, getRobot().getID());
         m_oRemoteCtrl.setProperties();
         
         updateButtons(false);
@@ -286,8 +289,16 @@ public abstract class RoverBaseRobot extends WifiRobot {
 			break;
 		}
     }
-    
-    protected abstract void prepareConnectionSettingsDialog(Dialog dialog);
+
+    protected void prepareConnectionSettingsDialog(Dialog dialog) {
+		EditText editText;
+		
+		editText = (EditText) dialog.findViewById(R.id.txtAddress);
+		editText.setText(m_strAddress);
+		
+		editText = (EditText) dialog.findViewById(R.id.txtPort);
+		editText.setText(Integer.toString(m_nPort));
+    }
 
 	protected abstract void checkConnectionSettings();
 
