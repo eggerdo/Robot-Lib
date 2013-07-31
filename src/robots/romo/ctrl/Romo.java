@@ -4,9 +4,9 @@ import java.io.IOException;
 
 import org.dobots.communication.control.ZmqRemoteControlHelper;
 
-import robots.RobotRemoteListener;
 import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
+import robots.gui.RobotRemoteListener;
 
 import com.romotive.library.RomoCommandInterface;
 

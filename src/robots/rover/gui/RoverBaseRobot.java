@@ -14,7 +14,6 @@ import robots.gui.WifiRobot;
 import robots.rover.ac13.gui.AC13RoverRobot;
 import robots.rover.ctrl.RoverBase;
 import robots.rover.ctrl.RoverBaseTypes.VideoResolution;
-import robots.rover.rover2.ctrl.Rover2;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -80,8 +79,8 @@ public abstract class RoverBaseRobot extends WifiRobot {
         
 		m_dblSpeed = m_oRover.getBaseSped();
 
-    	m_oZmqRemoteListener = new ZmqRemoteListener();
-		m_oRemoteCtrl = new ZmqRemoteControlHelper(m_oActivity, m_oZmqRemoteListener, getRobot().getID());
+    	m_oZmqRemoteListener = new ZmqRemoteListener(getRobot().getID());
+		m_oRemoteCtrl = new ZmqRemoteControlHelper(m_oActivity, m_oZmqRemoteListener);
         m_oRemoteCtrl.setProperties();
         
         updateButtons(false);

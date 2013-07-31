@@ -90,7 +90,7 @@
                 android:indeterminateBehavior="repeat"
                 android:visibility="invisible" />
 
-            <robots.ispytank.gui.VideoView
+            <robots.spytank.gui.VideoView
                 android:id="@+id/ivCamera"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

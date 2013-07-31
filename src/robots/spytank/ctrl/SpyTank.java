@@ -1,4 +1,4 @@
-package robots.ispytank.ctrl;
+package robots.spytank.ctrl;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
@@ -8,10 +8,10 @@ import org.dobots.communication.control.ZmqRemoteControlHelper;
 import org.dobots.communication.video.IRawVideoListener;
 import org.dobots.communication.video.ZmqVideoSender;
 
-import robots.RobotRemoteListener;
 import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
 import robots.ctrl.ICameraControlListener;
+import robots.gui.RobotRemoteListener;
 import android.os.Handler;
 
 public class SpyTank extends DifferentialRobot implements ICameraControlListener {

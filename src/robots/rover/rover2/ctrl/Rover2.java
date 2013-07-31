@@ -2,10 +2,8 @@ package robots.rover.rover2.ctrl;
 
 import java.io.IOException;
 
-import org.dobots.communication.control.ZmqRemoteControlHelper;
 import org.dobots.communication.video.ZmqVideoSender;
 
-import robots.RobotRemoteListener;
 import robots.RobotType;
 import robots.ctrl.ICameraControlListener;
 import robots.rover.ctrl.RoverBase;

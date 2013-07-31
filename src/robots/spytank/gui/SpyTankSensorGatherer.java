@@ -1,9 +1,7 @@
-package robots.ispytank.gui;
+package robots.spytank.gui;
 
 import org.dobots.R;
-import org.dobots.communication.video.FpsCounter;
 import org.dobots.communication.video.IFpsListener;
-import org.dobots.communication.video.IRawVideoListener;
 import org.dobots.communication.video.IVideoListener;
 import org.dobots.communication.video.VideoDisplayThread;
 import org.dobots.communication.zmq.ZmqHandler;
@@ -13,11 +11,10 @@ import org.zeromq.ZMQ;
 import org.zeromq.ZMQ.Socket;
 
 import robots.gui.SensorGatherer;
-import robots.ispytank.ctrl.SpyTank;
+import robots.spytank.ctrl.SpyTank;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
@@ -175,7 +172,7 @@ public class SpyTankSensorGatherer extends SensorGatherer implements IFpsListene
 			setupVideoDisplay();
 		} else {
 			if (m_oVideoDisplayer != null) {
-				m_oVideoDisplayer.close();
+				m_oVideoDisplayer.destroy();
 			}
 		}
 	}
@@ -224,7 +221,7 @@ public class SpyTankSensorGatherer extends SensorGatherer implements IFpsListene
 	@Override
 	public void shutDown() {
 		if (m_oVideoDisplayer != null) {
-			m_oVideoDisplayer.close();
+			m_oVideoDisplayer.destroy();
 		}
 	}
 

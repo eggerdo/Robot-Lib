@@ -7,9 +7,9 @@ import org.dobots.utilities.CameraPreview;
 import org.dobots.utilities.log.ILogListener;
 import org.dobots.utilities.log.LogTypes;
 
-import robots.RobotInventory;
 import robots.RobotType;
 import robots.ctrl.ICameraControlListener;
+import robots.gui.RobotInventory;
 import robots.gui.RobotView;
 import robots.gui.SensorGatherer;
 import robots.romo.ctrl.Romo;
@@ -47,9 +47,9 @@ public class RomoRobot extends RobotView implements ICameraControlListener, ILog
         oRomo.setDebug(true);
         oRomo.setLogListener(this);
 
-    	m_oZmqRemoteListener = new ZmqRemoteListener();
+    	m_oZmqRemoteListener = new ZmqRemoteListener(oRomo.getID());
 
-		m_oRemoteCtrl = new ZmqRemoteControlHelper(m_oActivity, m_oZmqRemoteListener, "RomoGUI");
+		m_oRemoteCtrl = new ZmqRemoteControlHelper(m_oActivity, m_oZmqRemoteListener);
         m_oRemoteCtrl.setProperties();
 		m_oRemoteCtrl.setCameraControlListener(this);
 

@@ -13,7 +13,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ToggleButton;
 
@@ -24,6 +24,12 @@ public class RemoteControlHelper implements IJoystickListener {
 	public enum Move {
 		NONE, STRAIGHT_FORWARD, FORWARD, STRAIGHT_BACKWARD, BACKWARD, ROTATE_LEFT, ROTATE_RIGHT
 	}
+	
+	// negative angle ->
+	// positive angle ->
+	// angle from -90 to +90
+	// angle is used as a common control for rotation. the robot itself uses radius. but radius can
+	//   differ from robot to robot
 	
 	protected IRemoteControlListener m_oRemoteControlListener = null;
 	
@@ -36,18 +42,70 @@ public class RemoteControlHelper implements IJoystickListener {
 	private Activity m_oActivity;
 	
 	private boolean m_bControl;
-	private boolean m_bAdvancedControl = true;
+	private boolean m_bAdvancedControl = false;
 
 	private ToggleButton m_btnControl;
-	private Button m_btnFwd;
-	private Button m_btnBwd;
-	private Button m_btnLeft;
-	private Button m_btnRight;
+	private ImageButton m_btnFwd;
+	private ImageButton m_btnFwdLeft;
+	private ImageButton m_btnFwdRight;
+	private ImageButton m_btnBwd;
+	private ImageButton m_btnBwdLeft;
+	private ImageButton m_btnBwdRight;
+	private ImageButton m_btnLeft;
+	private ImageButton m_btnRight;
+	private ImageButton m_btnStop;
 	
 	private LockableScrollView m_oScrollView;
 	private LinearLayout m_oAdvancedControl;
 	
 	private Joystick m_oJoystick;
+	
+	private int mAlpha = 99;
+
+	private class RemoteControlTouchListener implements OnTouchListener {
+
+		private Move mMove;
+		private double mRadius = 0;
+		
+		public RemoteControlTouchListener(Move move) {
+			mMove = move;
+		}
+
+		public RemoteControlTouchListener(Move move, double radius) {
+			mMove = move;
+			mRadius = radius;
+		}
+		
+		@Override
+		public boolean onTouch(View v, MotionEvent e) {
+			if (m_oRemoteControlListener != null) {
+				int action = e.getAction();
+				switch (action & MotionEvent.ACTION_MASK) {
+				case MotionEvent.ACTION_CANCEL:
+				case MotionEvent.ACTION_UP:
+					onMove(Move.NONE);
+					break;
+				case MotionEvent.ACTION_POINTER_UP:
+					break;
+				case MotionEvent.ACTION_DOWN:
+					if (mRadius == 0) {
+						onMove(mMove);
+					} else {
+						// -1 is used as a placeholder for the speed so that
+						// the robot is using its default speed
+						onMove(mMove, -1, mRadius);
+					}
+					break;
+				case MotionEvent.ACTION_POINTER_DOWN:
+					break;					
+				case MotionEvent.ACTION_MOVE:
+					break;
+				}
+			}
+			return false;
+		}
+		
+	}
 	
 	protected RemoteControlHelper(IRemoteControlListener i_oListener) {
 
@@ -102,110 +160,42 @@ public class RemoteControlHelper implements IJoystickListener {
 			});
 		}
 	
-		m_btnFwd = (Button) m_oActivity.findViewById(R.id.btnFwd);
-		m_btnLeft = (Button) m_oActivity.findViewById(R.id.btnLeft);
-		m_btnBwd = (Button) m_oActivity.findViewById(R.id.btnBwd);
-		m_btnRight = (Button) m_oActivity.findViewById(R.id.btnRight);
-		
-		m_btnFwd.setOnTouchListener(new OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent e) {
-				if (m_oRemoteControlListener != null) {
-					int action = e.getAction();
-					switch (action & MotionEvent.ACTION_MASK) {
-					case MotionEvent.ACTION_CANCEL:
-					case MotionEvent.ACTION_UP:
-						onMove(Move.NONE);
-						break;
-					case MotionEvent.ACTION_POINTER_UP:
-						break;
-					case MotionEvent.ACTION_DOWN:
-						onMove(Move.STRAIGHT_FORWARD);
-						break;
-					case MotionEvent.ACTION_POINTER_DOWN:
-						break;					
-					case MotionEvent.ACTION_MOVE:
-						break;
-					}
-				}
-				return true;
-			}
-		});
-		
-		m_btnBwd.setOnTouchListener(new OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent e) {
-				if (m_oRemoteControlListener != null) {
-					int action = e.getAction();
-					switch (action & MotionEvent.ACTION_MASK) {
-					case MotionEvent.ACTION_CANCEL:
-					case MotionEvent.ACTION_UP:
-						onMove(Move.NONE);
-						break;
-					case MotionEvent.ACTION_POINTER_UP:
-						break;
-					case MotionEvent.ACTION_DOWN:
-						onMove(Move.STRAIGHT_BACKWARD);
-						break;
-					case MotionEvent.ACTION_POINTER_DOWN:
-						break;					
-					case MotionEvent.ACTION_MOVE:
-						break;
-					}
-				}
-				return true;
-			}
-		});
 
-		m_btnLeft.setOnTouchListener(new OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent e) {
-				if (m_oRemoteControlListener != null) {
-					int action = e.getAction();
-					switch (action & MotionEvent.ACTION_MASK) {
-					case MotionEvent.ACTION_CANCEL:
-					case MotionEvent.ACTION_UP:
-						onMove(Move.NONE);
-						break;
-					case MotionEvent.ACTION_POINTER_UP:
-						break;
-					case MotionEvent.ACTION_DOWN:
-						onMove(Move.ROTATE_LEFT);
-						break;
-					case MotionEvent.ACTION_POINTER_DOWN:
-						break;					
-					case MotionEvent.ACTION_MOVE:
-						break;
-					}
-				}
-				return true;
-			}
-		});
+		m_btnFwdLeft = (ImageButton) m_oActivity.findViewById(R.id.btnFwdLeft);
+		m_btnFwdLeft.getBackground().setAlpha(mAlpha);
+		m_btnFwdLeft.setOnTouchListener(new RemoteControlTouchListener(Move.FORWARD, -80));
+		
+		m_btnFwd = (ImageButton) m_oActivity.findViewById(R.id.btnFwd);
+		m_btnFwd.getBackground().setAlpha(mAlpha);
+		m_btnFwd.setOnTouchListener(new RemoteControlTouchListener(Move.STRAIGHT_FORWARD));
+		
+		m_btnFwdRight = (ImageButton) m_oActivity.findViewById(R.id.btnFwdRight);
+		m_btnFwdRight.getBackground().setAlpha(mAlpha);
+		m_btnFwdRight.setOnTouchListener(new RemoteControlTouchListener(Move.FORWARD, 80));
 
-		m_btnRight.setOnTouchListener(new OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent e) {
-				if (m_oRemoteControlListener != null) {
-					int action = e.getAction();
-					switch (action & MotionEvent.ACTION_MASK) {
-					case MotionEvent.ACTION_CANCEL:
-					case MotionEvent.ACTION_UP:
-						onMove(Move.NONE);
-						break;
-					case MotionEvent.ACTION_POINTER_UP:
-						break;
-					case MotionEvent.ACTION_DOWN:
-						onMove(Move.ROTATE_RIGHT);
-						break;
-					case MotionEvent.ACTION_POINTER_DOWN:
-						break;					
-					case MotionEvent.ACTION_MOVE:
-						break;
-					}
-				}
-				return true;
-			}
-		});
+		m_btnLeft = (ImageButton) m_oActivity.findViewById(R.id.btnLeft);
+		m_btnLeft.getBackground().setAlpha(mAlpha);
+		m_btnLeft.setOnTouchListener(new RemoteControlTouchListener(Move.ROTATE_LEFT));
+		
+		m_btnStop = (ImageButton) m_oActivity.findViewById(R.id.btnStop);
+		m_btnStop.getBackground().setAlpha(mAlpha);
+		m_btnStop.setOnTouchListener(new RemoteControlTouchListener(Move.NONE));
+		
+		m_btnRight = (ImageButton) m_oActivity.findViewById(R.id.btnRight);
+		m_btnRight.getBackground().setAlpha(mAlpha);
+		m_btnRight.setOnTouchListener(new RemoteControlTouchListener(Move.ROTATE_RIGHT));
+		
+		m_btnBwdLeft = (ImageButton) m_oActivity.findViewById(R.id.btnBwdLeft);
+		m_btnBwdLeft.getBackground().setAlpha(mAlpha);
+		m_btnBwdLeft.setOnTouchListener(new RemoteControlTouchListener(Move.BACKWARD, -80));
+		
+		m_btnBwd = (ImageButton) m_oActivity.findViewById(R.id.btnBwd);
+		m_btnBwd.getBackground().setAlpha(mAlpha);
+		m_btnBwd.setOnTouchListener(new RemoteControlTouchListener(Move.STRAIGHT_BACKWARD));
+		
+		m_btnBwdRight = (ImageButton) m_oActivity.findViewById(R.id.btnBwdRight);
+		m_btnBwdRight.getBackground().setAlpha(mAlpha);
+		m_btnBwdRight.setOnTouchListener(new RemoteControlTouchListener(Move.BACKWARD, 80));
 		
 		resetLayout();
 	}

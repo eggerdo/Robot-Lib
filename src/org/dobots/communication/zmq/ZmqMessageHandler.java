@@ -106,6 +106,10 @@ public class ZmqMessageHandler {
 			m_oInSocket = null;
 		}
 
+		if (m_oRecvThread != null) {
+			m_oRecvThread.close();
+			m_oRecvThread = null;
+		}
 	}
 
 	public void sendZmsg(ZMsg i_oMsg) {
@@ -113,5 +117,8 @@ public class ZmqMessageHandler {
 			i_oMsg.send(m_oOutSocket);
 		}
 	}
-
+	
+	public void close() {
+		closeConnections();
+	}
 }

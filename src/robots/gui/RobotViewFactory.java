@@ -1,10 +1,10 @@
 package robots.gui;
 
 import robots.RobotType;
-import robots.ispytank.gui.SpyTankRobot;
 import robots.romo.ctrl.RomoTypes;
 import robots.romo.gui.RomoRobot;
 import robots.rover.rover2.gui.Rover2Robot;
+import robots.spytank.gui.SpyTankRobot;
 
 //import org.dobots.robots.dotty.DottyTypes;
 //import org.dobots.robots.nxt.NXTTypes;

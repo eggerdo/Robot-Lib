@@ -11,14 +11,10 @@ import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
-import java.util.Arrays;
-
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Log;
 
 import robots.rover.ctrl.RoverBaseController;
 import robots.rover.ctrl.RoverBaseTypes;
+import android.util.Log;
 
 public class AC13Controller extends RoverBaseController {
 	

@@ -61,7 +61,7 @@ public class ZmqConnectionHelper {
         m_oCmdHandler = new ZmqMessageHandler();
         
 		if (!m_oSettings.isValid()) {
-			m_oZmqHandler.getSettings().showDialog();
+			m_oZmqHandler.getSettings().showDialog(m_oActivity);
 		} else {
 			setupConnections(m_oSettings.isRemote());
 			m_oActivity.ready();
@@ -75,6 +75,10 @@ public class ZmqConnectionHelper {
     
     private boolean isRobot() {
     	return (m_eType == UseCase.ROBOT) || (m_eType == UseCase.FULL);
+    }
+    
+    public void close() {
+    	closeConnections();
     }
  
 	private void closeConnections() {
@@ -212,21 +216,12 @@ public class ZmqConnectionHelper {
 	
     public Dialog onCreateDialog(int id) {
     	switch(id) {
-    	case ZmqSettings.DIALOG_SETTINGS_ID:
-    		return m_oZmqHandler.getSettings().onCreateDialog(id);
     	case FAILURE_DIALOG_ID:
     		return createFailureDialog();
     	}
     	return null;
     }
     
-	public void onPrepareDialog(int id, Dialog dialog) {
-    	switch(id) {
-    	case ZmqSettings.DIALOG_SETTINGS_ID:
-    		m_oZmqHandler.getSettings().onPrepareDialog(id, dialog);
-    	}
-	}
-
 	private Dialog createFailureDialog() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(m_oActivity);
     	builder.setTitle("ZMQ Setup failed")

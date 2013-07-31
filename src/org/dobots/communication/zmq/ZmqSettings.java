@@ -73,18 +73,18 @@ public class ZmqSettings {
 		return m_bSettingsValid;
 	}
 
-	public void showDialog() {
-		context.showDialog(DIALOG_SETTINGS_ID);
+	public void showDialog(Activity activity) {
+		activity.showDialog(DIALOG_SETTINGS_ID);
 	}
 	
 	public boolean isRemote() {
 		return m_bRemote;
 	}
 
-    public Dialog onCreateDialog(int id) {
-    	LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+    public Dialog onCreateDialog(Activity activity, int id) {
+    	LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
     	View layout;
-    	AlertDialog.Builder builder = new AlertDialog.Builder(context);
+    	AlertDialog.Builder builder = new AlertDialog.Builder(activity);
     	switch (id) {
     	case DIALOG_SETTINGS_ID:
         	layout = inflater.inflate(R.layout.zmq_connection_settings, null);
@@ -218,7 +218,7 @@ public class ZmqSettings {
 		
 		if (!checkSettings()) {
 			Utils.showToast("Connection Settings not valid, please check again!", Toast.LENGTH_LONG);
-		} else {
+		} else if (m_oChangeListener != null) {
 			m_oChangeListener.onChange();
 		}
     }

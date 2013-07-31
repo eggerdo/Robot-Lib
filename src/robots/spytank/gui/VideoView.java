@@ -1,4 +1,4 @@
-package robots.ispytank.gui;
+package robots.spytank.gui;
 
 import org.dobots.communication.video.FpsCounter;
 import org.dobots.communication.video.IFpsListener;

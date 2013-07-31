@@ -1,6 +1,9 @@
 <resources>
 
     <string name="app_name">RoboTalk-Lib</string>
+    
+    <!-- ZMQ -->
+    <string name="zmq_settings">ZMQ Settings</string>
       
     <!--  Settings --> 
     <string name="menu_settings">Settings</string>
@@ -15,7 +18,12 @@
     <string name="control_fwd">Fwd</string>    
     <string name="control_left">Left</string>    
     <string name="control_bwd">Bwd</string>    
-    <string name="control_right">Right</string> 
+    <string name="control_right">Right</string>
+    <string name="control_bwdright">Bwd Right</string> 
+    <string name="control_bwdleft">Bwd Left</string>    
+    <string name="control_fwdleft">Fwd Left</string>    
+    <string name="control_fwdright">Fwd Right</string>    
+    <string name="control_stop">Stop</string> 
     <string name="control">Remote Control</string> 
     <string name="local">Local</string> 
     <string name="remote">Remote</string>

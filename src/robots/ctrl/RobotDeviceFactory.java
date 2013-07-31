@@ -2,9 +2,9 @@ package robots.ctrl;
 
 
 import robots.RobotType;
-import robots.ispytank.ctrl.SpyTank;
 import robots.romo.ctrl.Romo;
 import robots.rover.rover2.ctrl.Rover2;
+import robots.spytank.ctrl.SpyTank;
 
 public class RobotDeviceFactory {
 	

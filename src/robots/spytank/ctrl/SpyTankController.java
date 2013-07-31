@@ -1,4 +1,4 @@
-package robots.ispytank.ctrl;
+package robots.spytank.ctrl;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -7,17 +7,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.Socket;
-import java.net.URI;
 import java.net.URL;
-import java.nio.BufferUnderflowException;
-import java.util.Arrays;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.ByteArrayBuffer;
 import org.dobots.communication.video.IRawVideoListener;
 
 import robots.ctrl.BaseWifi;

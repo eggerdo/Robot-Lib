@@ -2,7 +2,6 @@ package robots.rover.rover2.gui;
 
 import org.dobots.R;
 import org.dobots.communication.video.IFpsListener;
-import org.dobots.communication.video.IRawVideoListener;
 import org.dobots.communication.video.IVideoListener;
 import org.dobots.communication.video.VideoDisplayThread;
 import org.dobots.communication.zmq.ZmqHandler;
@@ -64,7 +63,7 @@ public class Rover2SensorGatherer extends RoverBaseSensorGatherer  implements IF
 			setupVideoDisplay();
 		} else {
 			if (m_oVideoDisplayer != null) {
-				m_oVideoDisplayer.close();
+				m_oVideoDisplayer.destroy();
 			}
 		}
 	}
@@ -110,7 +109,7 @@ public class Rover2SensorGatherer extends RoverBaseSensorGatherer  implements IF
 	@Override
 	public void shutDown() {
 		if (m_oVideoDisplayer != null) {
-			m_oVideoDisplayer.close();
+			m_oVideoDisplayer.destroy();
 		}
 	}
 

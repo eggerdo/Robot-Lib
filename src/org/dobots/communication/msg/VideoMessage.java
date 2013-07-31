@@ -48,16 +48,22 @@ public class VideoMessage {
 	}
 
 	public static VideoMessage fromZMsg(ZMsg i_oMsg) {
-		VideoMessage oMsg = new VideoMessage();
-		ZFrame oRobot = i_oMsg.pop();
-		ZFrame oRotation = i_oMsg.pop();
-		ZFrame oData = i_oMsg.pop();
-		
-		oMsg.videoData = oData.getData();
-		oMsg.nRotation = Integer.valueOf(oRotation.toString());
-		oMsg.robotID = oRobot.getData();
-		
-		return oMsg;
+		ZMsg clone = i_oMsg.duplicate();
+		try {
+			VideoMessage oMsg = new VideoMessage();
+			ZFrame oRobot = i_oMsg.pop();
+			ZFrame oRotation = i_oMsg.pop();
+			ZFrame oData = i_oMsg.pop();
+			
+			oMsg.videoData = oData.getData();
+			oMsg.nRotation = Integer.valueOf(oRotation.toString());
+			oMsg.robotID = oRobot.getData();
+			
+			return oMsg;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	// create a zmsg from the chat message

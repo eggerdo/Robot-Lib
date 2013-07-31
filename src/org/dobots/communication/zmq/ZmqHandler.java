@@ -7,6 +7,7 @@ import org.zeromq.ZMQ.Poller;
 import org.zeromq.ZMsg;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 
 public class ZmqHandler {
@@ -61,6 +62,11 @@ public class ZmqHandler {
 		setupVideoConnections();
 	}
 	
+	public void onDestroy() {
+		m_oCommandHandler.close();
+		m_oVideoHandler.close();
+	}
+	
 	public void setupCommandConnections() {
 
 		m_strCommandOutAddr = ZmqTypes.COMMAND_ADDRESS + "/out";
@@ -88,13 +94,13 @@ public class ZmqHandler {
 		m_strVideoOutAddr = ZmqTypes.VIDEO_ADDRESS + "/out";
 		ZMQ.Socket oVideoSendSocket = createSocket(ZMQ.PUB);
 		oVideoSendSocket.bind(m_strVideoOutAddr);
-		oVideoSendSocket.setHWM(1);
+		oVideoSendSocket.setHWM(3);
 
 		m_strVideoInAddr = ZmqTypes.VIDEO_ADDRESS + "/in";
 		ZMQ.Socket oVideoRecvSocket = createSocket(ZMQ.SUB);
 		oVideoRecvSocket.bind(m_strVideoInAddr);
 		oVideoRecvSocket.subscribe("".getBytes());
-		oVideoRecvSocket.setHWM(1);
+		oVideoRecvSocket.setHWM(3);
 
 		m_oVideoHandler.setupConnections(oVideoRecvSocket, oVideoSendSocket);
 		m_oVideoHandler.addIncomingMessageListener(new ZmqMessageListener() {

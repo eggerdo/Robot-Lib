@@ -9,12 +9,12 @@ import org.dobots.communication.control.ZmqRemoteControlHelper;
 import org.dobots.communication.video.IRawVideoListener;
 import org.dobots.utilities.Utils;
 
-import robots.RobotRemoteListener;
 import robots.ctrl.DifferentialRobot;
 import robots.ctrl.IMoveRepeaterListener;
 import robots.ctrl.MoveRepeater;
 import robots.ctrl.MoveRepeater.MoveCommand;
 import robots.gui.MessageTypes;
+import robots.gui.RobotRemoteListener;
 import robots.rover.ctrl.RoverBaseTypes.RoverParameters;
 import robots.rover.ctrl.RoverBaseTypes.VideoResolution;
 import android.os.Handler;

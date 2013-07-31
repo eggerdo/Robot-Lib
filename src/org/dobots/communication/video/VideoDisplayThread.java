@@ -42,7 +42,12 @@ public class VideoDisplayThread extends ZmqReceiveThread {
 		ZMsg oMsg = ZMsg.recvMsg(m_oInSocket);
 		if (oMsg != null) {
 			// create a video message out of the zmq message
-			VideoMessage oVideoMsg = VideoMessage.fromZMsg(oMsg);
+			VideoMessage oVideoMsg = null;
+			try {
+				oVideoMsg = VideoMessage.fromZMsg(oMsg);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}	
 			
 			if (oVideoMsg != null) {
 				
@@ -54,7 +59,7 @@ public class VideoDisplayThread extends ZmqReceiveThread {
 	}
 
 	private class FrameDecoder extends AsyncTask<VideoMessage, Integer, VideoMessage> {
-
+		
 		@Override
 		protected VideoMessage doInBackground(VideoMessage... params) {
 			// this will trigger the frame to be decoded as a bmp

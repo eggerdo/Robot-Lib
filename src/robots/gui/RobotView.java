@@ -5,7 +5,6 @@ import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.IAccelerometerListener;
 import org.dobots.utilities.ProgressDlg;
 
-import robots.RobotInventory;
 import robots.RobotType;
 import robots.ctrl.IRobotDevice;
 import android.app.ProgressDialog;

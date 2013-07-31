@@ -27,7 +27,7 @@ public abstract class ZmqReceiveThread extends Thread {
 		while(!Thread.currentThread().isInterrupted()) {
 			try {
 				if (!bPause) {
-					if (m_oPoller.poll() > 0) {
+					if (m_oPoller.poll(1000) > 0) {
 						execute();
 					}
 				} else {

@@ -1,7 +1,6 @@
 package robots.rover.rover2.gui;
 
 import org.dobots.R;
-import org.dobots.communication.control.ZmqRemoteListener;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
 
@@ -10,7 +9,6 @@ import robots.rover.gui.RoverBaseRobot;
 import robots.rover.rover2.ctrl.Rover2;
 import robots.rover.rover2.ctrl.Rover2Types;
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MotionEvent;

@@ -106,7 +106,7 @@
         
         <include 
             android:id="@+id/layRemoteControl"
-            layout="@layout/remote_control" />
+            layout="@layout/remote_control_bak" />
 
 	</LinearLayout>
 	

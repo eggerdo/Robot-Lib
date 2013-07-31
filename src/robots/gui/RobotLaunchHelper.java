@@ -1,6 +1,5 @@
 package robots.gui;
 
-import robots.RobotInventory;
 import robots.RobotType;
 import robots.ctrl.IRobotDevice;
 import robots.ctrl.RobotDeviceFactory;

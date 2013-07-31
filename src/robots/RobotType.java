@@ -43,6 +43,15 @@ public enum RobotType {
 		return bAvailable;
 	}
 	
+	public static RobotType fromString(String name) {
+		for (RobotType item : RobotType.values()) {
+			if (item.name().equals(name)) {
+				return item;
+			}
+		}
+		return null;
+	}
+	
 	public static RobotType[] getRobots() {
 		RobotType[] values = RobotType.values();
 		LinkedList<RobotType> temp = new LinkedList<RobotType>();

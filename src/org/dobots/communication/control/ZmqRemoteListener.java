@@ -18,9 +18,15 @@ public class ZmqRemoteListener implements IRemoteControlListener, ICameraControl
 	private static final int BASE_SPEED = -1;
 	
 	private ZMQ.Socket m_oCmdSendSocket;
+	private String m_strRobot = "";
 	
-	public ZmqRemoteListener() {
+	public ZmqRemoteListener(String i_strRobot) {
 		m_oCmdSendSocket = ZmqHandler.getInstance().obtainCommandSendSocket();
+		m_strRobot = i_strRobot;
+	}
+	
+	public void setRobotId(String i_strRobot) {
+		m_strRobot = i_strRobot;
 	}
 
 	@Override
@@ -37,12 +43,12 @@ public class ZmqRemoteListener implements IRemoteControlListener, ICameraControl
 	}
 
 	protected void sendMove(Move i_eMove, double i_dblSpeed, double i_dblAngle) {
-		DriveCommand oCmd = RoboCommands.createDriveCommand("", i_eMove, i_dblSpeed, i_dblAngle);
+		DriveCommand oCmd = RoboCommands.createDriveCommand(m_strRobot, i_eMove, i_dblSpeed, i_dblAngle);
 		sendCommand(oCmd);
 	}
 	
 	protected void sendCameraCommand(CameraCommandType i_eType) {
-		CameraCommand oCmd = RoboCommands.createCameraCommand("", i_eType);
+		CameraCommand oCmd = RoboCommands.createCameraCommand(m_strRobot, i_eType);
 		sendCommand(oCmd);
 	}
 

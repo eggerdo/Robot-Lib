@@ -1,4 +1,4 @@
-package robots.ispytank.gui;
+package robots.spytank.gui;
 
 import org.dobots.R;
 import org.dobots.communication.control.ZmqRemoteControlHelper;
@@ -10,7 +10,7 @@ import robots.RobotType;
 import robots.ctrl.RemoteControlHelper;
 import robots.gui.SensorGatherer;
 import robots.gui.WifiRobot;
-import robots.ispytank.ctrl.SpyTank;
+import robots.spytank.ctrl.SpyTank;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -40,8 +40,8 @@ public class SpyTankRobot extends WifiRobot {
     	m_oSpyTank = (SpyTank) getRobot();
     	m_oSpyTank.setHandler(m_oUiHandler);
 
-    	m_oZmqRemoteListener = new ZmqRemoteListener();
-    	m_oRemoteCtrl = new ZmqRemoteControlHelper(m_oActivity, m_oZmqRemoteListener, m_oSpyTank.getID());
+    	m_oZmqRemoteListener = new ZmqRemoteListener(m_oSpyTank.getID());
+    	m_oRemoteCtrl = new ZmqRemoteControlHelper(m_oActivity, m_oZmqRemoteListener);
         m_oRemoteCtrl.setProperties();
     	
         m_oSensorGatherer = new SpyTankSensorGatherer(this, m_oSpyTank);

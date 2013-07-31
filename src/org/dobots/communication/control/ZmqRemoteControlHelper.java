@@ -31,7 +31,7 @@ public class ZmqRemoteControlHelper extends RemoteControlHelper {
 
 	private ICameraControlListener m_oCameraListener;
 	
-	public ZmqRemoteControlHelper(Activity i_oActivity, IRemoteControlListener i_oListener, String i_strName) {
+	public ZmqRemoteControlHelper(Activity i_oActivity, IRemoteControlListener i_oListener) {
 		super(i_oActivity, i_oListener);
 		
 		m_oZContext = ZmqHandler.getInstance().getContext();

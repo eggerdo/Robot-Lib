@@ -1,4 +1,4 @@
-package robots;
+package robots.gui;
 
 
 import robots.ctrl.IRemoteControlListener;
