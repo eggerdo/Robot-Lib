@@ -1,4 +1,4 @@
-package template.wifirobot.ctrl;
+package robots.template.wifirobot.ctrl;
 
 public class NAMETypes {
 

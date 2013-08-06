@@ -23,7 +23,13 @@ public class ZmqVideoSender implements IRawVideoListener {
 		VideoMessage oMsg = new VideoMessage(robotID, rgb, rotation);
 		
 		ZMsg zmsg = oMsg.toZmsg();
-		zmsg.send(m_oVideoSocket);
+		try {
+			zmsg.send(m_oVideoSocket);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} catch (IllegalAccessError err) {
+			err.printStackTrace();
+		}
 	}
 
 }

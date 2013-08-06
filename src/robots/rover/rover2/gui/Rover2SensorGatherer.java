@@ -63,7 +63,7 @@ public class Rover2SensorGatherer extends RoverBaseSensorGatherer  implements IF
 			setupVideoDisplay();
 		} else {
 			if (m_oVideoDisplayer != null) {
-				m_oVideoDisplayer.destroy();
+				m_oVideoDisplayer.close();
 			}
 		}
 	}
@@ -109,7 +109,7 @@ public class Rover2SensorGatherer extends RoverBaseSensorGatherer  implements IF
 	@Override
 	public void shutDown() {
 		if (m_oVideoDisplayer != null) {
-			m_oVideoDisplayer.destroy();
+			m_oVideoDisplayer.close();
 		}
 	}
 

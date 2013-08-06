@@ -63,6 +63,10 @@ public class SpyTank extends DifferentialRobot implements ICameraControlListener
 	public void destroy() {
 		m_oController.destroy();
 	}
+	
+	public void setConnection(String address, int command_port, int media_port) {
+		m_oController.setConnection(address, command_port, media_port);
+	}
 
 	@Override
 	public void connect() {
@@ -108,16 +112,32 @@ public class SpyTank extends DifferentialRobot implements ICameraControlListener
 	public void moveForward(double i_dblSpeed) {
 		m_oController.moveForward((int)i_dblSpeed);
 	}
+	
+	@Override
+	public void moveForward(double i_dblSpeed, double i_dblAngle) {
+		// there is only one speed available, so we make a threshold
+		// if the angle is > threshold, we set the velocity
+		// of the left wheel to 0 and the right wheel to i_dblSpeed
+		// and vice versa if it is < -threshold
+		if (i_dblAngle > 30) {
+			m_oController.moveForward(0, (int)i_dblSpeed);
+		} else if (i_dblAngle < -30) {
+			m_oController.moveForward((int)i_dblSpeed, 0);
+		} else {
+			m_oController.moveForward((int)i_dblSpeed);
+		}
+	}
 
 	@Override
 	public void moveForward(double i_dblSpeed, int i_nRadius) {
 		// there is only one speed available, so we make a threshold
-		// if the radius is over the threshold, we set the velocity
-		// of the inside wheel to 0 and the outside wheel to i_dblSpeed
-		if (i_nRadius > 10) {
-			m_oController.moveForward((int)i_dblSpeed);
-		} else if (i_nRadius < 10) {
+		// if the radius is > 0, we set the velocity
+		// of the left wheel to 0 and the right wheel to i_dblSpeed
+		// and vice versa if it is < 0
+		if (i_nRadius > 0) {
 			m_oController.moveForward(0, (int)i_dblSpeed);
+		} else if (i_nRadius < 0) {
+			m_oController.moveForward((int)i_dblSpeed, 0);
 		} else {
 			m_oController.moveForward((int)i_dblSpeed);
 		}
@@ -127,16 +147,31 @@ public class SpyTank extends DifferentialRobot implements ICameraControlListener
 	public void moveBackward(double i_dblSpeed) {
 		m_oController.moveBackward((int)i_dblSpeed);
 	}
+	
+	@Override
+	public void moveBackward(double i_dblSpeed, double i_dblAngle) {
+		// there is only one speed available, so we make a threshold
+		// if the angle is > threshold, we set the velocity
+		// of the left wheel to 0 and the right wheel to i_dblSpeed
+		// and vice versa if it is < -threshold
+		if (i_dblAngle > 30) {
+			m_oController.moveBackward(0, (int)i_dblSpeed);
+		} else if (i_dblAngle < -30) {
+			m_oController.moveBackward((int)i_dblSpeed, 0);
+		} else {
+			m_oController.moveBackward((int)i_dblSpeed);
+		}
+	}
 
 	@Override
 	public void moveBackward(double i_dblSpeed, int i_nRadius) {
 		// there is only one speed available, so we make a threshold
 		// if the radius is over the threshold, we set the velocity
-		// of the inside wheel to 0 and the outside wheel to 100
-		if (i_nRadius > 10) {
-			m_oController.moveBackward((int)i_dblSpeed, 0);
-		} else if (i_nRadius < 10) {
+		// of the left wheel to 0 and the right wheel to 100
+		if (i_nRadius > 0) {
 			m_oController.moveBackward(0, (int)i_dblSpeed);
+		} else if (i_nRadius < 0) {
+			m_oController.moveBackward((int)i_dblSpeed, 0);
 		} else {
 			m_oController.moveBackward((int)i_dblSpeed);
 		}

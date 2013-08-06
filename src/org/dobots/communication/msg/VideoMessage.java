@@ -36,8 +36,12 @@ public class VideoMessage {
 	public Bitmap getAsBmp() {
 		if (this.bmp == null) {
 			// decode the received frame from jpeg to a bitmap
-			ByteArrayInputStream stream = new ByteArrayInputStream(getVideoData());
-			this.bmp = BitmapFactory.decodeStream(stream);
+			try {
+				ByteArrayInputStream stream = new ByteArrayInputStream(getVideoData());
+				this.bmp = BitmapFactory.decodeStream(stream);
+			} catch (Exception e) {
+				return null;
+			}
 //			this.bmp = BitmapFactory.decodeByteArray(getVideoData(), 0, getVideoData().length);;
 		}
 		return this.bmp;

@@ -7,6 +7,7 @@ import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMsg;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 /**
  * The VideoDisplayThread supports two different video listeners:
@@ -32,9 +33,19 @@ public class VideoDisplayThread extends ZmqReceiveThread {
 	private IVideoListener m_oVideoListener;
 	
 	private FpsCounter mFpsCounter = new FpsCounter();
+	
+	private FpsCounter mFpsInCounter = new FpsCounter();
 
 	public VideoDisplayThread(ZMQ.Context i_oContext, Socket i_oInSocket) {
 		super(i_oContext, i_oInSocket, "VideoDisplayer");
+		
+		mFpsInCounter.setListener(new IFpsListener() {
+			
+			@Override
+			public void onFPS(int i_nFPS) {
+				Log.w("VideoDisplayThread", String.format("FPS in: %d", i_nFPS));
+			}
+		});
 	}
 	
 	@Override
@@ -54,7 +65,13 @@ public class VideoDisplayThread extends ZmqReceiveThread {
 				if (m_oVideoListener != null) {
 					(new FrameDecoder()).execute(oVideoMsg);
 				}
+				
+				if (m_oRawVideoListener != null) {
+					m_oRawVideoListener.onFrame(oVideoMsg.getVideoData(), oVideoMsg.getRotation());
+				}
 			}
+			
+			mFpsInCounter.tick();
 		}
 	}
 

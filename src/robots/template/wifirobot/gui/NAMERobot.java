@@ -1,4 +1,4 @@
-package template.wifirobot.gui;
+package robots.template.wifirobot.gui;
 
 import robots.RobotType;
 import robots.gui.SensorGatherer;

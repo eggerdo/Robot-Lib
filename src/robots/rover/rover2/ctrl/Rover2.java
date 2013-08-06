@@ -42,10 +42,6 @@ public class Rover2 extends RoverBase implements ICameraControlListener {
 		return (Rover2Controller) m_oController;
 	}
 
-	public void setConnection(String address, int port) {
-		m_oController.setConnection(address, port);
-	}
-
 	public void toggleInfrared() {
 
 		if (bInfrared) {

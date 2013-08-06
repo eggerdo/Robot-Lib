@@ -1,4 +1,4 @@
-package template.wifirobot.ctrl;
+package robots.template.wifirobot.ctrl;
 
 import java.io.IOException;
 

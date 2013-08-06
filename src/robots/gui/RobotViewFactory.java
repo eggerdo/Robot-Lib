@@ -1,8 +1,10 @@
 package robots.gui;
 
 import robots.RobotType;
+import robots.parrot.gui.ParrotRobot;
 import robots.romo.ctrl.RomoTypes;
 import robots.romo.gui.RomoRobot;
+import robots.rover.ac13.gui.AC13RoverRobot;
 import robots.rover.rover2.gui.Rover2Robot;
 import robots.spytank.gui.SpyTankRobot;
 
@@ -30,20 +32,20 @@ public class RobotViewFactory {
 //			return NXTRobot.class;
 //		case RBT_DOTTY:
 //			return DottyRobot.class;
-//		case RBT_PARROT:
-//			return ParrotRobot.class;
 //		case RBT_ROBOSCOOPER:
 //			return RoboScooperRobot.class;
 //		case RBT_SPYKEE:
 //			return SpykeeRobot.class;
-//		case RBT_AC13ROVER:
-//			return AC13RoverRobot.class;
+		case RBT_AC13ROVER:
+			return AC13RoverRobot.class;
 		case RBT_ROMO:
 			return RomoRobot.class;
 		case RBT_ROVER2:
 			return Rover2Robot.class;
 		case RBT_SPYTANK:
 			return SpyTankRobot.class;
+		case RBT_PARROT:
+			return ParrotRobot.class;
 		default:
 			return null;
 //			return UnimplementedRobot.class;

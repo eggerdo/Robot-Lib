@@ -1,6 +1,12 @@
 package robots.spytank.ctrl;
 
 public class SpyTankTypes {
+	
+
+	public static final String PREFS_SPYTANK_ADDRESS 		= "spytank_address";
+	public static final String PREFS_SPYTANK_COMMANDPORT 	= "spytank_commandport";
+	public static final String PREFS_SPYTANK_MEDIAPORT 		= "spytank_mediaport";
+
 
 	public static final String ADDRESS 		= "10.10.1.1";
 	public static final int COMMAND_PORT	= 8150;
@@ -8,10 +14,10 @@ public class SpyTankTypes {
 	public static final int AUDIO_PORT		= 7070;
 
 	public static final int MIN_SPEED		= 0;
-	public static final int MAX_SPEED 		= 0;
+	public static final int MAX_SPEED 		= 100;
 	public static final int MIN_RADIUS 		= 0;
-	public static final int MAX_RADIUS 		= 0;
-	public static final double AXLE_WIDTH  	= 0.0; // mm
+	public static final int MAX_RADIUS 		= 1;
+	public static final double AXLE_WIDTH  	= 160.0; // mm
 	
 	public static final String LEFT_STOP 	= "10";
 	public static final String LEFT_FWD 	= "11";

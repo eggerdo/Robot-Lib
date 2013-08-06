@@ -172,7 +172,7 @@ public class SpyTankSensorGatherer extends SensorGatherer implements IFpsListene
 			setupVideoDisplay();
 		} else {
 			if (m_oVideoDisplayer != null) {
-				m_oVideoDisplayer.destroy();
+				m_oVideoDisplayer.close();
 			}
 		}
 	}
@@ -221,7 +221,7 @@ public class SpyTankSensorGatherer extends SensorGatherer implements IFpsListene
 	@Override
 	public void shutDown() {
 		if (m_oVideoDisplayer != null) {
-			m_oVideoDisplayer.destroy();
+			m_oVideoDisplayer.close();
 		}
 	}
 

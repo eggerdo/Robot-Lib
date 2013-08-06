@@ -14,7 +14,6 @@ import java.net.SocketAddress;
 
 import robots.rover.ctrl.RoverBaseController;
 import robots.rover.ctrl.RoverBaseTypes;
-import android.util.Log;
 
 public class AC13Controller extends RoverBaseController {
 	
@@ -280,7 +279,7 @@ public class AC13Controller extends RoverBaseController {
 							+ (imageLength - 36));
 
 					byte[] rgb = new byte[imageLength - 36];
-					Log.w(TAG, String.format("imagelen: %d", rgb.length));
+//					Log.w(TAG, String.format("imagelen: %d", rgb.length));
 					System.arraycopy(imageBuffer, imagePtr + 36, rgb, 0, rgb.length);
 					if (rgb.length > 0) {
 						if (oVideoListener != null) {

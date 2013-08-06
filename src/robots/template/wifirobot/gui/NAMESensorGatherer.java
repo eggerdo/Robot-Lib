@@ -1,9 +1,9 @@
-package template.wifirobot.gui;
+package robots.template.wifirobot.gui;
 
 import org.dobots.utilities.BaseActivity;
 
 import robots.gui.SensorGatherer;
-import template.wifirobot.ctrl.NAME;
+import robots.template.wifirobot.ctrl.NAME;
 
 public class NAMESensorGatherer extends SensorGatherer {
 

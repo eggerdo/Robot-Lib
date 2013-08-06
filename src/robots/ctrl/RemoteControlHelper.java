@@ -22,11 +22,11 @@ public class RemoteControlHelper implements IJoystickListener {
 	static final String TAG = "RemoteControlHelper";
 	
 	public enum Move {
-		NONE, STRAIGHT_FORWARD, FORWARD, STRAIGHT_BACKWARD, BACKWARD, ROTATE_LEFT, ROTATE_RIGHT
+		NONE, STRAIGHT_FORWARD, FORWARD, STRAIGHT_BACKWARD, BACKWARD, ROTATE_LEFT, ROTATE_RIGHT, LEFT, RIGHT
 	}
 	
-	// negative angle ->
-	// positive angle ->
+	// negative angle -> right radius
+	// positive angle -> left radius
 	// angle from -90 to +90
 	// angle is used as a common control for rotation. the robot itself uses radius. but radius can
 	//   differ from robot to robot
@@ -162,40 +162,58 @@ public class RemoteControlHelper implements IJoystickListener {
 	
 
 		m_btnFwdLeft = (ImageButton) m_oActivity.findViewById(R.id.btnFwdLeft);
-		m_btnFwdLeft.getBackground().setAlpha(mAlpha);
-		m_btnFwdLeft.setOnTouchListener(new RemoteControlTouchListener(Move.FORWARD, -80));
+		if (m_btnFwdLeft != null) {
+			m_btnFwdLeft.getBackground().setAlpha(mAlpha);
+			m_btnFwdLeft.setOnTouchListener(new RemoteControlTouchListener(Move.FORWARD, 80));
+		}
 		
 		m_btnFwd = (ImageButton) m_oActivity.findViewById(R.id.btnFwd);
-		m_btnFwd.getBackground().setAlpha(mAlpha);
-		m_btnFwd.setOnTouchListener(new RemoteControlTouchListener(Move.STRAIGHT_FORWARD));
+		if (m_btnFwd != null) {
+			m_btnFwd.getBackground().setAlpha(mAlpha);
+			m_btnFwd.setOnTouchListener(new RemoteControlTouchListener(Move.STRAIGHT_FORWARD));
+		}
 		
 		m_btnFwdRight = (ImageButton) m_oActivity.findViewById(R.id.btnFwdRight);
-		m_btnFwdRight.getBackground().setAlpha(mAlpha);
-		m_btnFwdRight.setOnTouchListener(new RemoteControlTouchListener(Move.FORWARD, 80));
+		if (m_btnFwdRight != null) {
+			m_btnFwdRight.getBackground().setAlpha(mAlpha);
+			m_btnFwdRight.setOnTouchListener(new RemoteControlTouchListener(Move.FORWARD, -80));
+		}
 
 		m_btnLeft = (ImageButton) m_oActivity.findViewById(R.id.btnLeft);
-		m_btnLeft.getBackground().setAlpha(mAlpha);
-		m_btnLeft.setOnTouchListener(new RemoteControlTouchListener(Move.ROTATE_LEFT));
+		if (m_btnLeft != null) {
+			m_btnLeft.getBackground().setAlpha(mAlpha);
+			m_btnLeft.setOnTouchListener(new RemoteControlTouchListener(Move.ROTATE_LEFT));
+		}
 		
 		m_btnStop = (ImageButton) m_oActivity.findViewById(R.id.btnStop);
-		m_btnStop.getBackground().setAlpha(mAlpha);
-		m_btnStop.setOnTouchListener(new RemoteControlTouchListener(Move.NONE));
+		if (m_btnStop != null) {
+			m_btnStop.getBackground().setAlpha(mAlpha);
+			m_btnStop.setOnTouchListener(new RemoteControlTouchListener(Move.NONE));
+		}
 		
 		m_btnRight = (ImageButton) m_oActivity.findViewById(R.id.btnRight);
-		m_btnRight.getBackground().setAlpha(mAlpha);
-		m_btnRight.setOnTouchListener(new RemoteControlTouchListener(Move.ROTATE_RIGHT));
+		if (m_btnRight != null) {
+			m_btnRight.getBackground().setAlpha(mAlpha);
+			m_btnRight.setOnTouchListener(new RemoteControlTouchListener(Move.ROTATE_RIGHT));
+		}
 		
 		m_btnBwdLeft = (ImageButton) m_oActivity.findViewById(R.id.btnBwdLeft);
-		m_btnBwdLeft.getBackground().setAlpha(mAlpha);
-		m_btnBwdLeft.setOnTouchListener(new RemoteControlTouchListener(Move.BACKWARD, -80));
+		if (m_btnBwdLeft != null) {
+			m_btnBwdLeft.getBackground().setAlpha(mAlpha);
+			m_btnBwdLeft.setOnTouchListener(new RemoteControlTouchListener(Move.BACKWARD, 80));
+		}
 		
 		m_btnBwd = (ImageButton) m_oActivity.findViewById(R.id.btnBwd);
-		m_btnBwd.getBackground().setAlpha(mAlpha);
-		m_btnBwd.setOnTouchListener(new RemoteControlTouchListener(Move.STRAIGHT_BACKWARD));
+		if (m_btnBwd != null) {
+			m_btnBwd.getBackground().setAlpha(mAlpha);
+			m_btnBwd.setOnTouchListener(new RemoteControlTouchListener(Move.STRAIGHT_BACKWARD));
+		}
 		
 		m_btnBwdRight = (ImageButton) m_oActivity.findViewById(R.id.btnBwdRight);
-		m_btnBwdRight.getBackground().setAlpha(mAlpha);
-		m_btnBwdRight.setOnTouchListener(new RemoteControlTouchListener(Move.BACKWARD, 80));
+		if (m_btnBwdRight != null) {
+			m_btnBwdRight.getBackground().setAlpha(mAlpha);
+			m_btnBwdRight.setOnTouchListener(new RemoteControlTouchListener(Move.BACKWARD, -80));
+		}
 		
 		resetLayout();
 	}
