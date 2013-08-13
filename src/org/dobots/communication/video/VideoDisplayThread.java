@@ -68,6 +68,9 @@ public class VideoDisplayThread extends ZmqReceiveThread {
 				
 				if (m_oRawVideoListener != null) {
 					m_oRawVideoListener.onFrame(oVideoMsg.getVideoData(), oVideoMsg.getRotation());
+					
+					// notify the fps counter about the new frame
+					mFpsCounter.tick();
 				}
 			}
 			
