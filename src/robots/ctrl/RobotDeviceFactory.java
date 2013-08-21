@@ -3,6 +3,7 @@ package robots.ctrl;
 
 import robots.RobotType;
 import robots.parrot.ctrl.Parrot;
+import robots.replicator.ctrl.Replicator;
 import robots.romo.ctrl.Romo;
 import robots.rover.ac13.ctrl.AC13Rover;
 import robots.rover.rover2.ctrl.Rover2;
@@ -29,6 +30,8 @@ public class RobotDeviceFactory {
 			case RBT_PARROT:
 				oRobot = new Parrot();
 				break;
+			case RBT_REPLICATOR:
+				oRobot = new Replicator();
 			default: 		
 				throw new Exception();
 		}

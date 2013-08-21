@@ -7,6 +7,7 @@ import robots.romo.gui.RomoRobot;
 import robots.rover.ac13.gui.AC13RoverRobot;
 import robots.rover.rover2.gui.Rover2Robot;
 import robots.spytank.gui.SpyTankRobot;
+import robots.replicator.gui.ReplicatorRobot;
 
 //import org.dobots.robots.dotty.DottyTypes;
 //import org.dobots.robots.nxt.NXTTypes;
@@ -46,6 +47,8 @@ public class RobotViewFactory {
 			return SpyTankRobot.class;
 		case RBT_PARROT:
 			return ParrotRobot.class;
+		case RBT_REPLICATOR:
+			return ReplicatorRobot.class;
 		default:
 			return null;
 //			return UnimplementedRobot.class;

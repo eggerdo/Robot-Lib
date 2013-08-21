@@ -10,8 +10,11 @@ import org.dobots.utilities.Utils;
 
 import robots.gui.MessageTypes;
 import android.os.Handler;
+import android.util.Log;
 
 public abstract class BaseWifi extends Thread {
+	
+	private static final String TAG = "BaseWifi";
 	
 	public static final int CONNECT_TIMEOUT = 10000; // 10 seconds
 
@@ -90,9 +93,15 @@ public abstract class BaseWifi extends Thread {
     }
 
     public boolean connect() throws IOException {
+    	if (m_strAddress == "") {
+    		Log.w(TAG, "There is no address defined");
+//    		return false;
+    	}
+    	
         try {
 	    	try {
 	    		m_oSocket = new Socket();
+	        	Log.w(TAG, "Connection attempt to " + m_strAddress + " on port " + m_nPort);
 	    		m_oSocket.connect(new InetSocketAddress(m_strAddress, m_nPort), CONNECT_TIMEOUT);
 	        }
 	        catch (IOException e) {  

@@ -160,7 +160,6 @@ public class SpyTankRobot extends WifiRobot {
 
 	@Override
 	protected SensorGatherer getSensorGatherer() {
-		// TODO Auto-generated method stub
 		return m_oSensorGatherer;
 	}
 
