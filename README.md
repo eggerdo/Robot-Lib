@@ -20,14 +20,14 @@ For a Wifi robot, let us show how this is done for the Replicator robot.
 * add your robot to robots.RobotDeviceFactory: ````oRobot = new Replicator();````
 * add the GUI for your robot to robots.gui.RobotViewFactory
 * or no, add to org.dobots.swarmcontrol.robots.RobotViewFactory
-* add to manifest
+* add to manifest in SwarmControl
 
-````<activity android:name="robots.replicator.gui.ReplicatorRobot"
+````
+<activity android:name="robots.replicator.gui.ReplicatorRobot"
 	android:screenOrientation="portrait" ></activity>
 ````
 
-* 
-
+* add functionality to the Robot class (which functions as entry points for a graphical user interface), the Controller class, which encapsulates all the primitives that are valid for this robot, and the SensorGatherer which establishes the way the sensor data is read out, for example the camera.
 
 
 ## Copyrights
