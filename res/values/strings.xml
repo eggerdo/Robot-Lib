@@ -49,6 +49,10 @@
     <!--  Spy Tank -->
     <string name="spytank_title">I-Spy Tank</string>
     <string name="spytank_commands">I-Spy Tank Commands</string>
+
+    <!--  Replicator robots -->
+    <string name="replicator_title">Replicator</string>
+    <string name="replicator_commands">Replicator Commands</string>
     
     <!--  Parrot -->
     <string name="ardrone_takeoff">Take Off</string>
