@@ -95,7 +95,6 @@ public abstract class BaseWifi extends Thread {
     public boolean connect() throws IOException {
     	if (m_strAddress == "") {
     		Log.w(TAG, "There is no address defined");
-//    		return false;
     	}
     	
         try {
@@ -115,6 +114,7 @@ public abstract class BaseWifi extends Thread {
 	    	m_oDataIn = new DataInputStream(m_oSocket.getInputStream());
 	    	m_oDataOut = new DataOutputStream(m_oSocket.getOutputStream());
 	        connected = true;
+        	Log.i(TAG, "Connection successful established");
 	    } catch (IOException e) {
 	        if (m_oReceiveHandler == null)
 	            throw e;

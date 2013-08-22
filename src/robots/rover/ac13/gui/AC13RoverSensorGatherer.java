@@ -9,6 +9,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+/**
+ * This class provides foremost a function onFrame() with which it implements IRawVideoListener. This interface can be
+ * used in the corresponding controller after the image has been actually extracted from for example a TCP message or
+ * converted from another format. 
+ */
 public class AC13RoverSensorGatherer extends RoverBaseSensorGatherer implements IRawVideoListener {
 	
 	public static final String TAG = "AC13RoverSensorGatherer";

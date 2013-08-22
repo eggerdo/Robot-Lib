@@ -16,9 +16,9 @@ public class ReplicatorTypes {
 	public static final int IMAGE_WIDTH     = 640;
 	public static final int IMAGE_HEIGHT    = 480;
 	public static final int IMAGE_CHANNELS  = 3;
-	public static final int IMAGE_SIZE      = 921000; // 640x480x3
+	public static final int IMAGE_SIZE      = 921600; // 640x480x3
 	public static final int HEADER_SIZE     = 54;
-	public static final int FRAME_SIZE      = 921654; // 640x480x3 + 54 for header
+	public static final int FRAME_SIZE      = 921600; // actually, 921654, 640x480x3 + 54 for header
 	
 	
 }

@@ -43,7 +43,8 @@ public class ReplicatorRobot extends WifiRobot {
 			connectToRobot();
 		}
 	}
-
+	
+	
 	@Override
 	protected void connect() {
 		m_oReplicator.connect();

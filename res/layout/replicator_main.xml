@@ -90,8 +90,8 @@
                 android:indeterminateBehavior="repeat"
                 android:visibility="invisible" />
 
-            <robots.replicator.gui.VideoView
-                android:id="@+id/ivRepCamera"
+            <org.dobots.utilities.ScalableImageView
+                android:id="@+id/ivCamera"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
