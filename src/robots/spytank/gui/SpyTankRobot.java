@@ -62,7 +62,6 @@ public class SpyTankRobot extends WifiRobot {
 
     	m_oZmqRemoteListener = new ZmqRemoteListener(m_oSpyTank.getID());
     	m_oRemoteCtrl = new ZmqRemoteControlHelper(m_oActivity, m_oZmqRemoteListener);
-        m_oRemoteCtrl.setProperties();
     	
         m_oSensorGatherer = new SpyTankSensorGatherer(this, m_oSpyTank);
 
@@ -153,7 +152,7 @@ public class SpyTankRobot extends WifiRobot {
 
 	@Override
 	protected void updateButtons(boolean i_bEnabled) {
-		m_oRemoteCtrl.updateButtons(i_bEnabled);
+		m_oRemoteCtrl.setControlEnabled(i_bEnabled);
 		
 		Utils.setEnabledRecursive((ViewGroup)m_oActivity.findViewById(R.id.layCameraControl), i_bEnabled);
 	}

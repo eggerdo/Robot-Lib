@@ -1,18 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/layControlButtons"
+    android:id="@+id/layRemoteControl"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:visibility="visible" >
-	
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight="1" />
+    android:orientation="vertical" >
 
     <FrameLayout
-	    android:id="@+id/layRemote"
 	    android:layout_width="match_parent"
 	    android:layout_height="0dp"
 	    android:layout_weight="1"
@@ -20,6 +13,7 @@
 	    android:orientation="vertical" >
 	    
 	    <LinearLayout
+	        android:id="@+id/layBasicControl"
 	        android:layout_width="match_parent"
 	        android:layout_height="match_parent"
 	        android:orientation="horizontal" >
@@ -149,11 +143,14 @@
 	    </LinearLayout>
 	
 	    <include 
-	        android:id="@+id/layAdvancedControl"
-	        layout="@layout/advanced_remote"
+	        layout="@layout/joystick_remote"
 	        android:visibility="invisible"
 	        />
 	    
     </FrameLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dip" />
+    
 </LinearLayout>

@@ -24,8 +24,7 @@ public class Rover2Robot extends RoverBaseRobot {
 	private static final int DIALOG_SETTINGS_ID = 1;
 
 	private static final int ACCEL_ID = CONNECT_ID + 1;
-	private static final int ADVANCED_CONTROL_ID = ACCEL_ID + 1;
-	private static final int VIDEO_ID = ADVANCED_CONTROL_ID + 1;
+	private static final int VIDEO_ID = ACCEL_ID + 1;
 	private static final int VIDEO_SETTINGS_ID = VIDEO_ID + 1;
 
 	private static final int REMOTE_CTRL_GRP = GENERAL_GRP + 1;

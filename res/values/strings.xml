@@ -2,6 +2,8 @@
 
     <string name="app_name">RoboTalk-Lib</string>
     
+    <!-- unassigned -->
+    
     <!-- ZMQ -->
     <string name="zmq_settings">ZMQ Settings</string>
       
@@ -30,6 +32,7 @@
     <string name="remote">Remote</string>
     <string name="cameraup">Camera Up</string>
     <string name="cameradown">Camera Down</string>
+    <string name="joystick">Joystick</string>
       
     <!--  Rover Base -->
     <string name="rover_infrared">Infrared</string>

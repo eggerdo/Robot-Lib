@@ -13,6 +13,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.dobots.communication.video.IRawVideoListener;
 import org.dobots.utilities.log.Loggable;
 
+import android.util.Log;
+
 import robots.rover.ctrl.RoverBaseTypes.RoverParameters;
 
 public abstract class RoverBaseController extends Loggable {
@@ -66,36 +68,43 @@ public abstract class RoverBaseController extends Loggable {
 	}
 
 	public void moveForward(int i_nVelocity) {
+		Log.d(TAG, String.format("move fwd (%d, %d)", i_nVelocity, i_nVelocity));
 		moveLeftForward(i_nVelocity);
 		moveRightForward(i_nVelocity);
 	}
 
 	public void moveForward(int i_nLeftVelocity, int i_nRightVelocity) {
+		Log.d(TAG, String.format("move fwd (%d, %d)", i_nLeftVelocity, i_nRightVelocity));
 		moveLeftForward(i_nLeftVelocity);
 		moveRightForward(i_nRightVelocity);
 	}
 	
 	public void moveBackward(int i_nVelocity) {
+		Log.d(TAG, String.format("move bwd (%d, %d)", i_nVelocity, i_nVelocity));
 		moveLeftBackward(i_nVelocity);
 		moveRightBackward(i_nVelocity);
 	}
 
 	public void moveBackward(int i_nLeftVelocity, int i_nRightVelocity) {
+		Log.d(TAG, String.format("move bwd (%d, %d)", i_nLeftVelocity, i_nRightVelocity));
 		moveLeftBackward(i_nLeftVelocity);
 		moveRightBackward(i_nRightVelocity);
 	}
 
 	public void rotateLeft(int i_nVelocity) {
+		Log.d(TAG, String.format("rotate left (%d)", i_nVelocity));
 		moveLeftBackward(i_nVelocity);
 		moveRightForward(i_nVelocity);
 	}
 
 	public void rotateRight(int i_nVelocity) {
+		Log.d(TAG, String.format("rotate right (%d)", i_nVelocity));
 		moveRightBackward(i_nVelocity);
 		moveLeftForward(i_nVelocity);
 	}
 
 	public void moveStop() {
+		Log.d(TAG, "stop");
 		moveLeftStop();
 		moveRightStop();
 	}

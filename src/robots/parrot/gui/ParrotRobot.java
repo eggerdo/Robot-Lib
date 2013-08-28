@@ -98,8 +98,7 @@ public class ParrotRobot extends WifiRobot implements IRemoteControlListener {
 
 		m_oRobotRemoteListener = new RobotRemoteListener(m_oParrot);
 		m_oRemoteCtrl = new RemoteControlHelper(m_oActivity, m_oRobotRemoteListener);
-        m_oRemoteCtrl.setProperties();
-        m_oRemoteCtrl.setAdvancedControl(false);
+        m_oRemoteCtrl.setJoystickControlAvailable(false);
 
         updateButtons(false);
 
@@ -144,6 +143,8 @@ public class ParrotRobot extends WifiRobot implements IRemoteControlListener {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+    	super.onPrepareOptionsMenu(menu);
+    	
     	menu.setGroupVisible(SENSOR_GRP, m_oParrot.isConnected());
     	menu.setGroupVisible(VIDEO_GRP, m_oParrot.isConnected() && m_oParrot.isARDrone1());
 
@@ -221,8 +222,8 @@ public class ParrotRobot extends WifiRobot implements IRemoteControlListener {
         edtKd = (EditText) findViewById(R.id.edtKd);
         edtKi = (EditText) findViewById(R.id.edtKi);
         
-        Button btnStop = (Button) findViewById(R.id.btnStopAltitudeCtrl);
-        btnStop.setOnClickListener(new OnClickListener() {
+        Button btnStopAltitudeCtrl = (Button) findViewById(R.id.btnStopAltitudeCtrl);
+        btnStopAltitudeCtrl.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
@@ -382,7 +383,7 @@ public class ParrotRobot extends WifiRobot implements IRemoteControlListener {
 	}
 
 	public void updateButtons(boolean enabled) {
-		m_oRemoteCtrl.updateButtons(enabled);
+		m_oRemoteCtrl.setControlEnabled(enabled);
 		
 		m_btnCamera.setEnabled(enabled);
 		m_btnSensors.setEnabled(enabled);

@@ -14,11 +14,11 @@ public enum RobotType {
 	RBT_ROVER2		("Rover 2.0",		true,	true),
 	RBT_SPYTANK		("I-Spy Tank",		true,	true),
 	RBT_ROBO40		("Robo 40",			true,	false),
+	RBT_REPLICATOR	("Replicator",		true,	true),
 	RBT_FINCH		("Finch", 			false,	true),
 	RBT_SURVEYOR	("Surveyor", 		false,	true),
 	RBT_TRAKR		("Trakr", 			false,	true),
-	RBT_ROMO		("Romo",			false,	true),
-	RBT_REPLICATOR	("Replicator",		true,	true);
+	RBT_ROMO		("Romo",			false,	true);
 	
 	private String strDisplayName;
 	// enabled means that the robot is implemented and can be selected

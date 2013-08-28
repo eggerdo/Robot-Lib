@@ -35,8 +35,7 @@ public abstract class RoverBaseRobot extends WifiRobot {
 	
 	protected static final int CONNECTION_SETTINGS_ID = CONNECT_ID + 1;
 	protected static final int ACCEL_ID = CONNECTION_SETTINGS_ID + 1;
-	protected static final int ADVANCED_CONTROL_ID = ACCEL_ID + 1;
-	protected static final int VIDEO_ID = ADVANCED_CONTROL_ID + 1;
+	protected static final int VIDEO_ID = ACCEL_ID + 1;
 	protected static final int VIDEO_SETTINGS_ID = VIDEO_ID + 1;
 
 	protected static final int REMOTE_CTRL_GRP = GENERAL_GRP + 1;
@@ -81,7 +80,6 @@ public abstract class RoverBaseRobot extends WifiRobot {
 
     	m_oZmqRemoteListener = new ZmqRemoteListener(getRobot().getID());
 		m_oRemoteCtrl = new ZmqRemoteControlHelper(m_oActivity, m_oZmqRemoteListener);
-        m_oRemoteCtrl.setProperties();
         
         updateButtons(false);
 
@@ -103,7 +101,6 @@ public abstract class RoverBaseRobot extends WifiRobot {
 		menu.add(GENERAL_GRP, CONNECTION_SETTINGS_ID, CONNECTION_SETTINGS_ID, "Connection Settings");
 
 		menu.add(REMOTE_CTRL_GRP, ACCEL_ID, ACCEL_ID, "Accelerometer");
-		menu.add(REMOTE_CTRL_GRP, ADVANCED_CONTROL_ID, ADVANCED_CONTROL_ID, "Advanced Control");
 		
 		menu.add(SENSOR_GRP, VIDEO_ID, VIDEO_ID, "Video");
 
@@ -114,12 +111,13 @@ public abstract class RoverBaseRobot extends WifiRobot {
     
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+    	super.onPrepareOptionsMenu(menu);
+    	
     	menu.setGroupVisible(REMOTE_CTRL_GRP, m_oRover.isConnected() && m_oRemoteCtrl.isControlEnabled());
     	menu.setGroupVisible(SENSOR_GRP, m_oRover.isConnected());
     	menu.setGroupVisible(VIDEO_GRP, m_oRover.isConnected() && m_oRover.isStreaming());
     	
     	Utils.updateOnOffMenuItem(menu.findItem(ACCEL_ID), m_bAccelerometer);
-    	Utils.updateOnOffMenuItem(menu.findItem(ADVANCED_CONTROL_ID), m_oRemoteCtrl.isAdvancedControl());
     	Utils.updateOnOffMenuItem(menu.findItem(VIDEO_ID), m_oRover.isStreaming());
     	
 		return true;
@@ -142,9 +140,6 @@ public abstract class RoverBaseRobot extends WifiRobot {
 			} else {
 				m_oRover.moveStop();
 			}
-			break;
-		case ADVANCED_CONTROL_ID:
-			m_oRemoteCtrl.toggleAdvancedControl();
 			break;
 		case VIDEO_ID:
 			m_oSensorGatherer.setVideoEnabled(!m_oRover.isStreaming());
@@ -212,7 +207,7 @@ public abstract class RoverBaseRobot extends WifiRobot {
 
 	@Override
 	protected void updateButtons(boolean i_bEnabled) {
-		m_oRemoteCtrl.updateButtons(i_bEnabled);
+		m_oRemoteCtrl.setControlEnabled(i_bEnabled);
 		m_btnInfrared.setEnabled(i_bEnabled);
 	}
 

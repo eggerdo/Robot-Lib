@@ -1,6 +1,8 @@
 package robots.ctrl;
 
 import org.dobots.R;
+import org.dobots.utilities.BaseActivity;
+import org.dobots.utilities.IMenuListener;
 import org.dobots.utilities.LockableScrollView;
 import org.dobots.utilities.Utils;
 import org.dobots.utilities.joystick.IJoystickListener;
@@ -9,6 +11,8 @@ import org.dobots.utilities.joystick.Joystick;
 import android.app.Activity;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -17,9 +21,17 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ToggleButton;
 
-public class RemoteControlHelper implements IJoystickListener {
+public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 
-	static final String TAG = "RemoteControlHelper";
+	private static final String TAG = "RemoteControlHelper";
+	
+	private static final int MENU_JOYSTICK_CTRL = 110;
+	private static final int GRP_REMOTE_CTRL = 110;
+
+	final static int ROTATE_THRESHOLD = 40;
+	final static int STRAIGHT_THRESHOLD = 2;
+	final static int DIRECTION_THRESHOLD_1 = 10;
+	final static int DIRECTION_THRESHOLD_2 = 30;
 	
 	public enum Move {
 		NONE, STRAIGHT_FORWARD, FORWARD, STRAIGHT_BACKWARD, BACKWARD, ROTATE_LEFT, ROTATE_RIGHT, LEFT, RIGHT
@@ -39,10 +51,17 @@ public class RemoteControlHelper implements IJoystickListener {
 	private double updateFrequency = 5.0; // Hz
 	private int threshold = 20;
 	
-	private Activity m_oActivity;
+	private BaseActivity m_oActivity;
 	
+	// flag if remote control
 	private boolean m_bControl;
-	private boolean m_bAdvancedControl = false;
+	
+	// flag if remote control with joystick
+	private boolean m_bJoystickControl = false;
+	// flag if joystick can be used / chosen
+	private boolean m_bJoystickControlAvailable = true;
+	// flag if fwdleft, fwdright, etc. buttons are available
+	private boolean m_bAdvancedControl = true;
 
 	private ToggleButton m_btnControl;
 	private ImageButton m_btnFwd;
@@ -56,7 +75,8 @@ public class RemoteControlHelper implements IJoystickListener {
 	private ImageButton m_btnStop;
 	
 	private LockableScrollView m_oScrollView;
-	private LinearLayout m_oAdvancedControl;
+	private LinearLayout m_oBasicControl;
+	private LinearLayout m_oRemoteControl;
 	
 	private Joystick m_oJoystick;
 	
@@ -117,9 +137,17 @@ public class RemoteControlHelper implements IJoystickListener {
 
 	// At least one of the parameters i_oRobot or i_oListener has to be assigned! the other can be null.
 	// It is also possible to assign both
-	public RemoteControlHelper(Activity i_oActivity, IRemoteControlListener i_oListener) {
+	public RemoteControlHelper(BaseActivity i_oActivity, IRemoteControlListener i_oListener) {
 		this(i_oListener);
-		this.m_oActivity = i_oActivity;
+		
+		m_oActivity = i_oActivity;
+		m_oActivity.addMenuListener(this);
+		
+		setProperties();
+	}
+	
+	public void destroy() {
+		m_oActivity.addMenuListener(null);
 	}
 	
 	public void setRemoteControlListener(IRemoteControlListener i_oListener) {
@@ -136,13 +164,14 @@ public class RemoteControlHelper implements IJoystickListener {
 		return m_btnControl != null;
 	}
 	
-	public void setProperties() {
+	private void setProperties() {
 		if (m_oActivity == null) 
 			return;
 		
 		m_oScrollView = (LockableScrollView) m_oActivity.findViewById(R.id.scrollview);
-		
-		m_oAdvancedControl = (LinearLayout) m_oActivity.findViewById(R.id.layAdvancedControl);
+
+		m_oRemoteControl = (LinearLayout) m_oActivity.findViewById(R.id.layRemoteControl);
+		m_oBasicControl = (LinearLayout) m_oActivity.findViewById(R.id.layBasicControl);
 		
 		m_oJoystick = (Joystick) m_oActivity.findViewById(R.id.oJoystick);
 		m_oJoystick.setUpdateListener(this);
@@ -155,9 +184,11 @@ public class RemoteControlHelper implements IJoystickListener {
 				public void onClick(View v) {
 					m_bControl = !m_bControl;
 					enableControl(m_bControl);
-					showControlButtons(m_bControl);
+					showRemoteControl(m_bControl);
 				}
 			});
+		} else {
+			m_bControl = true;
 		}
 	
 
@@ -218,32 +249,49 @@ public class RemoteControlHelper implements IJoystickListener {
 		resetLayout();
 	}
 	
-	public void showControlButtons(boolean visible) {
-		if (!visible) {
-			Utils.showLayout((LinearLayout)m_oActivity.findViewById(R.id.layRemoteControl), visible);
-			if (m_bAdvancedControl) {
-				Utils.showLayout(m_oAdvancedControl, visible);
-			}
+	public void showRemoteControl(boolean visible) {
+		Utils.showLayout(m_oRemoteControl, visible);
+	}
+	
+	private void updateControlType() {
+		if (m_bJoystickControl) {
+			m_oBasicControl.setVisibility(View.INVISIBLE);
+			m_oJoystick.setVisibility(View.VISIBLE);
 		} else {
-			Utils.showLayout((LinearLayout)m_oActivity.findViewById(R.id.layRemoteControl), visible);
-			if (m_bAdvancedControl) {
-				Utils.showLayout(m_oAdvancedControl, visible);
-			} 
+			m_oBasicControl.setVisibility(View.VISIBLE);
+			m_oJoystick.setVisibility(View.INVISIBLE);
+			updateBasicControl(m_bAdvancedControl);
 		}
+	}
+	
+	private void updateBasicControl(boolean i_bAdvanced) {
+		int visibility;
+		
+		if (i_bAdvanced) {
+			visibility = View.VISIBLE;
+		} else {
+			visibility = View.INVISIBLE;
+		}
+		
+		m_btnFwdLeft.setVisibility(visibility);
+		m_btnFwdRight.setVisibility(visibility);
+		m_btnBwdLeft.setVisibility(visibility);
+		m_btnBwdRight.setVisibility(visibility);
 	}
 	
 	public void resetLayout() {
 		if (hasControlButton()) {
-			m_btnControl.setChecked(false);
-			showControlButtons(false);
+			m_bControl = false;
+			m_btnControl.setChecked(m_bControl);
+			showRemoteControl(m_bControl);
+			setControlEnabled(m_bControl);
 		} else {
-			showControlButtons(true);
+			m_bControl = true;
+			showRemoteControl(m_bControl);
 		}
-		m_bControl = false;
-		updateButtons(false);
 	}
 
-	public void updateButtons(boolean enabled) {
+	public void setControlEnabled(boolean enabled) {
 		if (hasControlButton()) {
 			m_btnControl.setEnabled(enabled);
 		}
@@ -258,15 +306,10 @@ public class RemoteControlHelper implements IJoystickListener {
 				m_oScrollView.setScrollingEnabled(true);
 			}
 		} else {
-			Log.e(TAG, "scroll view not lockable!");
+//			Log.e(TAG, "scroll view not lockable!");
 		}
 	}
 
-	final static int ROTATE_THRESHOLD = 40;
-	final static int STRAIGHT_THRESHOLD = 2;
-	final static int DIRECTION_THRESHOLD_1 = 10;
-	final static int DIRECTION_THRESHOLD_2 = 30;
-	
 	@Override
 	public void onUpdate(double i_dblPercentage, double i_dblAngle) {
 		
@@ -388,18 +431,63 @@ public class RemoteControlHelper implements IJoystickListener {
 	public boolean isControlEnabled() {
 		return m_bControl;
 	}
-
-	public void toggleAdvancedControl() {
-		m_bAdvancedControl = !m_bAdvancedControl;
-	}
 	
 	public void setAdvancedControl(boolean i_bAdvancedControl) {
-//		m_bAdvancedControl = i_bAdvancedControl;
-//		Utils.showLayout(m_oAdvancedControl, m_bAdvancedControl);
+		m_bAdvancedControl = i_bAdvancedControl;
+		updateControlType();
 	}
 
-	public boolean isAdvancedControl() {
-		return m_bAdvancedControl;
+	public void toggleJoystickControl() {
+		setJoystickControl(!m_bJoystickControl);
+	}
+	
+	public void setJoystickControl(boolean i_bJoystickControl) {
+		m_bJoystickControl = i_bJoystickControl;
+		updateControlType();
+	}
+
+	public boolean isJoystickControl() {
+		return m_bJoystickControl;
+	}
+	
+	public void setJoystickControlAvailable(boolean i_bAvailable) {
+		m_bJoystickControlAvailable = i_bAvailable;
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		
+		if (m_bJoystickControlAvailable) {
+			menu.add(GRP_REMOTE_CTRL, MENU_JOYSTICK_CTRL, Menu.NONE, m_oActivity.getString(R.string.joystick));
+		}
+		
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		
+		switch(item.getItemId()) {
+			case MENU_JOYSTICK_CTRL:
+				if (m_bJoystickControlAvailable) {
+					toggleJoystickControl();
+					return true;
+				}
+				break;
+		}
+		
+		return false;
+	}
+
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+
+		if (m_bJoystickControlAvailable) {
+			menu.setGroupVisible(GRP_REMOTE_CTRL, m_bControl);
+			Utils.updateOnOffMenuItem(menu.findItem(MENU_JOYSTICK_CTRL), m_bJoystickControl);
+		}	
+		
+		return true;
 	}
 		
 }

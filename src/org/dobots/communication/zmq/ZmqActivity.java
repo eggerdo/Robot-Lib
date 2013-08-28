@@ -1,6 +1,7 @@
 package org.dobots.communication.zmq;
 
 import org.dobots.R;
+import org.dobots.utilities.BaseActivity;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -8,7 +9,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public abstract class ZmqActivity extends Activity {
+public abstract class ZmqActivity extends BaseActivity {
 
 	private static final int MENU_ZMQ_SETTINGS	= 100;
 	
@@ -45,7 +46,6 @@ public abstract class ZmqActivity extends Activity {
 		}
 		
 		return super.onOptionsItemSelected(item);
-		
 	}
 
 	@Override

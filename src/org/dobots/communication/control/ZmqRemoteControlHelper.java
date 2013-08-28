@@ -7,6 +7,7 @@ import org.dobots.communication.msg.RoboCommands.DriveCommand;
 import org.dobots.communication.msg.RobotMessage;
 import org.dobots.communication.zmq.ZmqHandler;
 import org.dobots.communication.zmq.ZmqReceiveThread;
+import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
@@ -31,7 +32,7 @@ public class ZmqRemoteControlHelper extends RemoteControlHelper {
 
 	private ICameraControlListener m_oCameraListener;
 	
-	public ZmqRemoteControlHelper(Activity i_oActivity, IRemoteControlListener i_oListener) {
+	public ZmqRemoteControlHelper(BaseActivity i_oActivity, IRemoteControlListener i_oListener) {
 		super(i_oActivity, i_oListener);
 		
 		m_oZContext = ZmqHandler.getInstance().getContext();
