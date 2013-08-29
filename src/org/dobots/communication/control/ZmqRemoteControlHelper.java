@@ -163,8 +163,14 @@ public class ZmqRemoteControlHelper extends RemoteControlHelper {
 	}
 
 	public void close() {
-//		m_oCmdRecvSocket.close();
-//		m_oReceiver.close();
+		if (m_oCmdRecvSocket != null) {
+			m_oCmdRecvSocket.close();
+			m_oCmdRecvSocket = null;
+		}
+		if (m_oReceiver != null) {
+			m_oReceiver.close();
+			m_oReceiver = null;
+		}
 	}
 
 

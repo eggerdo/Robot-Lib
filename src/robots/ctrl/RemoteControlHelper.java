@@ -262,6 +262,7 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 			m_oJoystick.setVisibility(View.INVISIBLE);
 			updateBasicControl(m_bAdvancedControl);
 		}
+		m_oRemoteControl.requestLayout();
 	}
 	
 	private void updateBasicControl(boolean i_bAdvanced) {

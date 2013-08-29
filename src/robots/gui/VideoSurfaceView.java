@@ -14,10 +14,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.os.AsyncTask;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 public class VideoSurfaceView extends SurfaceView implements IVideoListener, IRawVideoListener {
@@ -27,41 +25,23 @@ public class VideoSurfaceView extends SurfaceView implements IVideoListener, IRa
 	public boolean isScaled = false;
 	public boolean isFullScreen = false;
 	private int m_nMaxWidth = 0;
+	private int m_nMaxHeight = 0;
 	
 	int mHeight = -1, mWidth = -1;
-
+	
 	private Bitmap mCurrentFrame = null;
-		private Paint paint;
-
-		private SurfaceHolder mHolder;
-
-	//	private float mScale = 1F;
-
-//	public VideoSurfaceView(Context context) {
-//		super(context);
-//		paint = new Paint();
-//		paint.setColor(Color.WHITE);
-//		mHolder = getHolder();
-//	}
+	private Paint paint;
 
 	public VideoSurfaceView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		paint = new Paint();
 		paint.setAntiAlias(true);
-		//		paint.setAntiAlias(true);
-		//		paint.setFilterBitmap(true);
+		paint.setFilterBitmap(true);
 		//		paint.setDither(true);
-		//		paint.setColor(Color.BLACK);
-		paint.setColor(Color.WHITE);
-		mHolder = getHolder();
+		paint.setColor(Color.BLACK);
+		
+		mWorkerThread.start();
 	}
-
-//	public VideoSurfaceView(Context context, AttributeSet attrs, int defStyle) {
-//		super(context, attrs, defStyle);
-//		paint = new Paint();
-//		//		paint.setColor(Color.BLACK);
-//		paint.setColor(Color.WHITE);
-//	}
 
 	public void setScale(boolean i_bScale) {
 		isScaled = i_bScale;
@@ -77,187 +57,165 @@ public class VideoSurfaceView extends SurfaceView implements IVideoListener, IRa
 		m_nMaxWidth = i_nMaxWidth;
 	}
 
+	public void setMaxHeight(int i_nMaxHeight) {
+		m_nMaxHeight = i_nMaxHeight;
+	}
+
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 
-		try
-		{
-			if (mCurrentFrame != null) {
-				if (isScaled) {
-					int width;
-					width = MeasureSpec.getSize(widthMeasureSpec);
-					if (m_nMaxWidth != 0) {
-						width = Math.min(width, m_nMaxWidth);
+		synchronized(lock) {
+			try
+			{
+				if (mCurrentFrame != null) {
+					if (isScaled) {
+						int width, height;
+						int newWidth, newHeight;
+						width = MeasureSpec.getSize(widthMeasureSpec);
+						height = MeasureSpec.getSize(heightMeasureSpec);
+	
+						if (m_nMaxWidth != 0) {
+							width = Math.min(width, m_nMaxWidth);
+						}
+						if (m_nMaxHeight != 0) {
+							height = Math.min(height, m_nMaxHeight);
+						}
+						
+						newHeight = (int)(width * (double)mHeight / mWidth);
+						
+						if (newHeight > height) {
+							newHeight = height;
+							newWidth = (int)(height * (double)mWidth / mHeight);
+						} else {
+							newWidth = width;
+						}
+						
+						setMeasuredDimension(newWidth, newHeight);
+					} else if (isFullScreen) {
+						int width = MeasureSpec.getSize(widthMeasureSpec);
+						int height = MeasureSpec.getSize(heightMeasureSpec);
+						setMeasuredDimension(width, height);
+					} else {
+						setMeasuredDimension(mWidth, mHeight);
 					}
-					//	            	mScale = (float)width / mCurrentFrame.getWidth();
-					int height = (int)(width * (double)mHeight / mWidth);
-					setMeasuredDimension(width, height);
-				} else if (isFullScreen) {
-					int width = MeasureSpec.getSize(widthMeasureSpec);
-					int height = MeasureSpec.getSize(heightMeasureSpec);
-					setMeasuredDimension(width, height);
 				} else {
-					setMeasuredDimension(mWidth, mHeight);
+					Log.e(TAG, "current frame is NULL");
+					super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 				}
-			} else {
+			} catch (Exception e)
+			{
 				super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 			}
-		} catch (Exception e)
-		{
-			super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 		}
 	}
 
 	public void setFrame(Bitmap bmp) {
 		mCurrentFrame = bmp;
-		invalidate();
+		requestLayout();
 	}
-
-	BmpDecoder globalDecoder;
-	@Override
+	
+	byte[] mCurrentRgb = null;
+	int mCurrentRotation = 0;
+	Object lock = new Object();
+	
+	int count = 0;
 	public void onFrame(byte[] rgb, int rotation) {
-//		if (globalDecoder == null) {
-			globalDecoder = new BmpDecoder(rgb, rotation);
-			globalDecoder.execute();
-//		}
+		
+		synchronized (lock) {
+			if (mCurrentRgb != null) {
+				count++;
+			}
+			mCurrentRgb = rgb;
+			mCurrentRotation = rotation;
+		}
 	}
 
+	Thread mWorkerThread = new Thread("VideoSurfaceView-Worker") {
+		
+		public void run() {
+			
+			byte[] rgb = null;
+			int rotation = 0;
+
+			while (!isInterrupted()) {
+				synchronized (lock) {
+					if (mCurrentRgb == null) {
+						continue;
+					} else {
+						rgb = mCurrentRgb;
+						rotation = mCurrentRotation;
+						mCurrentRgb = null;
+					}
+					
+					if (count > 0) {
+						Log.d(TAG, "skipped frames " + count);
+						count = 0;
+					}
+				}
+				
+				try {
+					ByteArrayInputStream stream = new ByteArrayInputStream(rgb);
+					Bitmap frame = BitmapFactory.decodeStream(stream);
+					
+					if (mCurrentFrame == null) {
+						setSize(frame, rotation);
+						invalidate();
+						requestLayout();
+					} else {
+						mCurrentFrame.recycle();
+					}
+					mCurrentFrame = frame;
+					
+					drawVideoFrame(mCurrentFrame, rotation);
+			
+					counter.tick();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			
+		};
+	};
+	
 	FpsCounter counter = new FpsCounter(new IFpsListener() {
 		
 		@Override
 		public void onFPS(int i_nFPS) {
 			Log.w("ZmqVideo", String.format("fps dec: %d", i_nFPS));
 		}
-	});
+	});	
 
-	long dec_sum = 0;
-	long dec_count = 0;
-	private class BmpDecoder extends AsyncTask<Void, Integer, Void> {
-
-		long start, end;
-		byte[] rgbData;
-		int nRotation;
-		Bitmap frame;
-		
-		public BmpDecoder(byte[] rgb, int rotation) {
-			rgbData = rgb;
-			nRotation = rotation;
-		}
-		
-		@Override
-		protected Void doInBackground(Void... params) {
-			start = System.currentTimeMillis();
-//			frame = BitmapFactory.decodeByteArray(rgbData, 0, rgbData.length);
-			ByteArrayInputStream stream = new ByteArrayInputStream(rgbData);
-			frame = BitmapFactory.decodeStream(stream);
-			
-//			int dstWidth = getWidth();
-//			int dstHeight = getHeight();
-//
-//			Matrix matrix = new Matrix();
-//			
-//			if (nRotation != 0) {
-//				matrix.postRotate(nRotation, (float)frame.getWidth()/2, (float)frame.getHeight()/2);
-//				matrix.postTranslate((mWidth - frame.getWidth())/2, (mHeight - frame.getHeight())/2);
-//			}
-//
-//			if (isScaled || isFullScreen) {
-//				// if the video should be scaled, determine the scaling factors
-//				if ((mWidth != dstWidth) || (mHeight != dstHeight)) {
-//					matrix.postScale((float) dstWidth / mWidth, (float) dstHeight / mHeight);
-//				}
-//			}
-//
-//			if (!matrix.isIdentity()) {
-//				frame = Bitmap.createBitmap(frame, 0, 0, frame.getWidth(), frame.getHeight(), matrix, false);
-//			}
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(Void result) {
-			Bitmap oldBitmap = getDrawingCache();
-			if (oldBitmap != null) {
-				oldBitmap.recycle();
-			}
-			
-			showFrame(frame, nRotation);
-			
-//			if (frame != null) {
-//				Canvas canvas = getHolder().lockCanvas();
-//				if (canvas != null) {
-//					try {
-//						canvas.drawBitmap(frame, 0, 0, null);
-//					} finally {
-//						getHolder().unlockCanvasAndPost(canvas);
-//					}
-//				}
-//				mCurrentFrame = frame;
-//			}
-			
-			counter.tick();
-			
-            end = System.currentTimeMillis();
-            long dt = end - start;
-            dec_sum += dt;
-            dec_count += 1;
-            Log.d("ZmqVideo", String.format("dec dt: %d (%.3f)", dt, (double)dec_sum / dec_count));
-            
-//            globalDecoder = null;
-		}
-
-	}
-	
 	private void setSize(Bitmap bmp, int rotation) {
-//		if (rotation % 180 == 0) {
+		if (rotation % 180 == 0) {
 			mWidth = bmp.getWidth();
 			mHeight = bmp.getHeight();
-//		} else {
-//			mHeight = bmp.getWidth();
-//			mWidth = bmp.getHeight();
-//		}
+		} else {
+			mHeight = bmp.getWidth();
+			mWidth = bmp.getHeight();
+		}
 	}
 	
-	private void showFrame(Bitmap bmp, int rotation) {
-
-		if (mCurrentFrame == null) {
-			setSize(bmp, rotation);
-			requestLayout();
-		}
-		mCurrentFrame = bmp;
-		
-//		int dstWidth = getWidth();
-//		int dstHeight = getHeight();
-//
-//		Matrix matrix = new Matrix();
-//		
-//		if (rotation != 0) {
-//			matrix.postRotate(rotation, (float)mCurrentFrame.getWidth()/2, (float)mCurrentFrame.getHeight()/2);
-//			matrix.postTranslate((mWidth - mCurrentFrame.getWidth())/2, (mHeight - mCurrentFrame.getHeight())/2);
-//		}
-//
-//		if (isScaled || isFullScreen) {
-//			// if the video should be scaled, determine the scaling factors
-//			if ((mWidth != dstWidth) || (mHeight != dstHeight)) {
-//				matrix.postScale((float) dstWidth / mWidth, (float) dstHeight / mHeight);
-//			}
-//		}
-		
+	private void drawVideoFrame(Bitmap bmp, int rotation) {
 		Canvas canvas = getHolder().lockCanvas();
 		if (canvas != null) {
 			try {
-				canvas.drawBitmap(mCurrentFrame, 0, 0, paint);
+				canvas.scale((float) getWidth() / mWidth, (float) getHeight() / mHeight);
+				canvas.translate((mWidth - bmp.getWidth())/2, (mHeight - bmp.getHeight())/2);
+				canvas.rotate(rotation, (float)bmp.getWidth()/2, (float)bmp.getHeight()/2);
+				canvas.drawBitmap(bmp, 0, 0, paint);
 			} finally {
 				getHolder().unlockCanvasAndPost(canvas);
 			}
+		} else {
+			invalidate();
+			requestLayout();
 		}
-//		bmp.recycle();
 	}
 
 	@Override
 	public void onFrame(Bitmap bmp, int rotation) {
-//		mCurrentFrame = bmp;
-		showFrame(bmp, rotation);
+		mCurrentFrame = bmp;
+		drawVideoFrame(bmp, rotation);
 	}
 
 }

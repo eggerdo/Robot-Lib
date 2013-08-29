@@ -35,8 +35,6 @@ public class RomoRobot extends RobotView implements ICameraControlListener, ILog
 	
 	private RomoSensorGatherer m_oSensorGatherer;
 	
-	private boolean m_bOwnsRobot = false;
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -66,7 +64,7 @@ public class RomoRobot extends RobotView implements ICameraControlListener, ILog
 		
 		m_oCamera = (CameraPreview) findViewById(R.id.svCamera);
 		m_oCamera.setScale(false);
-		m_oCamera.setPreviewSize(640, 480);
+		m_oCamera.setPreviewSize(480, 320);
 	
 		m_btnCameraToggle = (ImageButton) findViewById(R.id.btnCameraToggle);
 		if (Camera.getNumberOfCameras() <= 1) {

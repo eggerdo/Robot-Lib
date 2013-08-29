@@ -23,7 +23,7 @@ public class RomoSensorGatherer extends SensorGatherer implements CameraPreviewC
     private int m_nFpsCounterPartner = 0;
     private long m_lLastTimePartner = System.currentTimeMillis();
 
-    private boolean m_bDebug = false;
+    private boolean m_bDebug = true;
     
 	public RomoSensorGatherer(BaseActivity i_oActivity, String i_strRobotID) {
 		super(i_oActivity, i_strRobotID + "-SensorGatherer");
