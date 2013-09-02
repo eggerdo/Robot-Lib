@@ -1,6 +1,7 @@
 package org.dobots.communication.zmq;
 
 import org.dobots.communication.zmq.ZmqMessageHandler.ZmqMessageListener;
+import org.dobots.utilities.BaseActivity;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMQ.Poller;
@@ -18,7 +19,7 @@ public class ZmqHandler {
 	
 	private ZContext m_oZmqContext;
 	
-	private Activity m_oActivity;
+	private BaseActivity m_oActivity;
 
 	private ZmqSettings m_oSettings;
 	
@@ -41,7 +42,7 @@ public class ZmqHandler {
 
 //	private ZmqMessageHandler m_oVideoBase64Handler;
 	
-	public ZmqHandler(Activity i_oActivity) {
+	public ZmqHandler(BaseActivity i_oActivity) {
 		m_oActivity = i_oActivity;
 		
 		INSTANCE = this;
@@ -52,6 +53,9 @@ public class ZmqHandler {
 		
 		m_oSettings = new ZmqSettings(m_oActivity);
 		m_oSettings.checkSettings();
+		
+		m_oActivity.addMenuListener(m_oSettings);
+		m_oActivity.addDialogListener(m_oSettings);
 		
 		m_oCommandHandler = new ZmqMessageHandler();
 		setupCommandConnections();

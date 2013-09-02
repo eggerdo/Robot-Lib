@@ -2,7 +2,7 @@ package robots.spytank.gui;
 
 import org.dobots.R;
 import org.dobots.communication.control.ZmqRemoteControlHelper;
-import org.dobots.communication.control.ZmqRemoteListener;
+import org.dobots.communication.control.ZmqRemoteControlSender;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
 
@@ -35,7 +35,7 @@ public class SpyTankRobot extends WifiRobot {
 	protected static final int CONNECTION_SETTINGS_ID = CONNECT_ID + 1;
 	
 	private SpyTankSensorGatherer m_oSensorGatherer;
-	private ZmqRemoteListener m_oZmqRemoteListener;
+	private ZmqRemoteControlSender m_oZmqRemoteListener;
 	private RemoteControlHelper m_oRemoteCtrl;
 	
 	private SpyTank m_oSpyTank;
@@ -60,8 +60,9 @@ public class SpyTankRobot extends WifiRobot {
     	m_oSpyTank = (SpyTank) getRobot();
     	m_oSpyTank.setHandler(m_oUiHandler);
 
-    	m_oZmqRemoteListener = new ZmqRemoteListener(m_oSpyTank.getID());
-    	m_oRemoteCtrl = new ZmqRemoteControlHelper(m_oActivity, m_oZmqRemoteListener);
+    	m_oZmqRemoteListener = new ZmqRemoteControlSender(m_oSpyTank.getID());
+    	m_oRemoteCtrl = new ZmqRemoteControlHelper(m_oActivity);
+    	m_oRemoteCtrl.setDriveControlListener(m_oZmqRemoteListener);
     	
         m_oSensorGatherer = new SpyTankSensorGatherer(this, m_oSpyTank);
 

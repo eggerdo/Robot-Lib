@@ -11,14 +11,14 @@ import org.dobots.communication.video.ZmqVideoSender;
 import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
 import robots.ctrl.ICameraControlListener;
-import robots.gui.RobotRemoteListener;
+import robots.gui.RobotDriveCommandListener;
 import android.os.Handler;
 
 public class SpyTank extends DifferentialRobot implements ICameraControlListener {
 
 	private SpyTankController m_oController;
 	private ZmqVideoSender m_oVideoSender;
-	private RobotRemoteListener m_oRemoteListener;
+	private RobotDriveCommandListener m_oRemoteListener;
 	private ZmqRemoteControlHelper m_oRemoteHelper;
 
 	protected ExecutorService executorSerive = Executors.newCachedThreadPool();
@@ -31,10 +31,11 @@ public class SpyTank extends DifferentialRobot implements ICameraControlListener
 		m_oVideoSender = new ZmqVideoSender(getID());
 		m_oController.setVideoListener(m_oVideoSender);
 
-		m_oRemoteListener = new RobotRemoteListener(this);
-		m_oRemoteHelper = new ZmqRemoteControlHelper(m_oRemoteListener, getID());
-		m_oRemoteHelper.setRemoteControlListener(m_oRemoteListener);
+		m_oRemoteListener = new RobotDriveCommandListener(this);
+		m_oRemoteHelper = new ZmqRemoteControlHelper();
+		m_oRemoteHelper.setDriveControlListener(m_oRemoteListener);
 		m_oRemoteHelper.setCameraControlListener(this);
+		m_oRemoteHelper.startReceiver(getID());
 	}
 
 	public void setHandler(Handler m_oUiHandler) {

@@ -1,3 +1,21 @@
+/**
+* 456789------------------------------------------------------------------------------------------------------------120
+*
+* @brief:	Helper class to handle remote control
+* @file: ${file_name}
+*
+* @desc:	Provides Remote Control over the User Interface. Expects that the layout of the activity
+* 			includes the remote_control.xml layout. It handles the button presses and forwards the
+* 			controls to the remote control listener. also provides a joystick interface for
+* 			advanced remote control
+*
+* Copyright (c) 2013 Dominik Egger <dominik@dobots.nl>
+*
+* @author:		Dominik Egger
+* @date:		2.9.2013
+* @project:		Robot-Lib
+* @company:		Distributed Organisms B.V.
+*/
 package robots.ctrl;
 
 import org.dobots.R;
@@ -43,7 +61,7 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 	// angle is used as a common control for rotation. the robot itself uses radius. but radius can
 	//   differ from robot to robot
 	
-	protected IRemoteControlListener m_oRemoteControlListener = null;
+	protected IDriveControlListener m_oRemoteControlListener = null;
 	
 	private Move lastMove = Move.NONE;
 
@@ -127,34 +145,34 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 		
 	}
 	
-	protected RemoteControlHelper(IRemoteControlListener i_oListener) {
-
-		// by default, this class is handling the move commands triggered either by the remote control buttons
-		// or by the joystick. However it is possible to overwrite the listener so that move commands
-		// can be individually handled
-		m_oRemoteControlListener = i_oListener;
-	}
-
+//	protected RemoteControlHelper(IRemoteControlListener i_oListener) {
+//
+//		// by default, this class is handling the move commands triggered either by the remote control buttons
+//		// or by the joystick. However it is possible to overwrite the listener so that move commands
+//		// can be individually handled
+//		m_oRemoteControlListener = i_oListener;
+//	}
+	
 	// At least one of the parameters i_oRobot or i_oListener has to be assigned! the other can be null.
 	// It is also possible to assign both
-	public RemoteControlHelper(BaseActivity i_oActivity, IRemoteControlListener i_oListener) {
-		this(i_oListener);
+	public RemoteControlHelper(BaseActivity i_oActivity) {
+//		this(i_oListener);
 		
 		m_oActivity = i_oActivity;
-		m_oActivity.addMenuListener(this);
-		
 		setProperties();
 	}
 	
 	public void destroy() {
-		m_oActivity.addMenuListener(null);
+		if (m_oActivity != null) {
+			m_oActivity.addMenuListener(null);
+		}
 	}
 	
-	public void setRemoteControlListener(IRemoteControlListener i_oListener) {
+	public void setDriveControlListener(IDriveControlListener i_oListener) {
 		m_oRemoteControlListener = i_oListener;
 	}
 	
-	public void removeRemoteControlListener(IRemoteControlListener i_oListener) {
+	public void removeDriveControlListener(IDriveControlListener i_oListener) {
 		if (m_oRemoteControlListener == i_oListener) {
 			m_oRemoteControlListener = null;
 		}
@@ -167,6 +185,8 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 	private void setProperties() {
 		if (m_oActivity == null) 
 			return;
+		
+		m_oActivity.addMenuListener(this);
 		
 		m_oScrollView = (LockableScrollView) m_oActivity.findViewById(R.id.scrollview);
 
@@ -456,17 +476,17 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public boolean onCreateOptionsMenu(Activity activity, Menu menu) {
 		
 		if (m_bJoystickControlAvailable) {
-			menu.add(GRP_REMOTE_CTRL, MENU_JOYSTICK_CTRL, Menu.NONE, m_oActivity.getString(R.string.joystick));
+			menu.add(GRP_REMOTE_CTRL, MENU_JOYSTICK_CTRL, Menu.NONE, activity.getString(R.string.joystick));
 		}
 		
 		return true;
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+	public boolean onOptionsItemSelected(Activity activity, MenuItem item) {
 		
 		switch(item.getItemId()) {
 			case MENU_JOYSTICK_CTRL:
@@ -481,7 +501,7 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 	}
 
 	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
+	public boolean onPrepareOptionsMenu(Activity activity, Menu menu) {
 
 		if (m_bJoystickControlAvailable) {
 			menu.setGroupVisible(GRP_REMOTE_CTRL, m_bControl);

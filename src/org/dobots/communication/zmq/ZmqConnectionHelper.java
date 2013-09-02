@@ -52,7 +52,9 @@ public class ZmqConnectionHelper {
 
 			@Override
 			public void onCancel() {
-				m_oActivity.failed();
+				if (!m_oSettings.checkSettings()) {
+					m_oActivity.failed();
+				}
 			}
 		});
 

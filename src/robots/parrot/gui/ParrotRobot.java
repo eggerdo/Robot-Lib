@@ -5,11 +5,11 @@ import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
 
 import robots.RobotType;
-import robots.ctrl.IRemoteControlListener;
+import robots.ctrl.IDriveControlListener;
 import robots.ctrl.RemoteControlHelper;
 import robots.ctrl.RemoteControlHelper.Move;
 import robots.gui.IConnectListener;
-import robots.gui.RobotRemoteListener;
+import robots.gui.RobotDriveCommandListener;
 import robots.gui.SensorGatherer;
 import robots.gui.WifiRobot;
 import robots.parrot.ctrl.Parrot;
@@ -29,7 +29,7 @@ import android.widget.ToggleButton;
 
 import com.codeminders.ardrone.ARDrone.VideoChannel;
 
-public class ParrotRobot extends WifiRobot implements IRemoteControlListener {
+public class ParrotRobot extends WifiRobot implements IDriveControlListener {
 
 	private static String TAG = "Parrot";
 	
@@ -70,7 +70,7 @@ public class ParrotRobot extends WifiRobot implements IRemoteControlListener {
 
     private EditText edtKp, edtKd, edtKi;
 
-	private RobotRemoteListener m_oRobotRemoteListener;
+	private RobotDriveCommandListener m_oRobotRemoteListener;
 
 //	private Button m_btnEmergency;
 
@@ -96,8 +96,9 @@ public class ParrotRobot extends WifiRobot implements IRemoteControlListener {
 		m_oSensorGatherer = new ParrotSensorGatherer(this, m_oParrot);
 		m_dblSpeed = m_oParrot.getBaseSped();
 
-		m_oRobotRemoteListener = new RobotRemoteListener(m_oParrot);
-		m_oRemoteCtrl = new RemoteControlHelper(m_oActivity, m_oRobotRemoteListener);
+		m_oRobotRemoteListener = new RobotDriveCommandListener(m_oParrot);
+		m_oRemoteCtrl = new RemoteControlHelper(m_oActivity);
+		m_oRemoteCtrl.setDriveControlListener(m_oRobotRemoteListener);
         m_oRemoteCtrl.setJoystickControlAvailable(false);
 
         updateButtons(false);

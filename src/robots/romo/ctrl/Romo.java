@@ -6,7 +6,7 @@ import org.dobots.communication.control.ZmqRemoteControlHelper;
 
 import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
-import robots.gui.RobotRemoteListener;
+import robots.gui.RobotDriveCommandListener;
 
 import com.romotive.library.RomoCommandInterface;
 
@@ -18,7 +18,7 @@ public class Romo extends DifferentialRobot {
 	
 	private RomoCommandInterface m_oController;
 	
-	private RobotRemoteListener m_oRemoteListener;
+	private RobotDriveCommandListener m_oRemoteListener;
 
 	private ZmqRemoteControlHelper m_oRemoteHelper;
 
@@ -29,9 +29,10 @@ public class Romo extends DifferentialRobot {
 		
 		m_oController = new RomoCommandInterface();
 
-		m_oRemoteListener = new RobotRemoteListener(this);
-		m_oRemoteHelper = new ZmqRemoteControlHelper(m_oRemoteListener, "Romo");
-		m_oRemoteHelper.setRemoteControlListener(m_oRemoteListener);
+		m_oRemoteListener = new RobotDriveCommandListener(this);
+		m_oRemoteHelper = new ZmqRemoteControlHelper();
+		m_oRemoteHelper.setDriveControlListener(m_oRemoteListener);
+		m_oRemoteHelper.startReceiver("Romo");
 	}
 
 	@Override

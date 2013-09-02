@@ -4,7 +4,7 @@ import org.dobots.R;
 import org.dobots.utilities.BaseActivity;
 
 import robots.RobotType;
-import robots.gui.RobotRemoteListener;
+import robots.gui.RobotDriveCommandListener;
 import robots.rover.ac13.ctrl.AC13Rover;
 import robots.rover.ac13.ctrl.AC13RoverTypes;
 import robots.rover.gui.RoverBaseRobot;
@@ -20,11 +20,11 @@ public class AC13RoverRobot extends RoverBaseRobot {
 	public AC13RoverRobot(BaseActivity i_oOwner) {
 		super(i_oOwner);
 
-		RobotRemoteListener oListener = new RobotRemoteListener(getRobot());
+		RobotDriveCommandListener oListener = new RobotDriveCommandListener(getRobot());
 //		m_oRemoteCtrl = new RemoteControlHelper(m_oActivity, oListener);
 //        m_oRemoteCtrl.setProperties();
 
-        m_oRemoteCtrl.setRemoteControlListener(oListener);
+        m_oRemoteCtrl.setDriveControlListener(oListener);
 	}
 	
 	public AC13RoverRobot() {

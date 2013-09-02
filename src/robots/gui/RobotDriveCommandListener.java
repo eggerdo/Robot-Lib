@@ -1,18 +1,18 @@
 package robots.gui;
 
 
-import robots.ctrl.IRemoteControlListener;
+import robots.ctrl.IDriveControlListener;
 import robots.ctrl.IRobotDevice;
 import robots.ctrl.RemoteControlHelper.Move;
 import android.util.Log;
 
-public class RobotRemoteListener implements IRemoteControlListener {
+public class RobotDriveCommandListener implements IDriveControlListener {
 	
 	private static final String TAG = "RobotRemote";
 
 	private IRobotDevice m_oRobot;
 	
-	public RobotRemoteListener(IRobotDevice i_oRobot) {
+	public RobotDriveCommandListener(IRobotDevice i_oRobot) {
 		m_oRobot = i_oRobot;
 	}
 	

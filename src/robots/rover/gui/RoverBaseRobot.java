@@ -2,7 +2,7 @@ package robots.rover.gui;
 
 import org.dobots.R;
 import org.dobots.communication.control.ZmqRemoteControlHelper;
-import org.dobots.communication.control.ZmqRemoteListener;
+import org.dobots.communication.control.ZmqRemoteControlSender;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
 
@@ -44,8 +44,8 @@ public abstract class RoverBaseRobot extends WifiRobot {
 	
 	private RoverBase m_oRover;
 	protected RoverBaseSensorGatherer m_oSensorGatherer;
-	protected RemoteControlHelper m_oRemoteCtrl;
-	private ZmqRemoteListener m_oZmqRemoteListener;
+	protected ZmqRemoteControlHelper m_oRemoteCtrl;
+	private ZmqRemoteControlSender m_oZmqRemoteListener;
 
 	protected boolean connected;
 
@@ -78,8 +78,9 @@ public abstract class RoverBaseRobot extends WifiRobot {
         
 		m_dblSpeed = m_oRover.getBaseSped();
 
-    	m_oZmqRemoteListener = new ZmqRemoteListener(getRobot().getID());
-		m_oRemoteCtrl = new ZmqRemoteControlHelper(m_oActivity, m_oZmqRemoteListener);
+    	m_oZmqRemoteListener = new ZmqRemoteControlSender(getRobot().getID());
+		m_oRemoteCtrl = new ZmqRemoteControlHelper(m_oActivity);
+		m_oRemoteCtrl.setDriveControlListener(m_oZmqRemoteListener);
         
         updateButtons(false);
 

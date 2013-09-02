@@ -1,6 +1,8 @@
 package org.dobots.communication.zmq;
 
 import org.dobots.R;
+import org.dobots.utilities.IDialogListener;
+import org.dobots.utilities.IMenuListener;
 import org.dobots.utilities.Utils;
 
 import android.app.Activity;
@@ -9,6 +11,8 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -17,7 +21,10 @@ import android.widget.RadioButton;
 import android.widget.TableLayout;
 import android.widget.Toast;
 
-public class ZmqSettings {
+public class ZmqSettings implements IMenuListener, IDialogListener {
+
+	private static final int MENU_ZMQ_SETTINGS	= 100;
+	private static final int GRP_ZMQ = 100;
 	
 	public static final String PREFS_REMOTE			= "remote";
 	public static final String PREFS_ADDRESS 		= "address";
@@ -40,7 +47,7 @@ public class ZmqSettings {
 
 	public static final int DIALOG_SETTINGS_ID = 1;
 
-	private Activity context;
+	private Activity m_oActivity;
 
 	private Dialog m_dlgSettings;
 
@@ -62,7 +69,7 @@ public class ZmqSettings {
 	private String m_strVideoRecvAddress;
 
 	public ZmqSettings(Activity i_oActivity) {
-		context = i_oActivity;
+		m_oActivity = i_oActivity;
 	}
 	
 	public void setSettingsChangeListener(SettingsChangeListener i_oListener) {
@@ -81,6 +88,7 @@ public class ZmqSettings {
 		return m_bRemote;
 	}
 
+	@Override
     public Dialog onCreateDialog(Activity activity, int id) {
     	LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
     	View layout;
@@ -92,7 +100,9 @@ public class ZmqSettings {
         	builder.setView(layout);
         	builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
 				public void onCancel(DialogInterface paramDialogInterface) {
-					m_oChangeListener.onCancel();
+					if (m_oChangeListener != null) {
+						m_oChangeListener.onCancel();
+					}
 				}
 			});
         	builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
@@ -118,7 +128,8 @@ public class ZmqSettings {
         }
     }
 
-    public void onPrepareDialog(int id, final Dialog dialog) {
+    @Override
+    public void onPrepareDialog(Activity activity, int id, final Dialog dialog) {
     	if (id == DIALOG_SETTINGS_ID) {
     		final TableLayout table = (TableLayout) dialog.findViewById(R.id.tblRemoteSettings);
     		
@@ -171,7 +182,7 @@ public class ZmqSettings {
     
     public boolean checkSettings() {
 		// Read the settings from the preferences file.
-		SharedPreferences prefs = context.getPreferences(Activity.MODE_PRIVATE);
+		SharedPreferences prefs = m_oActivity.getPreferences(Activity.MODE_PRIVATE);
 		m_bRemote = prefs.getBoolean(PREFS_REMOTE, DEFAULT_REMOTE);
 		
 		m_strAddress = prefs.getString(PREFS_ADDRESS, DEFAULT_ADDRESS);
@@ -206,7 +217,7 @@ public class ZmqSettings {
 //		String strNickName = editText.getText().toString();
 		
 		// Save the current login settings
-		SharedPreferences prefs = context.getPreferences(Activity.MODE_PRIVATE);
+		SharedPreferences prefs = m_oActivity.getPreferences(Activity.MODE_PRIVATE);
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.putBoolean(PREFS_REMOTE, bRemote);
 		editor.putString(PREFS_ADDRESS, strAddress);
@@ -319,5 +330,29 @@ public class ZmqSettings {
 //			return String.format("tcp://127.0.0.1:%d", i_nPort);
 //		}
 	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Activity activity, Menu menu) {
+		menu.add(GRP_ZMQ, MENU_ZMQ_SETTINGS, MENU_ZMQ_SETTINGS, activity.getString(R.string.zmq_settings));
+		
+		return true;
+	}
 	
+	@Override
+	public boolean onOptionsItemSelected(Activity activity, MenuItem item) {
+		switch(item.getItemId()) {
+		case MENU_ZMQ_SETTINGS:
+			showDialog(activity);
+			return true;
+		}
+		
+		return false;
+	}
+
+	@Override
+	public boolean onPrepareOptionsMenu(Activity activity, Menu menu) {
+		// nothing to do
+		return true;
+	}
+
 }

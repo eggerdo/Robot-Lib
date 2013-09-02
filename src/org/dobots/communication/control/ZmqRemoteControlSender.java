@@ -1,3 +1,19 @@
+/**
+* 456789------------------------------------------------------------------------------------------------------------120
+*
+* @brief:	Helper class to handle remote control over Zmq
+* @file: ${file_name}
+*
+* @desc:	Creates Zmq messsages out of remote commands and sends them out.
+*
+*
+* Copyright (c) 2013 Dominik Egger <dominik@dobots.nl>
+*
+* @author:		Dominik Egger
+* @date:		2.9.2013
+* @project:		Robot-Lib
+* @company:		Distributed Organisms B.V.
+*/
 package org.dobots.communication.control;
 
 import org.dobots.communication.msg.RoboCommands;
@@ -10,17 +26,17 @@ import org.dobots.communication.zmq.ZmqUtils;
 import org.zeromq.ZMQ;
 
 import robots.ctrl.ICameraControlListener;
-import robots.ctrl.IRemoteControlListener;
+import robots.ctrl.IDriveControlListener;
 import robots.ctrl.RemoteControlHelper.Move;
 
-public class ZmqRemoteListener implements IRemoteControlListener, ICameraControlListener {
+public class ZmqRemoteControlSender implements IDriveControlListener, ICameraControlListener {
 
 	private static final int BASE_SPEED = -1;
 	
 	private ZMQ.Socket m_oCmdSendSocket;
 	private String m_strRobot = "";
 	
-	public ZmqRemoteListener(String i_strRobot) {
+	public ZmqRemoteControlSender(String i_strRobot) {
 		m_oCmdSendSocket = ZmqHandler.getInstance().obtainCommandSendSocket();
 		m_strRobot = i_strRobot;
 	}

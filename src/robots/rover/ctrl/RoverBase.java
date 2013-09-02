@@ -14,7 +14,7 @@ import robots.ctrl.IMoveRepeaterListener;
 import robots.ctrl.MoveRepeater;
 import robots.ctrl.MoveRepeater.MoveCommand;
 import robots.gui.MessageTypes;
-import robots.gui.RobotRemoteListener;
+import robots.gui.RobotDriveCommandListener;
 import robots.rover.ctrl.RoverBaseTypes.RoverParameters;
 import robots.rover.ctrl.RoverBaseTypes.VideoResolution;
 import android.os.Handler;
@@ -37,7 +37,7 @@ public abstract class RoverBase extends DifferentialRobot implements IMoveRepeat
 
 	protected MoveRepeater m_oRepeater;
 
-	protected RobotRemoteListener m_oRemoteListener;
+	protected RobotDriveCommandListener m_oRemoteListener;
 	protected ZmqRemoteControlHelper m_oRemoteHelper;
 
 	public RoverBase(double i_dblAxleWidth, int i_nMinVelocity, int i_nMaxVelocity, int i_nMinRadius, int i_nMaxRadius) {
@@ -48,8 +48,10 @@ public abstract class RoverBase extends DifferentialRobot implements IMoveRepeat
 
 		m_oRepeater = new MoveRepeater(this, 500);
 
-		m_oRemoteListener = new RobotRemoteListener(this);
-		m_oRemoteHelper = new ZmqRemoteControlHelper(m_oRemoteListener, getID());
+		m_oRemoteListener = new RobotDriveCommandListener(this);
+		m_oRemoteHelper = new ZmqRemoteControlHelper();
+		m_oRemoteHelper.setDriveControlListener(m_oRemoteListener);
+		m_oRemoteHelper.startReceiver(getID());
 	}
 
 	private final TimerTask m_oKeepAliveTask = new TimerTask() {
