@@ -32,6 +32,7 @@ public class RobotDeviceFactory {
 				break;
 			case RBT_REPLICATOR:
 				oRobot = new Replicator();
+				break;
 			default: 		
 				throw new Exception();
 		}
