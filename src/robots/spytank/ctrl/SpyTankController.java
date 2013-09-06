@@ -189,7 +189,7 @@ public class SpyTankController extends BaseWifi {
 	}
 	
 	public void startVideo() {
-		if (!m_bStreaming && connected) {
+		if (!m_bStreaming && m_bConnected) {
 			Log.d(TAG, "startVideo");
 			
 			try {
@@ -211,7 +211,7 @@ public class SpyTankController extends BaseWifi {
 	}
 	
 	private void send(byte[] buffer) throws IOException {
-		if (connected) {
+		if (m_bConnected) {
 			m_oDataOut.write(buffer);
 			m_oDataOut.flush();
 		}
@@ -219,7 +219,7 @@ public class SpyTankController extends BaseWifi {
 	
 	public void keepAlive() {
 		try {
-			if (connected) {
+			if (m_bConnected) {
 				byte[] request = CommandEncoder.getKeepAlive();
 				send(request);
 				return;
@@ -283,7 +283,7 @@ public class SpyTankController extends BaseWifi {
 	}
 	
 	private boolean motor(int id, int direction) {
-		if (connected) {
+		if (m_bConnected) {
 			try {
 				byte[] cmd = CommandEncoder.getMotorCommand(id, direction);
 				send(cmd);

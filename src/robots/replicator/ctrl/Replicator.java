@@ -20,6 +20,8 @@ public class Replicator extends DifferentialRobot implements ICameraControlListe
 	protected ExecutorService executorSerive = Executors.newCachedThreadPool();
 	
 	ReplicatorController m_oController;
+	
+	private double m_dblBaseSpeed = 50;
 
 	public Replicator() {
 		super(ReplicatorTypes.AXLE_WIDTH, ReplicatorTypes.MIN_SPEED, ReplicatorTypes.MAX_SPEED, ReplicatorTypes.MIN_SPEED, ReplicatorTypes.MAX_RADIUS);
@@ -90,6 +92,10 @@ public class Replicator extends DifferentialRobot implements ICameraControlListe
 	public boolean isConnected() {
 		return m_oController.isConnected();
 	}
+	
+	public boolean isStreaming() {
+		return m_oController.isStreaming();
+	}
 
 	@Override
 	public void enableControl(boolean i_bEnable) {
@@ -105,45 +111,44 @@ public class Replicator extends DifferentialRobot implements ICameraControlListe
 
 	@Override
 	public void moveForward(double i_dblSpeed) {
-		Log.w(TAG, "Move forward");
-		// TODO Auto-generated method stub
-
+		Log.i(TAG, String.format("Move forward (%.3f)", i_dblSpeed));
+		m_oController.drive((int)i_dblSpeed, 1000);
 	}
 
 	@Override
 	public void moveForward(double i_dblSpeed, int i_nRadius) {
-		// TODO Auto-generated method stub
-
+		Log.i(TAG, String.format("Move forward (%.3f, %d)", i_dblSpeed, i_nRadius));
+		m_oController.drive((int)i_dblSpeed, i_nRadius);
 	}
 
 	@Override
 	public void moveBackward(double i_dblSpeed) {
-		// TODO Auto-generated method stub
-
+		Log.i(TAG, String.format("Move backward (%.3f)", i_dblSpeed));
+		m_oController.drive(-(int)i_dblSpeed, 1000);
 	}
 
 	@Override
 	public void moveBackward(double i_dblSpeed, int i_nRadius) {
-		// TODO Auto-generated method stub
-
+		Log.i(TAG, String.format("Move backward (%.3f, %d)", i_dblSpeed, i_nRadius));
+		m_oController.drive(-(int)i_dblSpeed, i_nRadius);
 	}
 
 	@Override
 	public void rotateClockwise(double i_dblSpeed) {
-		// TODO Auto-generated method stub
-
+		Log.i(TAG, String.format("Move rotate clock (%.3f)", i_dblSpeed));
+		m_oController.drive((int)i_dblSpeed, -1);
 	}
 
 	@Override
 	public void rotateCounterClockwise(double i_dblSpeed) {
-		// TODO Auto-generated method stub
-
+		Log.i(TAG, String.format("Move rotate counter clock (%.3f)", i_dblSpeed));
+		m_oController.drive((int)i_dblSpeed, 1);
 	}
 
 	@Override
 	public void moveStop() {
-		// TODO Auto-generated method stub
-
+		Log.i(TAG, "Move stop");
+		m_oController.drive(0, 0);
 	}
 
 	@Override
@@ -154,50 +159,43 @@ public class Replicator extends DifferentialRobot implements ICameraControlListe
 
 	@Override
 	public void setBaseSpeed(double i_dblSpeed) {
-		// TODO Auto-generated method stub
-
+		m_dblBaseSpeed = i_dblSpeed;
 	}
 
 	@Override
 	public double getBaseSped() {
 		// TODO Auto-generated method stub
-		return 0;
+		return m_dblBaseSpeed;
 	}
 
 	@Override
 	public void moveForward() {
-		// TODO Auto-generated method stub
-
+		moveForward(m_dblBaseSpeed);
 	}
 
 	@Override
 	public void moveBackward() {
-		// TODO Auto-generated method stub
-
+		moveBackward(m_dblBaseSpeed);
 	}
 
 	@Override
 	public void rotateCounterClockwise() {
-		// TODO Auto-generated method stub
-
+		rotateCounterClockwise(m_dblBaseSpeed);
 	}
 
 	@Override
 	public void rotateClockwise() {
-		// TODO Auto-generated method stub
-
+		rotateClockwise(m_dblBaseSpeed);
 	}
 
 	@Override
 	public void moveLeft() {
-		// TODO Auto-generated method stub
-
+		// not available
 	}
 
 	@Override
 	public void moveRight() {
-		// TODO Auto-generated method stub
-
+		// not available
 	}
 
 	@Override

@@ -49,27 +49,6 @@
                 android:textOn="@string/control" />
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/layCameraControl"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="bottom|fill" >
-
-            <Button
-                android:id="@+id/btnCameraUp"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/cameraup" />
-
-            <Button
-                android:id="@+id/btnCameraDown"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/cameradown" />
-        </LinearLayout>
-
         <View
             android:layout_width="wrap_content"
             android:layout_height="20dp" />

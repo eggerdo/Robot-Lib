@@ -2,19 +2,18 @@ package robots.replicator.ctrl;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketAddress;
-import java.net.URL;
+import java.net.SocketException;
 
 import org.dobots.communication.video.IRawVideoListener;
-
-import android.util.Log;
+import org.dobots.utilities.Utils;
 
 import robots.ctrl.BaseWifi;
-import robots.replicator.ctrl.ReplicatorTypes;
+import robots.replicator.ctrl.ReplicatorMessage.MessageType;
+import android.util.Log;
 
 public class ReplicatorController extends BaseWifi {
 
@@ -29,16 +28,59 @@ public class ReplicatorController extends BaseWifi {
 
 	private boolean m_bRun = true;
 	private boolean m_bStreaming = false;
+	private boolean m_bInitialized = false;
+
+	private DataOutputStream m_oVideoOut;
 
 	public ReplicatorController() {
 		super(ReplicatorTypes.ADDRESS, ReplicatorTypes.COMMAND_PORT);
 		Log.w(TAG, "Construct controller as BaseWifi(" + ReplicatorTypes.ADDRESS + ":" + ReplicatorTypes.COMMAND_PORT + ")");
 		m_nVideoPort = ReplicatorTypes.VIDEO_PORT;
 	}
+	
+	private void initialize() {
+		if (m_bConnected) {
+			sendData(MessageType.MSG_INIT);
+			Utils.waitSomeTime(1000);
 
+			sendData(MessageType.MSG_CAM_VIDEOSTREAM_START);
+			Utils.waitSomeTime(1000);
+			
+			sendData(MessageType.MSG_START);
+			Utils.waitSomeTime(3000);
+			
+			Log.d(TAG, "initialize successful");
+			m_bInitialized = true;
+		}
+	}
+	
+	private void sendData(MessageType command) {
+		ReplicatorMessage message = new ReplicatorMessage((byte)command.ordinal());
+		sendData(message);
+	}
+	
+	private void sendData(MessageType command, byte[] data) {
+		ReplicatorMessage message = new ReplicatorMessage((byte)command.ordinal(), data);
+		sendData(message);
+	}
+	
+	private void sendData(ReplicatorMessage message) {
+		byte[] buffer = message.serialize();
+		
+		try {
+			if (m_oDataOut != null) {
+				m_oDataOut.write(buffer);
+			}
+		} catch (IOException e) {
+			onConnectError();
+		}
+	}
+	
 	@Override
 	public boolean connect() throws IOException {
 		if (super.connect()) {
+			initialize();
+			
 			if (m_bStreaming) {
 				connectVideo();
 			}
@@ -46,6 +88,7 @@ public class ReplicatorController extends BaseWifi {
 		}
 		return false;
 	}
+	
 
 	public void setVideoListener(IRawVideoListener listener) {
 		this.oVideoListener = listener;
@@ -65,9 +108,21 @@ public class ReplicatorController extends BaseWifi {
 	}
 
 	private void connectVideo() throws IOException {
+		if (!m_bInitialized) {
+			return;
+		}
+		
 		Log.w(TAG, "Connect video");
-		//m_oVideoIn = new DataInputStream(new BufferedInputStream(m_oSocket.getInputStream()));
 
+//		sendData(MessageType.MSG_CAM_VIDEOSTREAM_START);
+//		Utils.waitSomeTime(3000);
+		
+		m_oVideoSocket = new Socket();
+		m_oVideoSocket.connect(new InetSocketAddress(m_strAddress, m_nVideoPort), CONNECT_TIMEOUT);
+		m_oVideoIn = new DataInputStream(new BufferedInputStream(m_oVideoSocket.getInputStream()));
+		m_oVideoOut = new DataOutputStream(m_oVideoSocket.getOutputStream());
+
+		Utils.waitSomeTime(1000);
 		//		URL url = new URL(String.format("http://%s:%d", m_strAddress, m_nVideoPort));
 		//		Log.w(TAG, "Connect video on " + url.toString());
 		//		HttpURLConnection videoCon = (HttpURLConnection) url.openConnection();
@@ -82,7 +137,7 @@ public class ReplicatorController extends BaseWifi {
 						if (!m_bStreaming) {
 							return;
 						}
-						m_oDataOut.write(0);
+						m_oVideoOut.write(0);
 
 						byte[] data = readFrame();
 
@@ -90,6 +145,11 @@ public class ReplicatorController extends BaseWifi {
 							oVideoListener.onFrame(data, 0);
 						}
 
+					} catch (SocketException e) {
+						e.printStackTrace();
+						onConnectError();
+						m_bRun = false;
+						m_bStreaming = false;
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -108,7 +168,7 @@ public class ReplicatorController extends BaseWifi {
 			try {
 				do {
 					//int len = m_oVideoIn.read(buffer, 0, ReplicatorTypes.FRAME_SIZE);
-					int len = m_oDataIn.read(buffer, len_read, ReplicatorTypes.FRAME_SIZE - len_read);
+					int len = m_oVideoIn.read(buffer, len_read, ReplicatorTypes.FRAME_SIZE - len_read);
 					len_read += len;
 					if (len > 0) {
 						//String str = new String(buffer, 0, len);
@@ -117,7 +177,7 @@ public class ReplicatorController extends BaseWifi {
 				} while (len_read < ReplicatorTypes.FRAME_SIZE);
 				return buffer;
 			} catch (Exception eg) {
-				Log.e(TAG, "General: input stream error", eg);
+				Log.e(TAG, "General: input stream error");
 				eg.printStackTrace();
 				return null;
 			}
@@ -206,52 +266,74 @@ public class ReplicatorController extends BaseWifi {
 	//			eg.printStackTrace();
 	//		}
 	//	}
+	
+	@Override
+	public void disconnect() throws IOException {
+		disconnectVideo();
+		super.disconnect();
+	}
 
 	private void disconnectVideo() {
 		m_bRun = false;
 		try {
-			if (m_oVideoIn != null) {
-				m_oVideoIn.close();
+			
+			if (m_oVideoSocket != null) {
+//				sendData(MessageType.MSG_CAM_VIDEOSTREAM_STOP);
+				
+				m_oVideoSocket.close();
+				m_oVideoSocket = null;
 			}
+
+			m_oVideoIn = null;
+			m_oVideoOut = null;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		m_oVideoIn = null;
 	}
 
 	public void destroy() {
+		m_bRun = false;
 		try {
-			disconnect();
 			disconnectVideo();
+			disconnect();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		//		m_oKeepAliveTimer.cancel();
-		m_bRun = false;
 	}
 
 	public void startVideo() {
-		if (!m_bStreaming && connected) {
+		if (!m_bStreaming && m_bConnected) {
 			Log.d(TAG, "startVideo");
 
+			m_bRun = true;
+			m_bStreaming = true;
+			
 			try {
 				connectVideo();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
-			m_bStreaming = true;
 		}
 	}
 
 	public void stopVideo() {
 		if (m_bStreaming) {
 			Log.d(TAG, "stopVideo");
-			disconnectVideo();
 			m_bStreaming = false;
+			disconnectVideo();
 		}
+	}
+	
+	public boolean isStreaming() {
+		return m_bStreaming;
+	}
+
+	public void drive(int i_dblSpeed, int i_nRadius) {
+		MotorCommand cmd = new MotorCommand(i_dblSpeed, i_nRadius);
+		sendData(MessageType.MSG_SPEED, cmd.serialize());
 	}
 
 }

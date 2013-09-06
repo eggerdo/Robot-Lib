@@ -311,6 +311,10 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 			showRemoteControl(m_bControl);
 		}
 	}
+	
+	public void onConnect() {
+		setControlEnabled(true);
+	}
 
 	public void setControlEnabled(boolean enabled) {
 		if (hasControlButton()) {

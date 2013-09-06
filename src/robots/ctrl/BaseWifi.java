@@ -24,7 +24,7 @@ public abstract class BaseWifi extends Thread {
 
 	protected Handler m_oReceiveHandler = null;
 
-	protected boolean connected = false;
+	protected boolean m_bConnected = false;
 	protected boolean m_bStopped = false;
 	
 	protected String m_strRobotName = "";
@@ -50,7 +50,7 @@ public abstract class BaseWifi extends Thread {
      * @return the current status of the connection
      */            
     public boolean isConnected() {
-        return connected;
+        return m_bConnected;
     }
 
 	public void startThread() {
@@ -75,8 +75,9 @@ public abstract class BaseWifi extends Thread {
 
     public void disconnect() throws IOException {
         try {
+            m_bConnected = false;
+            
             if (m_oSocket != null) {
-                connected = false;
                 m_oSocket.close();
                 m_oSocket = null;
             }
@@ -113,7 +114,7 @@ public abstract class BaseWifi extends Thread {
 	    	
 	    	m_oDataIn = new DataInputStream(m_oSocket.getInputStream());
 	    	m_oDataOut = new DataOutputStream(m_oSocket.getOutputStream());
-	        connected = true;
+	        m_bConnected = true;
         	Log.i(TAG, "Connection successful established");
 	    } catch (IOException e) {
 	        if (m_oReceiveHandler == null)
@@ -137,6 +138,10 @@ public abstract class BaseWifi extends Thread {
 
     protected void sendState(int i_nCmd) {
     	Utils.sendMessage(m_oReceiveHandler, i_nCmd, null);
+    }
+    
+    protected void onConnectError() {
+        sendState(MessageTypes.STATE_CONNECTERROR);
     }
 
 }
