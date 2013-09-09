@@ -50,15 +50,12 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
 
 	protected float m_fXBase, m_fYBase, m_fZBase = 0;
 
-	protected Toast reusableToast;
-	
 	protected ProgressDialog connectingProgressDialog;
 
 	protected boolean btErrorPending = false;
 	
 	public RobotView(BaseActivity i_oOwner) {
 		m_oActivity = i_oOwner;
-		reusableToast = Toast.makeText(m_oActivity, "", Toast.LENGTH_SHORT);
 	}
 	
 	public RobotView() {
@@ -116,8 +113,6 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
         m_bOwnsRobot = (Boolean) getIntent().getExtras().get("OwnsRobot");
         
         m_oRobot = RobotInventory.getInstance().getRobot(m_strRobotID);
-		
-		reusableToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
 		
 		getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
 		
@@ -344,29 +339,7 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
         i_oHandler.sendMessage(myMessage);
     }
 
-	/**
-	 * Displays a message as a toast
-	 * @param textToShow the message
-	 * @param duration the length of the toast to display
-	 */
-    protected void showToast(String textToShow, int duration) {
-		reusableToast.setText(textToShow);
-		reusableToast.setDuration(duration);
-		reusableToast.show();
-	}
-
-	/**
-	 * Displays a message as a toast
-	 * @param nResID the resource ID to display
-	 * @param duration the length of the toast to display
-	 */
-    protected void showToast(int nResID, int duration) {
-		reusableToast.setText(nResID);
-		reusableToast.setDuration(duration);
-		reusableToast.show();
-	}
-    
-    public void showConnectingDialog() {
+	public void showConnectingDialog() {
     	connectingProgressDialog = ProgressDialog.show(m_oActivity, "", "Connecting to the robot.\nPlease wait...");
     }
     

@@ -41,32 +41,32 @@ public class ZmqConnectionHelper {
         m_oZmqHandler = i_oZmqHandler;
         m_oSettings = m_oZmqHandler.getSettings();
 
-        m_oSettings.setSettingsChangeListener(new SettingsChangeListener() {
-			
-			@Override
-			public void onChange() {
-				closeConnections();
-	        	setupConnections(m_oSettings.isRemote());
-	        	m_oActivity.ready();
-			}
-
-			@Override
-			public void onCancel() {
-				if (!m_oSettings.checkSettings()) {
-					m_oActivity.failed();
-				}
-			}
-		});
+//        m_oSettings.setSettingsChangeListener(new SettingsChangeListener() {
+//			
+//			@Override
+//			public void onChange() {
+//				closeConnections();
+//	        	setupConnections(m_oSettings.isRemote());
+//	        	m_oActivity.ready();
+//			}
+//
+//			@Override
+//			public void onCancel() {
+//				if (!m_oSettings.checkSettings()) {
+//					m_oActivity.failed();
+//				}
+//			}
+//		});
 
         m_oVideoHandler = new ZmqMessageHandler();
 
         m_oCmdHandler = new ZmqMessageHandler();
         
 		if (!m_oSettings.isValid()) {
-			m_oZmqHandler.getSettings().showDialog(m_oActivity);
+			m_oActivity.onZmqFailed();
 		} else {
 			setupConnections(m_oSettings.isRemote());
-			m_oActivity.ready();
+//			m_oActivity.ready();
 		}
 		
     }
@@ -240,7 +240,7 @@ public class ZmqConnectionHelper {
 			})
 	        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 	            public void onClick(DialogInterface dialog, int id) {
-	            	m_oActivity.failed();
+	            	m_oActivity.onZmqFailed();
 	            }
 	        });
 

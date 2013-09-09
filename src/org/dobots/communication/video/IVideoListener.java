@@ -10,6 +10,6 @@ public interface IVideoListener {
 	 * @param bmp received frame decoded as a bitmap
 	 * @param rotation rotation so that it can be displayed correctly. 0 if it doesn't have to be rotated.
 	 */
-	public void onFrame(Bitmap bmp, int rotation);
+	public void onFrame(final Bitmap bmp, final int rotation);
 }
 

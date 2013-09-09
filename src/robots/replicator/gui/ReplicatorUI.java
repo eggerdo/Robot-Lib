@@ -1,6 +1,8 @@
 package robots.replicator.gui;
 
 import org.dobots.R;
+import org.dobots.communication.control.ZmqRemoteControlHelper;
+import org.dobots.communication.control.ZmqRemoteControlSender;
 import org.dobots.utilities.Utils;
 
 import robots.RobotType;
@@ -25,9 +27,9 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TableRow;
 
-public class ReplicatorRobot extends WifiRobot {
+public class ReplicatorUI extends WifiRobot {
 
-	private static final String TAG = "ReplicatorRobot";
+	private static final String TAG = "ReplicatorUI";
 
 	protected static final int DIALOG_CONNECTION_SETTINGS_ID = 1;
 	
@@ -40,29 +42,29 @@ public class ReplicatorRobot extends WifiRobot {
 
 	private ReplicatorSensorGatherer m_oSensorGatherer;
 
-	private RobotDriveCommandListener m_oDriveCommandListener;
-
-	private RemoteControlHelper m_oRemoteCtrl;
+	private ZmqRemoteControlHelper m_oRemoteCtrl;
 
 	private Dialog m_dlgSettingsDialog;
 
 	private int m_nCommandPort;
 	private int m_nVideoPort;
 
+	private ZmqRemoteControlSender m_oZmqSender;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		Log.w(TAG, "Creating Replicator robot");
+		Log.w(TAG, "Creating Replicator UI");
 
 		m_oReplicator = (Replicator) getRobot();
 		m_oReplicator.setHandler(m_oUiHandler);
 
 		m_oSensorGatherer = new ReplicatorSensorGatherer(this, m_oReplicator);
 		
-		m_oDriveCommandListener = new RobotDriveCommandListener(m_oReplicator);
-		m_oRemoteCtrl = new RemoteControlHelper(this);
-		m_oRemoteCtrl.setDriveControlListener(m_oDriveCommandListener);
+		m_oZmqSender = new ZmqRemoteControlSender("");
+		m_oRemoteCtrl = new ZmqRemoteControlHelper(this);
+		m_oRemoteCtrl.setDriveControlListener(m_oZmqSender);
 
 		updateButtons(false);
 
@@ -112,7 +114,6 @@ public class ReplicatorRobot extends WifiRobot {
 
 	@Override
 	protected void updateButtons(boolean i_bEnabled) {
-		Utils.setEnabledRecursive((ViewGroup)m_oActivity.findViewById(R.id.layCameraControl), i_bEnabled);
 	}
 
 	@Override
@@ -166,7 +167,7 @@ public class ReplicatorRobot extends WifiRobot {
     	case DIALOG_CONNECTION_SETTINGS_ID:
     		return createConnectionSettingsDialog();
     	}
-    	return null;
+    	return super.onCreateDialog(id);
     }
     
     private Dialog createConnectionSettingsDialog() {
@@ -191,8 +192,10 @@ public class ReplicatorRobot extends WifiRobot {
     	switch(id) {
     	case DIALOG_CONNECTION_SETTINGS_ID:
     		prepareConnectionSettingsDialog(dialog);
-    		break;
+    		return;
     	}
+    	
+    	super.onPrepareDialog(id, dialog);
     }
 
     private void prepareConnectionSettingsDialog(Dialog dialog) {

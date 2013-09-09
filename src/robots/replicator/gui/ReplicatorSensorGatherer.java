@@ -5,10 +5,16 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.dobots.R;
+import org.dobots.communication.video.FpsCounter;
+import org.dobots.communication.video.IFpsListener;
 import org.dobots.communication.video.IRawVideoListener;
+import org.dobots.communication.video.IVideoListener;
+import org.dobots.communication.video.VideoDisplayThread;
+import org.dobots.communication.zmq.ZmqHandler;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.ScalableImageView;
 import org.dobots.utilities.Utils;
+import org.zeromq.ZMQ;
 
 import robots.gui.SensorGatherer;
 import robots.replicator.ctrl.Replicator;
@@ -33,7 +39,7 @@ import android.widget.TextView;
  * @license LGPLv3
  * @copyright Distributed Organisms B.V., Rotterdam, The Netherlands
  */
-public class ReplicatorSensorGatherer extends SensorGatherer implements IRawVideoListener  {
+public class ReplicatorSensorGatherer extends SensorGatherer implements IVideoListener  {
 
 	public static final String TAG = "ReplicatorSensorGatherer";
 
@@ -43,22 +49,31 @@ public class ReplicatorSensorGatherer extends SensorGatherer implements IRawVide
 	protected boolean m_bVideoConnected = false;
 	protected boolean m_bVideoStopped = false;
 	
-	// debug frame counters
-    int m_nFpsCounter = 0;
-    long m_lLastTime = System.currentTimeMillis();
-
 	private ProgressBar m_pbLoading;
 	private FrameLayout m_layCamera;
-	protected ScalableImageView m_ivVideo;
-	protected TextView m_lblFPS;
+	private ScalableImageView m_ivVideo;
+	private TextView m_lblFPS;
 
 	protected final Handler m_oSensorDataUiUpdater = new Handler();
 
-	protected ExecutorService executorSerive = Executors.newCachedThreadPool();
+	private ExecutorService executorSerive = Executors.newCachedThreadPool();
+	
+	private FpsCounter m_oFpsCounter;
+	private boolean m_bDebug = false;
 	
 	public ReplicatorSensorGatherer(BaseActivity i_oActivity, Replicator i_oReplicator) {
 		super(i_oActivity, "ReplicatorSensorGatherer");
 		m_oReplicator = i_oReplicator;
+		
+		m_oFpsCounter = new FpsCounter(new IFpsListener() {
+			
+			@Override
+			public void onFPS(int i_nFPS) {
+				if (m_bDebug) {
+					m_lblFPS.setText("FPS: " + String.valueOf(i_nFPS));
+				}
+			}
+		});
 		
 		setProperties();
 		
@@ -91,8 +106,8 @@ public class ReplicatorSensorGatherer extends SensorGatherer implements IRawVide
 		m_bVideoConnected = false;
 		m_bVideoStopped = false;
 		showVideoLoading(true);
-//		m_oSensorDataUiUpdater.postDelayed(m_oTimeoutRunnable, 15000);
-		m_oReplicator.setVideoListener(this);
+		m_oSensorDataUiUpdater.postDelayed(m_oTimeoutRunnable, 30000);
+		setVideoListening(true);
 	}
 
 	public void setVideoEnabled(boolean i_bEnabled) {
@@ -116,6 +131,8 @@ public class ReplicatorSensorGatherer extends SensorGatherer implements IRawVide
 			}
 		}
 	};
+
+	private VideoDisplayThread m_oVideoDisplayer;
 	
 	protected void showVideoMsg(String i_strMsg) {
 		if (m_layCamera == null) {
@@ -151,7 +168,7 @@ public class ReplicatorSensorGatherer extends SensorGatherer implements IRawVide
 		m_oReplicator.switchCameraOff();
 		m_bVideoStopped = true;
 		showVideoMsg("");
-		m_oReplicator.removeVideoListener(this);
+		setVideoListening(false);
 	}
 
 	protected void showVideoLoading(final boolean i_bShow) {
@@ -164,72 +181,27 @@ public class ReplicatorSensorGatherer extends SensorGatherer implements IRawVide
 		});
 	}
 	
-	private boolean decoding = false;
-	@Override
-	public void onFrame(byte[] rgb, int rotation) {
-		
-		if (!decoding) {
-			decoding = true;
-		
-					if (rgb == null) {
-						Log.w(TAG, "Byte array is null!");
-						return;
-					}
-					if (rgb.length == 0) {
-						Log.w(TAG, "Byte array is empty!");
-						return;
-					}
-					
-					Log.i(TAG, "Try to decode array to bitmap with size " + rgb.length);			
-									
-					int argb8888[] = new int[ReplicatorTypes.IMAGE_WIDTH * ReplicatorTypes.IMAGE_HEIGHT];
-					for (int i = 0, j = 0; i < ReplicatorTypes.IMAGE_SIZE; i+=3, j++) {
-						int r = rgb[i+0]; int g = rgb[i+1]; int b = rgb[i+2];
-						argb8888[j] = 0xFF000000 | (r & 0xFF) << 16 | (g & 0xFF) << 8 | (b & 0xFF);
-					}
-					final Bitmap bmp = Bitmap.createBitmap(argb8888, ReplicatorTypes.IMAGE_WIDTH, ReplicatorTypes.IMAGE_HEIGHT, Bitmap.Config.ARGB_8888);
-					
-					decoding = false;
-
-					if (bmp == null) {
-						return;
-					}
-					
-					if (m_bVideoEnabled) {
-						m_oSensorDataUiUpdater.post(new Runnable() {
-							@Override
-							public void run() {
-		
-								if (!m_bVideoConnected) {
-									m_oSensorDataUiUpdater.removeCallbacks(m_oTimeoutRunnable);
-									m_bVideoConnected = true;
-									showVideoLoading(false);
-								}
-								
-								if (bmp != null) {
-									Log.i(TAG, "Write bitmap to screen");
-									m_ivVideo.setImageBitmap(bmp);
-								} else {
-									Log.w(TAG, "Decode failed, bmp is null");
-								}
-		
-					            ++m_nFpsCounter;
-					            long now = System.currentTimeMillis();
-					            if ((now - m_lLastTime) >= 1000)
-					            {
-									m_lblFPS.setText("FPS: " + String.valueOf(m_nFpsCounter));
-						            
-					                m_lLastTime = now;
-					                m_nFpsCounter = 0;
-					            }
-							}
-						});
-					}
+	private void setVideoListening(boolean i_bListening) {
+		if (i_bListening) {
+			setupVideoDisplay();
 		} else {
-			Log.w(TAG, "skip frame");
+			if (m_oVideoDisplayer != null) {
+				m_oVideoDisplayer.close();
+			}
 		}
 	}
-	
+
+    private void setupVideoDisplay() {
+    	
+		ZMQ.Socket oVideoRecvSocket = ZmqHandler.getInstance().obtainVideoRecvSocket();
+		oVideoRecvSocket.subscribe(m_oReplicator.getID().getBytes());
+
+		// start a video display thread which receives video frames from the socket and displays them
+		m_oVideoDisplayer = new VideoDisplayThread(ZmqHandler.getInstance().getContext().getContext(), oVideoRecvSocket);
+		m_oVideoDisplayer.setVideoListener(this);
+		m_oVideoDisplayer.start();
+	}
+
 	public void onConnect() {
 		setVideoEnabled(m_bVideoEnabled);
 	}
@@ -240,7 +212,33 @@ public class ReplicatorSensorGatherer extends SensorGatherer implements IRawVide
 	
 	@Override
 	public void shutDown() {
-		// TODO Auto-generated method stub
-		
+		stopVideo();
 	}
+
+	@Override
+	public void onFrame(final Bitmap bmp, final int rotation) {
+		if (m_bVideoEnabled) {
+			m_oSensorDataUiUpdater.post(new Runnable() {
+				@Override
+				public void run() {
+
+					if (!m_bVideoConnected) {
+						m_oSensorDataUiUpdater.removeCallbacks(m_oTimeoutRunnable);
+						m_bVideoConnected = true;
+						showVideoLoading(false);
+					}
+					
+					if (bmp != null) {
+						Log.i(TAG, "Write bitmap to screen");
+						m_ivVideo.setImageBitmap(bmp);
+					} else {
+						Log.e(TAG, "bitmap is NULL!");
+					}
+					
+					m_oFpsCounter.tick();
+				}
+			});
+		}
+	}
+
 }

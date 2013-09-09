@@ -1,6 +1,7 @@
 package robots.replicator.ctrl;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -13,6 +14,8 @@ import org.dobots.utilities.Utils;
 
 import robots.ctrl.BaseWifi;
 import robots.replicator.ctrl.ReplicatorMessage.MessageType;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
 import android.util.Log;
 
 public class ReplicatorController extends BaseWifi {
@@ -123,10 +126,6 @@ public class ReplicatorController extends BaseWifi {
 		m_oVideoOut = new DataOutputStream(m_oVideoSocket.getOutputStream());
 
 		Utils.waitSomeTime(1000);
-		//		URL url = new URL(String.format("http://%s:%d", m_strAddress, m_nVideoPort));
-		//		Log.w(TAG, "Connect video on " + url.toString());
-		//		HttpURLConnection videoCon = (HttpURLConnection) url.openConnection();
-		//		m_oVideoIn = new DataInputStream(new BufferedInputStream(videoCon.getInputStream()));
 
 		Log.w(TAG, "Running: " + m_bRun + " and streaming: " + m_bStreaming);
 		Thread localThread = new Thread(new Runnable() {
@@ -139,17 +138,52 @@ public class ReplicatorController extends BaseWifi {
 						}
 						m_oVideoOut.write(0);
 
-						byte[] data = readFrame();
+						final byte[] data = readFrame();
 
-						if (oVideoListener != null) {
-							oVideoListener.onFrame(data, 0);
+						if (data == null) {
+							Log.w(TAG, "Byte array is null!");
+							continue;
+						}
+						if (data.length == 0) {
+							Log.w(TAG, "Byte array is empty!");
+							continue;
+						}
+						if (data.length != ReplicatorTypes.IMAGE_SIZE) {
+							Log.w(TAG, "Byte array too small!");
+							continue;
 						}
 
-					} catch (SocketException e) {
-						e.printStackTrace();
-						onConnectError();
-						m_bRun = false;
-						m_bStreaming = false;
+						Log.i(TAG, "Try to decode array to bitmap with size " + data.length);			
+										
+						if (oVideoListener != null) {
+							// the decoding shouldn't be dependent on the registered listener. but why
+							// should we do the work of decoding if nobody is listening anyway.
+							
+							// the received format is of RGB888, but android only knows ARGB8888 and RGB565
+							// so we first convert it to ARGB8888, then create a bitmap, and compress it as
+							// JPEG to send it to the listener.
+							// ideally, the robot would already send the image as compressed JPEG so we can
+							// skip this whole step here.
+							int argb8888[] = new int[ReplicatorTypes.IMAGE_WIDTH * ReplicatorTypes.IMAGE_HEIGHT];
+							for (int i = 0, j = 0; i < ReplicatorTypes.IMAGE_SIZE; i+=3, j++) {
+								int r = data[i+0]; int g = data[i+1]; int b = data[i+2];
+								argb8888[j] = 0xFF000000 | (r & 0xFF) << 16 | (g & 0xFF) << 8 | (b & 0xFF);
+							}
+							Bitmap bmp = Bitmap.createBitmap(argb8888, ReplicatorTypes.IMAGE_WIDTH, ReplicatorTypes.IMAGE_HEIGHT, Bitmap.Config.ARGB_8888);
+
+							if (bmp == null) {
+								Log.w(TAG, "bitmap decoding failed!");
+								return;
+							}
+							
+							ByteArrayOutputStream bos = new ByteArrayOutputStream();
+							bmp.compress(CompressFormat.JPEG, 100, bos);
+							
+							Log.i(TAG, "Bitmap decoded and ready to send");
+							
+							oVideoListener.onFrame(bos.toByteArray(), 0);
+							bmp.recycle();
+						}
 					} catch (IOException e) {
 						e.printStackTrace();
 					}

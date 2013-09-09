@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.dobots.communication.control.ZmqRemoteControlHelper;
 import org.dobots.communication.video.IRawVideoListener;
+import org.dobots.communication.video.ZmqVideoSender;
 
 import android.os.Handler;
 import android.util.Log;
@@ -12,6 +14,7 @@ import android.util.Log;
 import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
 import robots.ctrl.ICameraControlListener;
+import robots.gui.RobotDriveCommandListener;
 
 public class Replicator extends DifferentialRobot implements ICameraControlListener {
 	
@@ -23,10 +26,23 @@ public class Replicator extends DifferentialRobot implements ICameraControlListe
 	
 	private double m_dblBaseSpeed = 50;
 
+	private RobotDriveCommandListener m_oDriveCommandListener;
+	private ZmqRemoteControlHelper m_oRemoteCtrl;
+
+	private ZmqVideoSender m_oVideoSender;
+
 	public Replicator() {
 		super(ReplicatorTypes.AXLE_WIDTH, ReplicatorTypes.MIN_SPEED, ReplicatorTypes.MAX_SPEED, ReplicatorTypes.MIN_SPEED, ReplicatorTypes.MAX_RADIUS);
 
 		m_oController = new ReplicatorController();
+
+		m_oDriveCommandListener = new RobotDriveCommandListener(this);
+		m_oRemoteCtrl = new ZmqRemoteControlHelper();
+		m_oRemoteCtrl.setDriveControlListener(m_oDriveCommandListener);
+		m_oRemoteCtrl.startReceiver("Replicator");
+
+		m_oVideoSender = new ZmqVideoSender(getID());
+		m_oController.setVideoListener(m_oVideoSender);
 		
 		Log.w(TAG, "Created Replicator controller");
 		

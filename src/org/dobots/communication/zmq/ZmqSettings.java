@@ -25,6 +25,8 @@ public class ZmqSettings implements IMenuListener, IDialogListener {
 
 	private static final int MENU_ZMQ_SETTINGS	= 100;
 	private static final int GRP_ZMQ = 100;
+
+	public static final int DIALOG_SETTINGS_ID = 100;
 	
 	public static final String PREFS_REMOTE			= "remote";
 	public static final String PREFS_ADDRESS 		= "address";
@@ -44,8 +46,6 @@ public class ZmqSettings implements IMenuListener, IDialogListener {
 		public void onChange();
 		public void onCancel();
 	}
-
-	public static final int DIALOG_SETTINGS_ID = 1;
 
 	private Activity m_oActivity;
 

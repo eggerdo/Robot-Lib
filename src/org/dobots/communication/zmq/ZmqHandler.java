@@ -65,6 +65,17 @@ public class ZmqHandler {
 		setupVideoConnections();
 	}
 	
+	public static ZmqHandler initialize(BaseActivity i_oActivity) {
+		ZmqHandler zmqHandler = new ZmqHandler(i_oActivity);
+        ZmqSettings settings = zmqHandler.getSettings();
+        
+        if (!settings.checkSettings()) {
+        	settings.showDialog(i_oActivity);
+        }
+        
+        return zmqHandler;
+	}
+	
 	public void onDestroy() {
 		m_oCommandHandler.close();
 		m_oVideoHandler.close();
