@@ -101,7 +101,7 @@ public class ReplicatorController extends BaseWifi {
 	}
 
 	public void setConnection(String address, int commandPort, int videoPort) {
-		Log.w(TAG, "Set connection info as " + address + ":" + videoPort);
+		Log.w(TAG, String.format("Set connection info as %s:(%d,%d)", address, commandPort, videoPort));
 		m_strAddress = address;
 		m_nPort = commandPort;
 		m_nVideoPort = videoPort;

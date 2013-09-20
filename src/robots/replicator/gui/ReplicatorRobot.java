@@ -112,7 +112,7 @@ public class ReplicatorRobot extends WifiRobot {
 
 	@Override
 	protected void updateButtons(boolean i_bEnabled) {
-		Utils.setEnabledRecursive((ViewGroup)m_oActivity.findViewById(R.id.layCameraControl), i_bEnabled);
+//		Utils.setEnabledRecursive((ViewGroup)m_oActivity.findViewById(R.id.layCameraControl), i_bEnabled);
 	}
 
 	@Override

@@ -69,15 +69,13 @@
                 android:indeterminateBehavior="repeat"
                 android:visibility="invisible" />
 
-            <org.dobots.utilities.ScalableImageView
-                android:id="@+id/ivCamera"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:adjustViewBounds="true"
-                android:scaleType="fitCenter"
-                android:visibility="visible" />
-
+		    <SurfaceView
+		        android:id="@+id/ivCamera"
+		        android:layout_width="match_parent"
+		        android:layout_height="match_parent"
+		        android:layout_gravity="center"
+		        android:visibility="visible" />
+		    
             <TextView
                 android:id="@+id/lblFPS"
                 android:layout_width="wrap_content"
