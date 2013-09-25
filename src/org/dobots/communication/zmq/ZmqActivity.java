@@ -20,6 +20,7 @@ package org.dobots.communication.zmq;
 
 import org.dobots.communication.zmq.ZmqSettings.SettingsChangeListener;
 import org.dobots.utilities.BaseActivity;
+import org.dobots.utilities.Utils;
 
 import android.os.Bundle;
 
@@ -62,7 +63,13 @@ public abstract class ZmqActivity extends BaseActivity {
 		addDialogListener(mSettings);
 		
 		if (checkSettings()) {
-			onZmqReady();
+			Utils.runAsyncUiTask(new Runnable() {
+				
+				@Override
+				public void run() {
+					onZmqReady();
+				}
+			});
 		}
 	}
 	

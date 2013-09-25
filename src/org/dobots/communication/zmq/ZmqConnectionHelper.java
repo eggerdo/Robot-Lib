@@ -4,6 +4,7 @@ import org.dobots.communication.zmq.ZmqMessageHandler.ZmqMessageListener;
 import org.dobots.communication.zmq.ZmqSettings.SettingsChangeListener;
 import org.dobots.utilities.Utils;
 import org.zeromq.ZMQ;
+import org.zeromq.ZMQException;
 import org.zeromq.ZMsg;
 
 import android.app.AlertDialog;
@@ -65,7 +66,11 @@ public class ZmqConnectionHelper {
 		if (!m_oSettings.isValid()) {
 			m_oActivity.onZmqFailed();
 		} else {
-			setupConnections(m_oSettings.isRemote());
+			try {
+				setupConnections(m_oSettings.isRemote());
+			} catch (ZMQException e) {
+				m_oActivity.onZmqFailed();
+			}
 //			m_oActivity.ready();
 		}
 		

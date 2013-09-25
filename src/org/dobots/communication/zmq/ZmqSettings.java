@@ -152,8 +152,12 @@ public class ZmqSettings implements IMenuListener, IDialogListener {
 //					enableDisableView(table, true);
 				}
 			});
-    		
-    		rbRemote.setChecked(m_bRemote);
+
+    		if (m_bRemote) {
+    			rbRemote.setChecked(true);
+    		} else {
+    			rbLocal.setChecked(true);
+    		}
     		
     		// Pre-fill the text fields with the saved login settings.
     		EditText editText;

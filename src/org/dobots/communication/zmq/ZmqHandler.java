@@ -54,8 +54,8 @@ public class ZmqHandler {
 		m_oSettings = new ZmqSettings(m_oActivity);
 		m_oSettings.checkSettings();
 		
-		m_oActivity.addMenuListener(m_oSettings);
-		m_oActivity.addDialogListener(m_oSettings);
+//		m_oActivity.addMenuListener(m_oSettings);
+//		m_oActivity.addDialogListener(m_oSettings);
 		
 		m_oCommandHandler = new ZmqMessageHandler();
 		setupCommandConnections();
@@ -79,6 +79,7 @@ public class ZmqHandler {
 	public void onDestroy() {
 		m_oCommandHandler.close();
 		m_oVideoHandler.close();
+		INSTANCE = null;
 	}
 	
 	public void setupCommandConnections() {
