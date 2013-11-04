@@ -2,6 +2,7 @@ package org.dobots.communication.zmq;
 
 import org.dobots.communication.zmq.ZmqMessageHandler.ZmqMessageListener;
 import org.dobots.communication.zmq.ZmqSettings.SettingsChangeListener;
+import org.dobots.communication.zmq.ZmqSettings.ZmqSettingsInvalidException;
 import org.dobots.utilities.Utils;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMQException;
@@ -68,6 +69,8 @@ public class ZmqConnectionHelper {
 		} else {
 			try {
 				setupConnections(m_oSettings.isRemote());
+			} catch (ZmqSettingsInvalidException e) {
+				m_oActivity.onZmqFailed();
 			} catch (ZMQException e) {
 				m_oActivity.onZmqFailed();
 			}
@@ -93,12 +96,12 @@ public class ZmqConnectionHelper {
 		m_oCmdHandler.closeConnections();
 	}
 
-	private void setupConnections(boolean i_bRemote) {
+	private void setupConnections(boolean i_bRemote) throws ZmqSettingsInvalidException {
 		setupVideoConnection(i_bRemote);
 		setupCommandConnection(i_bRemote);
 	}
 
-	private void setupVideoConnection(boolean i_bRemote) {
+	private void setupVideoConnection(boolean i_bRemote) throws ZmqSettingsInvalidException {
 		ZMQ.Socket oVideoReceiver = null;
 		ZMQ.Socket oVideoSender = null;
 		
@@ -164,7 +167,7 @@ public class ZmqConnectionHelper {
         
 	}
 
-	private void setupCommandConnection(boolean i_bRemote) {
+	private void setupCommandConnection(boolean i_bRemote) throws ZmqSettingsInvalidException {
 		ZMQ.Socket oCommandSender = null;
 		ZMQ.Socket oCommandReceiver = null;
 		
@@ -235,7 +238,11 @@ public class ZmqConnectionHelper {
 	    	.setMessage("Check your settings or try again")
 	        .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
 	            public void onClick(DialogInterface dialog, int id) {
-	               setupConnections(m_oSettings.isRemote());
+	            	try {
+	            		setupConnections(m_oSettings.isRemote());
+	            	} catch (ZmqSettingsInvalidException e) {
+	        			m_oActivity.onZmqFailed();
+	        		}
 	            }
 	        })
 	        .setNeutralButton("Settings", new DialogInterface.OnClickListener() {

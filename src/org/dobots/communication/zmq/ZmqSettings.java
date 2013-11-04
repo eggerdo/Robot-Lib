@@ -22,6 +22,13 @@ import android.widget.TableLayout;
 import android.widget.Toast;
 
 public class ZmqSettings implements IMenuListener, IDialogListener {
+	
+	public class ZmqSettingsInvalidException extends Exception {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 3789470452000257763L;
+	};
 
 	private static final int MENU_ZMQ_SETTINGS	= 100;
 	private static final int GRP_ZMQ = 100;
@@ -114,18 +121,6 @@ public class ZmqSettings implements IMenuListener, IDialogListener {
         	return m_dlgSettings;
     	}
     	return null;
-    }
-
-    private void enableDisableView(View view, boolean enabled) {
-        view.setEnabled(enabled);
-
-        if (view instanceof ViewGroup ) {
-            ViewGroup group = (ViewGroup)view;
-
-            for ( int idx = 0 ; idx < group.getChildCount() ; idx++ ) {
-                enableDisableView(group.getChildAt(idx), enabled);
-            }
-        }
     }
 
     @Override
@@ -242,16 +237,28 @@ public class ZmqSettings implements IMenuListener, IDialogListener {
 		return m_strAddress;
 	}
 
-	public int getCommandPort() {
-		return Integer.valueOf(m_strCommandPort);
+	public int getCommandPort() throws ZmqSettingsInvalidException {
+		try {
+			return Integer.valueOf(m_strCommandPort);
+		} catch (NumberFormatException e) {
+			throw new ZmqSettingsInvalidException();
+		}
 	}
 
-	public int getVideoPort() {
-		return Integer.valueOf(m_strVideoPort);
+	public int getVideoPort() throws ZmqSettingsInvalidException {
+		try {
+			return Integer.valueOf(m_strVideoPort);
+		} catch (NumberFormatException e) {
+			throw new ZmqSettingsInvalidException();
+		}
 	}
 	
-	public int getEventPort() {
-		return Integer.valueOf(m_strEventPort);
+	public int getEventPort() throws ZmqSettingsInvalidException {
+		try {
+			return Integer.valueOf(m_strEventPort);
+		} catch (NumberFormatException e) {
+			throw new ZmqSettingsInvalidException();
+		}
 	}
 	
 //	public String getRobotName() {
@@ -259,7 +266,7 @@ public class ZmqSettings implements IMenuListener, IDialogListener {
 //	}
 	
 
-	public String getVideoReceiveAddress() {
+	public String getVideoReceiveAddress() throws ZmqSettingsInvalidException {
 		
 //		if (m_strVideoRecvAddress == null) {
 			// obtain command ports from settings
@@ -276,7 +283,7 @@ public class ZmqSettings implements IMenuListener, IDialogListener {
 		return m_strVideoRecvAddress;
 	}
 
-	public String getVideoSendAddress() {
+	public String getVideoSendAddress() throws ZmqSettingsInvalidException {
 		
 //		if (m_strVideoSendAddress == null) {
 			// obtain command ports from settings
@@ -293,7 +300,7 @@ public class ZmqSettings implements IMenuListener, IDialogListener {
 		return m_strVideoSendAddress;
 	}
 	
-	public String getCommandReceiveAddress() {
+	public String getCommandReceiveAddress() throws ZmqSettingsInvalidException {
 		
 //		if (m_strCommandReceiveAddress == null) {
 			// obtain command ports from settings
@@ -310,7 +317,7 @@ public class ZmqSettings implements IMenuListener, IDialogListener {
 		return m_strCommandReceiveAddress;
 	}
 
-	public String getCommandSendAddress() {
+	public String getCommandSendAddress() throws ZmqSettingsInvalidException {
 		
 //		if (m_strCommandSendAddress == null) {
 			// obtain command ports from settings
