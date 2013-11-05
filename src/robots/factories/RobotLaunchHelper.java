@@ -1,8 +1,8 @@
-package robots.gui;
+package robots.factories;
 
 import robots.RobotType;
 import robots.ctrl.IRobotDevice;
-import robots.ctrl.RobotDeviceFactory;
+import robots.gui.RobotInventory;
 import android.app.Activity;
 import android.content.Intent;
 

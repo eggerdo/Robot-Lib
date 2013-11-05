@@ -1,12 +1,12 @@
 package robots.rover.gui;
 
 import org.dobots.R;
-import org.dobots.communication.control.ZmqRemoteControlHelper;
-import org.dobots.communication.control.ZmqRemoteControlSender;
+import org.dobots.communication.control.RemoteControlReceiver;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
 
 import robots.RobotType;
+import robots.ctrl.IDriveControlListener;
 import robots.ctrl.RemoteControlHelper;
 import robots.gui.IConnectListener;
 import robots.gui.SensorGatherer;
@@ -44,8 +44,7 @@ public abstract class RoverBaseRobot extends WifiRobot {
 	
 	private RoverBase m_oRover;
 	protected RoverBaseSensorGatherer m_oSensorGatherer;
-	protected ZmqRemoteControlHelper m_oRemoteCtrl;
-	private ZmqRemoteControlSender m_oZmqRemoteListener;
+	protected RemoteControlHelper m_oRemoteCtrl;
 
 	protected boolean connected;
 
@@ -78,9 +77,7 @@ public abstract class RoverBaseRobot extends WifiRobot {
         
 		m_dblSpeed = m_oRover.getBaseSped();
 
-    	m_oZmqRemoteListener = new ZmqRemoteControlSender(getRobot().getID());
-		m_oRemoteCtrl = new ZmqRemoteControlHelper(m_oActivity);
-		m_oRemoteCtrl.setDriveControlListener(m_oZmqRemoteListener);
+		m_oRemoteCtrl = new RemoteControlHelper(m_oActivity);
         
         updateButtons(false);
 
@@ -95,6 +92,10 @@ public abstract class RoverBaseRobot extends WifiRobot {
         
     }
 
+	public void setDriveControlListener(IDriveControlListener i_oListener) {
+		m_oRemoteCtrl.setDriveControlListener(i_oListener);
+	}
+	
     @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);

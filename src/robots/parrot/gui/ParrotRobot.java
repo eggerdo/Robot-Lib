@@ -1,6 +1,7 @@
 package robots.parrot.gui;
 
 import org.dobots.R;
+import org.dobots.communication.control.RemoteControlReceiver;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
 
@@ -432,6 +433,25 @@ public class ParrotRobot extends WifiRobot implements IDriveControlListener {
 	@Override
 	public void toggleInvertDrive() {
 		// not available
+	}
+
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setCameraCtrlReceiver(
+			RemoteControlReceiver m_oCameraCtrlReceiver) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setDriveControlListener(IDriveControlListener i_oListener) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

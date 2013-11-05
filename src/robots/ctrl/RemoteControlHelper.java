@@ -19,6 +19,8 @@
 package robots.ctrl;
 
 import org.dobots.R;
+import org.dobots.communication.control.RemoteControlReceiver;
+import org.dobots.communication.control.zmq.ZmqRemoteControlReceiver;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.IMenuListener;
 import org.dobots.utilities.LockableScrollView;
@@ -39,7 +41,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ToggleButton;
 
-public class RemoteControlHelper implements IJoystickListener, IMenuListener {
+public class RemoteControlHelper implements IJoystickListener, IMenuListener, ICameraControlListener, IDriveControlListener {
 
 	private static final String TAG = "RemoteControlHelper";
 	
@@ -61,8 +63,10 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 	// angle is used as a common control for rotation. the robot itself uses radius. but radius can
 	//   differ from robot to robot
 	
-	protected IDriveControlListener m_oRemoteControlListener = null;
-	
+	protected IDriveControlListener m_oDriveControlListener = null;
+
+	protected ICameraControlListener m_oCameraControlListener = null;
+
 	private Move lastMove = Move.NONE;
 
 	private long lastTime = SystemClock.uptimeMillis();
@@ -100,6 +104,8 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 	
 	private int mAlpha = 99;
 
+	private RemoteControlReceiver m_oRemoteControlReceiver;
+
 	private class RemoteControlTouchListener implements OnTouchListener {
 
 		private Move mMove;
@@ -116,7 +122,7 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 		
 		@Override
 		public boolean onTouch(View v, MotionEvent e) {
-			if (m_oRemoteControlListener != null) {
+			if (m_oDriveControlListener != null) {
 				int action = e.getAction();
 				switch (action & MotionEvent.ACTION_MASK) {
 				case MotionEvent.ACTION_CANCEL:
@@ -152,6 +158,16 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 //		// can be individually handled
 //		m_oRemoteControlListener = i_oListener;
 //	}
+
+	/**
+	 * Starts a helper object without activity. the helper class now only serves as a hub to forward
+	 * remote controls. Optionally, a receiver can be assigned which listens for incoming remote controls and
+	 * forwards them to the listener
+	 */
+	public RemoteControlHelper() {
+		m_oActivity = null;
+		setProperties();
+	}
 	
 	// At least one of the parameters i_oRobot or i_oListener has to be assigned! the other can be null.
 	// It is also possible to assign both
@@ -169,12 +185,12 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 	}
 	
 	public void setDriveControlListener(IDriveControlListener i_oListener) {
-		m_oRemoteControlListener = i_oListener;
+		m_oDriveControlListener = i_oListener;
 	}
 	
 	public void removeDriveControlListener(IDriveControlListener i_oListener) {
-		if (m_oRemoteControlListener == i_oListener) {
-			m_oRemoteControlListener = null;
+		if (m_oDriveControlListener == i_oListener) {
+			m_oDriveControlListener = null;
 		}
 	}
 	
@@ -442,19 +458,31 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 	}
 
 	public void onMove(Move i_oMove, double i_dblSpeed, double i_dblAngle) {
-		m_oRemoteControlListener.onMove(i_oMove, i_dblSpeed, i_dblAngle);
+		if (m_oDriveControlListener != null) {
+			m_oDriveControlListener.onMove(i_oMove, i_dblSpeed, i_dblAngle);
+		}
 	}
 
 	public void onMove(Move i_oMove) {
-		m_oRemoteControlListener.onMove(i_oMove);
+		if (m_oDriveControlListener != null) {
+			m_oDriveControlListener.onMove(i_oMove);
+		}
 	}
 
 	public void enableControl(boolean i_bEnable) {
-		m_oRemoteControlListener.enableControl(i_bEnable);
+		if (m_oDriveControlListener != null) {
+			m_oDriveControlListener.enableControl(i_bEnable);
+		}
 	}
 	
 	public boolean isControlEnabled() {
 		return m_bControl;
+	}
+
+	public void toggleInvertDrive() {
+		if (m_oDriveControlListener != null) {
+			m_oDriveControlListener.toggleInvertDrive();
+		}
 	}
 	
 	public void setAdvancedControl(boolean i_bAdvancedControl) {
@@ -514,5 +542,69 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 		
 		return true;
 	}
+
+	/**
+	 * assign a camera control listener which will handle camera on/off, toggle, and up/down commands
+	 * @param i_oCameraListener object implementing the ICameraControlListener interface
+	 */
+	public void setCameraControlListener(ICameraControlListener i_oCameraListener) {
+		m_oCameraControlListener = i_oCameraListener;
+	}
+	
+	public void toggleCamera() {
+		if (m_oCameraControlListener != null) {
+			m_oCameraControlListener.toggleCamera();
+		}
+	}
+	
+	public void switchCameraOn() {
+		if (m_oCameraControlListener != null) {
+			m_oCameraControlListener.switchCameraOn();
+		}
+	}
+
+	public void switchCameraOff() {
+		if (m_oCameraControlListener != null) {
+			m_oCameraControlListener.switchCameraOff();
+		}
+	}
+	
+	public void cameraUp() {
+		if (m_oCameraControlListener != null) {
+			m_oCameraControlListener.cameraUp();
+		}
+	}
+
+	public void cameraDown() {
+		if (m_oCameraControlListener != null) {
+			m_oCameraControlListener.cameraDown();
+		}
+	}
+
+	public void cameraStop() {
+		if (m_oCameraControlListener != null) {
+			m_oCameraControlListener.cameraStop();
+		}
+	}
+
+	public void setReceiver(RemoteControlReceiver i_oReceiver) {
+		m_oRemoteControlReceiver = i_oReceiver;
+		m_oRemoteControlReceiver.setDriveControlListener(m_oDriveControlListener);
+		m_oRemoteControlReceiver.setCameraControlListener(m_oCameraControlListener);
+	}
+
+	public void close() {
+		if (m_oRemoteControlReceiver != null) {
+			m_oRemoteControlReceiver.close();
+		}
 		
+		if (m_oDriveControlListener != null) {
+			m_oDriveControlListener.close();
+		}
+		
+		if (m_oCameraControlListener != null) {
+			m_oCameraControlListener.close();
+		}
+	}
+	
 }

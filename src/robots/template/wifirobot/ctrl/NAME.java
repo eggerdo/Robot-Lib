@@ -2,6 +2,9 @@ package robots.template.wifirobot.ctrl;
 
 import java.io.IOException;
 
+import org.dobots.communication.control.RemoteControlReceiver;
+import org.dobots.communication.video.IRawVideoListener;
+
 import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
 
@@ -158,6 +161,18 @@ public class NAME extends DifferentialRobot {
 	public void moveRight() {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void setRemoteReceiver(RemoteControlReceiver i_oReceiver) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setVideoListener(IRawVideoListener i_oVideoSender) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

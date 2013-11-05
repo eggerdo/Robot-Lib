@@ -1,11 +1,13 @@
 package robots.gui;
 
+import org.dobots.communication.control.RemoteControlReceiver;
 import org.dobots.utilities.AccelerometerManager;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.IAccelerometerListener;
 import org.dobots.utilities.ProgressDlg;
 
 import robots.RobotType;
+import robots.ctrl.IDriveControlListener;
 import robots.ctrl.IRobotDevice;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -309,7 +311,7 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
     	return m_oUiHandler;
     }
 
-	protected IRobotDevice getRobot() {
+	public IRobotDevice getRobot() {
 		return m_oRobot;
 	}
 
@@ -361,4 +363,7 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
 		return "";
 	}
 
+	public abstract void setCameraCtrlReceiver(RemoteControlReceiver m_oCameraCtrlReceiver);
+
+	public abstract void setDriveControlListener(IDriveControlListener i_oListener);
 }

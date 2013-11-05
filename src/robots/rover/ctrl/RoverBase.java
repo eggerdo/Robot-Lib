@@ -5,13 +5,14 @@ import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.dobots.communication.control.ZmqRemoteControlHelper;
+import org.dobots.communication.control.RemoteControlReceiver;
 import org.dobots.communication.video.IRawVideoListener;
 import org.dobots.utilities.Utils;
 
 import robots.ctrl.DifferentialRobot;
 import robots.ctrl.IMoveRepeaterListener;
 import robots.ctrl.MoveRepeater;
+import robots.ctrl.RemoteControlHelper;
 import robots.ctrl.MoveRepeater.MoveCommand;
 import robots.gui.MessageTypes;
 import robots.gui.RobotDriveCommandListener;
@@ -38,7 +39,7 @@ public abstract class RoverBase extends DifferentialRobot implements IMoveRepeat
 	protected MoveRepeater m_oRepeater;
 
 	protected RobotDriveCommandListener m_oRemoteListener;
-	protected ZmqRemoteControlHelper m_oRemoteHelper;
+	protected RemoteControlHelper m_oRemoteHelper;
 
 	public RoverBase(double i_dblAxleWidth, int i_nMinVelocity, int i_nMaxVelocity, int i_nMinRadius, int i_nMaxRadius) {
 		super(i_dblAxleWidth, i_nMinVelocity, i_nMaxVelocity, i_nMinRadius, i_nMaxRadius);
@@ -49,11 +50,14 @@ public abstract class RoverBase extends DifferentialRobot implements IMoveRepeat
 		m_oRepeater = new MoveRepeater(this, 500);
 
 		m_oRemoteListener = new RobotDriveCommandListener(this);
-		m_oRemoteHelper = new ZmqRemoteControlHelper();
+		m_oRemoteHelper = new RemoteControlHelper();
 		m_oRemoteHelper.setDriveControlListener(m_oRemoteListener);
-		m_oRemoteHelper.startReceiver(getID());
 	}
 
+	public void setRemoteReceiver(RemoteControlReceiver i_oReceiver) {
+		m_oRemoteHelper.setReceiver(i_oReceiver);
+	}
+	
 	private final TimerTask m_oKeepAliveTask = new TimerTask() {
 		
 		@Override

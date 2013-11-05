@@ -1,6 +1,7 @@
 package robots.rover.ac13.gui;
 
 import org.dobots.R;
+import org.dobots.communication.control.RemoteControlReceiver;
 import org.dobots.utilities.BaseActivity;
 
 import robots.RobotType;
@@ -74,6 +75,13 @@ public class AC13RoverRobot extends RoverBaseRobot {
 		editor.putString(AC13RoverTypes.PREFS_AC13_ADDRESS, m_strAddress);
 		editor.putInt(AC13RoverTypes.PREFS_AC13_PORT, m_nPort);
 		editor.commit();
+		
+	}
+
+	@Override
+	public void setCameraCtrlReceiver(
+			RemoteControlReceiver m_oCameraCtrlReceiver) {
+		// TODO Auto-generated method stub
 		
 	}
 }

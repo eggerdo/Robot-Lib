@@ -2,10 +2,12 @@ package robots.romo.ctrl;
 
 import java.io.IOException;
 
-import org.dobots.communication.control.ZmqRemoteControlHelper;
+import org.dobots.communication.control.RemoteControlReceiver;
+import org.dobots.communication.video.IRawVideoListener;
 
 import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
+import robots.ctrl.RemoteControlHelper;
 import robots.gui.RobotDriveCommandListener;
 
 import com.romotive.library.RomoCommandInterface;
@@ -20,19 +22,24 @@ public class Romo extends DifferentialRobot {
 	
 	private RobotDriveCommandListener m_oRemoteListener;
 
-	private ZmqRemoteControlHelper m_oRemoteHelper;
+	private RemoteControlHelper m_oRemoteHelper;
 
 	private boolean m_bInverted;
 
+	private IRawVideoListener oVideoListener = null;
+	
 	public Romo() {
 		super(RomoTypes.AXLE_WIDTH, RomoTypes.MIN_VELOCITY, RomoTypes.MAX_VELOCITY, RomoTypes.MIN_RADIUS, RomoTypes.MAX_RADIUS);
 		
 		m_oController = new RomoCommandInterface();
 
 		m_oRemoteListener = new RobotDriveCommandListener(this);
-		m_oRemoteHelper = new ZmqRemoteControlHelper();
+		m_oRemoteHelper = new RemoteControlHelper();
 		m_oRemoteHelper.setDriveControlListener(m_oRemoteListener);
-		m_oRemoteHelper.startReceiver("Romo");
+	}
+	
+	public void setRemoteReceiver(RemoteControlReceiver i_oReceiver) {
+		m_oRemoteHelper.setReceiver(i_oReceiver);
 	}
 
 	@Override
@@ -223,6 +230,22 @@ public class Romo extends DifferentialRobot {
 	@Override
 	public void moveRight() {
 		assert false : "not available";
+	}
+
+	public void setVideoListener(IRawVideoListener listener) {
+		this.oVideoListener = listener;
+	}
+
+	public void removeVideoListener(IRawVideoListener listener) {
+		if (this.oVideoListener == listener) {
+			this.oVideoListener = null;
+		}
+	}
+
+	public void onFrame(byte[] rgb, int rotation) {
+		if (oVideoListener != null) {
+			oVideoListener.onFrame(rgb, rotation);
+		}
 	}
 
 }

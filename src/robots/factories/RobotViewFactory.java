@@ -1,4 +1,4 @@
-package robots.gui;
+package robots.factories;
 
 import robots.RobotType;
 import robots.parrot.gui.ParrotRobot;

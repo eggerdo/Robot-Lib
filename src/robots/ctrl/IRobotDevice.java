@@ -2,6 +2,10 @@ package robots.ctrl;
 
 import java.io.IOException;
 
+import org.dobots.communication.control.RemoteControlReceiver;
+import org.dobots.communication.video.IRawVideoListener;
+import org.dobots.communication.video.ZmqVideoSender;
+
 import robots.RobotType;
 
 public interface IRobotDevice {
@@ -16,6 +20,9 @@ public interface IRobotDevice {
 	public void connect() throws IOException;
 	public void disconnect();
 	public boolean isConnected();
+	
+	public void setRemoteReceiver(RemoteControlReceiver i_oReceiver);
+	public void setVideoListener(IRawVideoListener i_oVideoSender);
 	
 	// drive methods
 	

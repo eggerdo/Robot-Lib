@@ -11,5 +11,7 @@ public interface IDriveControlListener {
 	void enableControl(boolean i_bEnable);
 	
 	void toggleInvertDrive();
+
+	void close();
 	
 }

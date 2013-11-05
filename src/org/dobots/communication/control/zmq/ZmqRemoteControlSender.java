@@ -14,7 +14,7 @@
 * @project:		Robot-Lib
 * @company:		Distributed Organisms B.V.
 */
-package org.dobots.communication.control;
+package org.dobots.communication.control.zmq;
 
 import org.dobots.communication.msg.RoboCommands;
 import org.dobots.communication.msg.RoboCommands.BaseCommand;

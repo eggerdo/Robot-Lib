@@ -1,12 +1,12 @@
 package robots.spytank.gui;
 
 import org.dobots.R;
-import org.dobots.communication.control.ZmqRemoteControlHelper;
-import org.dobots.communication.control.ZmqRemoteControlSender;
+import org.dobots.communication.control.RemoteControlReceiver;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
 
 import robots.RobotType;
+import robots.ctrl.IDriveControlListener;
 import robots.ctrl.RemoteControlHelper;
 import robots.gui.SensorGatherer;
 import robots.gui.WifiRobot;
@@ -35,7 +35,6 @@ public class SpyTankRobot extends WifiRobot {
 	protected static final int CONNECTION_SETTINGS_ID = CONNECT_ID + 1;
 	
 	private SpyTankSensorGatherer m_oSensorGatherer;
-	private ZmqRemoteControlSender m_oZmqRemoteListener;
 	private RemoteControlHelper m_oRemoteCtrl;
 	
 	private SpyTank m_oSpyTank;
@@ -60,9 +59,7 @@ public class SpyTankRobot extends WifiRobot {
     	m_oSpyTank = (SpyTank) getRobot();
     	m_oSpyTank.setHandler(m_oUiHandler);
 
-    	m_oZmqRemoteListener = new ZmqRemoteControlSender(m_oSpyTank.getID());
-    	m_oRemoteCtrl = new ZmqRemoteControlHelper(m_oActivity);
-    	m_oRemoteCtrl.setDriveControlListener(m_oZmqRemoteListener);
+    	m_oRemoteCtrl = new RemoteControlHelper(m_oActivity);
     	
         m_oSensorGatherer = new SpyTankSensorGatherer(this, m_oSpyTank);
 
@@ -78,6 +75,17 @@ public class SpyTankRobot extends WifiRobot {
     	}
     }
 
+	@Override
+	public void setCameraCtrlReceiver(
+			RemoteControlReceiver m_oCameraCtrlReceiver) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void setDriveControlListener(IDriveControlListener i_oListener) {
+		m_oRemoteCtrl.setDriveControlListener(i_oListener);
+	}
+	
 	@Override
 	protected void connect() {
 		m_oSpyTank.connect();
@@ -270,4 +278,5 @@ public class SpyTankRobot extends WifiRobot {
 		editText = (EditText) dialog.findViewById(R.id.txtMediaPort);
 		editText.setText(Integer.toString(m_nMediaPort));
     }
+
 }

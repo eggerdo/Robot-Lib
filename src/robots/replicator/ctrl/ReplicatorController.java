@@ -136,6 +136,7 @@ public class ReplicatorController extends BaseWifi {
 						if (!m_bStreaming) {
 							return;
 						}
+						Log.d(TAG, "request image");
 						m_oVideoOut.write(0);
 
 						final byte[] data = readFrame();
@@ -152,10 +153,10 @@ public class ReplicatorController extends BaseWifi {
 							Log.w(TAG, "Byte array too small!");
 							continue;
 						}
-
-						Log.i(TAG, "Try to decode array to bitmap with size " + data.length);			
 										
 						if (oVideoListener != null) {
+							Log.i(TAG, "Try to decode array to bitmap with size " + data.length);	
+							
 							// the decoding shouldn't be dependent on the registered listener. but why
 							// should we do the work of decoding if nobody is listening anyway.
 							

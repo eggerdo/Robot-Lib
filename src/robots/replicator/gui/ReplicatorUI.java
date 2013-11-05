@@ -1,11 +1,11 @@
 package robots.replicator.gui;
 
 import org.dobots.R;
-import org.dobots.communication.control.ZmqRemoteControlHelper;
-import org.dobots.communication.control.ZmqRemoteControlSender;
+import org.dobots.communication.control.RemoteControlReceiver;
 import org.dobots.utilities.Utils;
 
 import robots.RobotType;
+import robots.ctrl.IDriveControlListener;
 import robots.ctrl.RemoteControlHelper;
 import robots.gui.RobotDriveCommandListener;
 import robots.gui.SensorGatherer;
@@ -42,14 +42,12 @@ public class ReplicatorUI extends WifiRobot {
 
 	private ReplicatorSensorGatherer m_oSensorGatherer;
 
-	private ZmqRemoteControlHelper m_oRemoteCtrl;
+	private RemoteControlHelper m_oDriveCtrl;
 
 	private Dialog m_dlgSettingsDialog;
 
 	private int m_nCommandPort;
 	private int m_nVideoPort;
-
-	private ZmqRemoteControlSender m_oZmqSender;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -62,9 +60,7 @@ public class ReplicatorUI extends WifiRobot {
 
 		m_oSensorGatherer = new ReplicatorSensorGatherer(this, m_oReplicator);
 		
-		m_oZmqSender = new ZmqRemoteControlSender("");
-		m_oRemoteCtrl = new ZmqRemoteControlHelper(this);
-		m_oRemoteCtrl.setDriveControlListener(m_oZmqSender);
+		m_oDriveCtrl = new RemoteControlHelper(this);
 
 		updateButtons(false);
 
@@ -87,7 +83,7 @@ public class ReplicatorUI extends WifiRobot {
 	@Override
 	protected void onConnect() {
 		updateButtons(true);
-		m_oRemoteCtrl.onConnect();
+		m_oDriveCtrl.onConnect();
 		m_oSensorGatherer.onConnect();
 	}
 
@@ -244,6 +240,19 @@ public class ReplicatorUI extends WifiRobot {
 		editor.putInt(ReplicatorTypes.PREFS_REPLICATOR_VIDEOPORT, m_nVideoPort);
 		editor.commit();
 		
+	}
+
+
+	@Override
+	public void setCameraCtrlReceiver(
+			RemoteControlReceiver m_oCameraCtrlReceiver) {
+		// TODO Auto-generated method stub
+	}
+
+
+	@Override
+	public void setDriveControlListener(IDriveControlListener i_oListener) {
+		m_oDriveCtrl.setDriveControlListener(i_oListener);
 	}
 
 }

@@ -2,19 +2,21 @@ package robots.romo.gui;
 
 import org.dobots.R;
 import org.dobots.communication.msg.VideoMessage;
-import org.dobots.communication.zmq.ZmqHandler;
+//import org.dobots.communication.zmq.ZmqHandler;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.CameraPreview.CameraPreviewCallback;
 import org.dobots.utilities.Utils;
-import org.zeromq.ZMQ;
-import org.zeromq.ZMsg;
+//import org.zeromq.ZMQ;
+//import org.zeromq.ZMsg;
 
+import robots.gui.RobotInventory;
 import robots.gui.SensorGatherer;
+import robots.romo.ctrl.Romo;
 import android.widget.TextView;
 
 public class RomoSensorGatherer extends SensorGatherer implements CameraPreviewCallback {
 
-	private ZMQ.Socket m_oVideoSocket;
+//	private ZMQ.Socket m_oVideoSocket;
 
 	private TextView m_lblFPS;
 
@@ -25,11 +27,14 @@ public class RomoSensorGatherer extends SensorGatherer implements CameraPreviewC
 
     private boolean m_bDebug = true;
     
+    private Romo mRomo = null;
+    
 	public RomoSensorGatherer(BaseActivity i_oActivity, String i_strRobotID) {
 		super(i_oActivity, i_strRobotID + "-SensorGatherer");
 		robotID = i_strRobotID.getBytes();
+		mRomo = (Romo) RobotInventory.getInstance().getRobot(i_strRobotID);
 
-		m_oVideoSocket = ZmqHandler.getInstance().obtainVideoSendSocket();
+//		m_oVideoSocket = ZmqHandler.getInstance().obtainVideoSendSocket();
 		
 		m_lblFPS = (TextView) i_oActivity.findViewById(R.id.lblFPS);
 
@@ -38,11 +43,13 @@ public class RomoSensorGatherer extends SensorGatherer implements CameraPreviewC
 	
 	@Override
 	public void onFrame(byte[] rgb, int width, int height, int rotation) {
-
-		VideoMessage oMsg = new VideoMessage(robotID, rgb, rotation);
 		
-		ZMsg zmsg = oMsg.toZmsg();
-		zmsg.send(m_oVideoSocket);
+		mRomo.onFrame(rgb, rotation);
+		
+//		VideoMessage oMsg = new VideoMessage(robotID, rgb, rotation);
+//		
+//		ZMsg zmsg = oMsg.toZmsg();
+//		zmsg.send(m_oVideoSocket);
 		
 		if (m_bDebug) {
             ++m_nFpsCounterPartner;
@@ -66,7 +73,7 @@ public class RomoSensorGatherer extends SensorGatherer implements CameraPreviewC
 
 	@Override
 	public void shutDown() {
-		m_oVideoSocket.close();
+//		m_oVideoSocket.close();
 	}
 
 }

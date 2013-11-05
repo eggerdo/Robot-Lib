@@ -2,8 +2,6 @@ package robots.rover.rover2.ctrl;
 
 import java.io.IOException;
 
-import org.dobots.communication.video.ZmqVideoSender;
-
 import robots.RobotType;
 import robots.ctrl.ICameraControlListener;
 import robots.rover.ctrl.RoverBase;
@@ -15,16 +13,11 @@ public class Rover2 extends RoverBase implements ICameraControlListener {
 	private boolean bInfrared;
 	private boolean bLight;
 	
-	private ZmqVideoSender m_oVideoSender;
-
 	public Rover2() {
 		super(Rover2Types.AXLE_WIDTH, Rover2Types.MIN_SPEED, Rover2Types.MAX_SPEED, Rover2Types.MIN_RADIUS, Rover2Types.MAX_RADIUS);
 
 		m_oController = new Rover2Controller();
 		
-		m_oVideoSender = new ZmqVideoSender(getID());
-		m_oController.setVideoListener(m_oVideoSender);
-
 		m_oRemoteHelper.setCameraControlListener(this);
 	}
 
@@ -168,6 +161,12 @@ public class Rover2 extends RoverBase implements ICameraControlListener {
 	
 	public double getBatteryPower() {
 		return ((Rover2Controller)m_oController).getBatteryPower();
+	}
+
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

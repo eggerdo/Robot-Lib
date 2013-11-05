@@ -4,22 +4,21 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.dobots.communication.control.ZmqRemoteControlHelper;
+import org.dobots.communication.control.RemoteControlReceiver;
 import org.dobots.communication.video.IRawVideoListener;
-import org.dobots.communication.video.ZmqVideoSender;
 
 import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
 import robots.ctrl.ICameraControlListener;
+import robots.ctrl.RemoteControlHelper;
 import robots.gui.RobotDriveCommandListener;
 import android.os.Handler;
 
 public class SpyTank extends DifferentialRobot implements ICameraControlListener {
 
 	private SpyTankController m_oController;
-	private ZmqVideoSender m_oVideoSender;
 	private RobotDriveCommandListener m_oRemoteListener;
-	private ZmqRemoteControlHelper m_oRemoteHelper;
+	private RemoteControlHelper m_oRemoteHelper;
 
 	protected ExecutorService executorSerive = Executors.newCachedThreadPool();
 
@@ -28,14 +27,15 @@ public class SpyTank extends DifferentialRobot implements ICameraControlListener
 		
 		m_oController = new SpyTankController();
 		
-		m_oVideoSender = new ZmqVideoSender(getID());
-		m_oController.setVideoListener(m_oVideoSender);
-
 		m_oRemoteListener = new RobotDriveCommandListener(this);
-		m_oRemoteHelper = new ZmqRemoteControlHelper();
+		m_oRemoteHelper = new RemoteControlHelper();
 		m_oRemoteHelper.setDriveControlListener(m_oRemoteListener);
 		m_oRemoteHelper.setCameraControlListener(this);
-		m_oRemoteHelper.startReceiver(getID());
+	}
+
+	@Override
+	public void setRemoteReceiver(RemoteControlReceiver i_oReceiver) {
+		m_oRemoteHelper.setReceiver(i_oReceiver);
 	}
 
 	public void setHandler(Handler m_oUiHandler) {
@@ -288,6 +288,12 @@ public class SpyTank extends DifferentialRobot implements ICameraControlListener
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

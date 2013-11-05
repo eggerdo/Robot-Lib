@@ -26,6 +26,7 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
@@ -40,7 +41,6 @@ public class VideoHelper implements IVideoListener, IFpsListener, IRawVideoListe
 	private Handler mHandler = new Handler();
 
 	private boolean m_bVideoConnected;
-
 	private boolean m_bVideoStopped;
 
 	private VideoSurfaceView m_ivVideo;
@@ -50,7 +50,9 @@ public class VideoHelper implements IVideoListener, IFpsListener, IRawVideoListe
 
 	private Activity m_oActivity;
 	
-	private long lastFrameRecv = 0;
+	private long mLastFrameRecv = 0;
+	
+	private boolean mDebug = false;
 
 	/**
 	 * takes an activity and a view container as input, then places a camera view, a progress bar
@@ -88,7 +90,7 @@ public class VideoHelper implements IVideoListener, IFpsListener, IRawVideoListe
 		
 		public void run() {
 			if (m_bVideoConnected && !m_bVideoStopped) {
-				if (System.currentTimeMillis() - lastFrameRecv > WATCHDOG_TIMEOUT) {
+				if (System.currentTimeMillis() - mLastFrameRecv > WATCHDOG_TIMEOUT) {
 					m_bVideoConnected = false;
 					showVideoLoading(true);
 				}
@@ -114,7 +116,7 @@ public class VideoHelper implements IVideoListener, IFpsListener, IRawVideoListe
 	public void resetLayout() {
 		initialize();
 		
-		Utils.showView(m_ivVideo, false);
+		m_ivVideo.setVisibility(View.INVISIBLE);
 	}
 	
 	private void initialize() {
@@ -195,7 +197,7 @@ public class VideoHelper implements IVideoListener, IFpsListener, IRawVideoListe
 
 			@Override
 			public void run() {
-				if (!m_bVideoStopped) {
+				if (!m_bVideoStopped && mDebug) {
 					m_lblFps.setText("FPS: " + String.valueOf(i_nFPS));
 				}
 			}
@@ -218,7 +220,7 @@ public class VideoHelper implements IVideoListener, IFpsListener, IRawVideoListe
 			}
 			
 			// store current time for watchdog
-			lastFrameRecv = System.currentTimeMillis();
+			mLastFrameRecv = System.currentTimeMillis();
 			m_ivVideo.onFrame(bmp, rotation);
 		}
 	}
@@ -245,10 +247,18 @@ public class VideoHelper implements IVideoListener, IFpsListener, IRawVideoListe
 			});
 
 			// store current time for watchdog
-			lastFrameRecv = System.currentTimeMillis();
+			mLastFrameRecv = System.currentTimeMillis();
 			m_ivVideo.onFrame(rgb, rotation);
 
 		}
+	}
+	
+	/**
+	 * Enable debug. in debug mode the FPS are displayed on the screen.
+	 * @param debug true to enable, false to disable
+	 */
+	public void setDebug(boolean debug) {
+		mDebug = debug;
 	}
     
 }

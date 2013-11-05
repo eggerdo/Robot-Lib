@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.concurrent.TimeoutException;
 
+import org.dobots.communication.control.RemoteControlReceiver;
+import org.dobots.communication.video.IRawVideoListener;
 import org.dobots.utilities.Utils;
 
 import robots.RobotType;
@@ -772,6 +774,18 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 	public boolean toggleInvertDrive() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void setRemoteReceiver(RemoteControlReceiver i_oReceiver) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setVideoListener(IRawVideoListener i_oVideoSender) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

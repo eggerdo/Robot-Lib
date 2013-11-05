@@ -11,4 +11,6 @@ public interface ICameraControlListener {
 	public void cameraDown();
 	public void cameraStop();
 
+	public void close();
+
 }

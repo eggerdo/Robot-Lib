@@ -1,7 +1,8 @@
-package robots.ctrl;
+package robots.factories;
 
 
 import robots.RobotType;
+import robots.ctrl.IRobotDevice;
 import robots.parrot.ctrl.Parrot;
 import robots.replicator.ctrl.Replicator;
 import robots.romo.ctrl.Romo;

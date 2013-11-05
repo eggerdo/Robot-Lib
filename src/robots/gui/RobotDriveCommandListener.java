@@ -98,5 +98,10 @@ public class RobotDriveCommandListener implements IDriveControlListener {
 	public void toggleInvertDrive() {
 		m_oRobot.toggleInvertDrive();
 	}
+
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+	}
 	
 }

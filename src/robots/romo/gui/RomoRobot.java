@@ -1,8 +1,9 @@
 package robots.romo.gui;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.dobots.R;
-import org.dobots.communication.control.ZmqRemoteControlHelper;
-import org.dobots.communication.control.ZmqRemoteControlSender;
+import org.dobots.communication.control.RemoteControlReceiver;
 import org.dobots.utilities.CameraPreview;
 import org.dobots.utilities.Utils;
 import org.dobots.utilities.log.ILogListener;
@@ -10,6 +11,8 @@ import org.dobots.utilities.log.LogTypes;
 
 import robots.RobotType;
 import robots.ctrl.ICameraControlListener;
+import robots.ctrl.IDriveControlListener;
+import robots.ctrl.RemoteControlHelper;
 import robots.gui.RobotInventory;
 import robots.gui.RobotView;
 import robots.gui.SensorGatherer;
@@ -32,13 +35,11 @@ public class RomoRobot extends RobotView implements ICameraControlListener, ILog
 	
 	private ImageButton m_btnCameraToggle;
 
-	private ZmqRemoteControlSender m_oZmqRemoteSender;
-	private ZmqRemoteControlHelper m_oRemoteCtrl;
-	private ZmqRemoteControlHelper m_oCameraCtrl;
+	private RemoteControlHelper m_oDriveCtrl;
+	private RemoteControlHelper m_oCameraCtrl;
 	
 	private RomoSensorGatherer m_oSensorGatherer;
 
-	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -49,21 +50,25 @@ public class RomoRobot extends RobotView implements ICameraControlListener, ILog
         oRomo.setDebug(true);
         oRomo.setLogListener(this);
 
-    	m_oZmqRemoteSender = new ZmqRemoteControlSender(oRomo.getID());
-
     	// remote control helper, handles ui buttons and sends commands over zmq
-		m_oRemoteCtrl = new ZmqRemoteControlHelper(m_oActivity);
-		m_oRemoteCtrl.setDriveControlListener(m_oZmqRemoteSender);
+		m_oDriveCtrl = new RemoteControlHelper(m_oActivity);
 		
 		// receives and handles incoming camera control commands
-		m_oCameraCtrl = new ZmqRemoteControlHelper();
+		m_oCameraCtrl = new RemoteControlHelper();
 		m_oCameraCtrl.setCameraControlListener(this);
-		m_oCameraCtrl.startReceiver("RomoUI");
-
+		
         m_oSensorGatherer = new RomoSensorGatherer(this, m_strRobotID);
 		m_oCamera.setFrameListener(m_oSensorGatherer);
 	}
 
+	public void setCameraCtrlReceiver(RemoteControlReceiver i_oCameraCtrlReceiver) {
+		m_oCameraCtrl.setReceiver(i_oCameraCtrlReceiver);
+	}
+
+	public void setDriveControlListener(IDriveControlListener i_oListener) {
+		m_oDriveCtrl.setDriveControlListener(i_oListener);
+	}
+	
 	@Override
 	protected void setProperties(RobotType i_eRobot) {
 
@@ -92,8 +97,8 @@ public class RomoRobot extends RobotView implements ICameraControlListener, ILog
 	@Override
 	public void onDestroy() {
 		m_oCamera.stopCamera();
-		m_oRemoteCtrl.close();
-		m_oZmqRemoteSender.close();
+		m_oDriveCtrl.close();
+		m_oCameraCtrl.close();
 		
 		if (m_bOwnsRobot) {
 			RobotInventory.getInstance().removeRobot(m_strRobotID);
@@ -214,6 +219,11 @@ public class RomoRobot extends RobotView implements ICameraControlListener, ILog
 	public void cameraStop() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
 	}
 
 }
