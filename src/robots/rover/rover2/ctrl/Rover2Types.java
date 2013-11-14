@@ -1,6 +1,6 @@
 package robots.rover.rover2.ctrl;
 
-import robots.rover.ctrl.RoverBaseTypes;
+import robots.rover.base.ctrl.RoverBaseTypes;
 
 public class Rover2Types extends RoverBaseTypes {
 

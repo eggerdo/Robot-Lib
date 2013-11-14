@@ -1,7 +1,6 @@
 package robots.piratedotty.gui;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.dobots.R;
 import org.dobots.communication.control.ZmqRemoteControlHelper;
@@ -9,21 +8,18 @@ import org.dobots.communication.control.ZmqRemoteControlSender;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.CameraPreview;
 import org.dobots.utilities.Utils;
-import org.dobots.utilities.log.AndroidLogListener;
+import org.dobots.utilities.log.AndroidLogger;
 
 import robots.RobotType;
 import robots.ctrl.ICameraControlListener;
-import robots.ctrl.RemoteControlHelper;
+import robots.gui.BaseBluetooth;
 import robots.gui.BluetoothRobot;
 import robots.gui.IConnectListener;
-import robots.gui.RobotDriveCommandListener;
 import robots.gui.RobotInventory;
 import robots.gui.SensorGatherer;
 import robots.piratedotty.ctrl.PirateDotty;
 import robots.piratedotty.ctrl.PirateDottyTypes;
-import robots.romo.gui.RomoSensorGatherer;
 import android.bluetooth.BluetoothDevice;
-import android.graphics.Movie;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Looper;
@@ -44,8 +40,9 @@ public class PirateDottyRobot extends BluetoothRobot implements ICameraControlLi
 	private static final int CAMERA_ID = REMOTE_CONTROL_ID + 1;
 	private static final int CAMERA_DISP_ID = CAMERA_ID + 1;
 
-	private static final int REMOTE_CTRL_GRP = GENERAL_GRP + 1;
-	private static final int CAMERA_CTRL_GRP = REMOTE_CTRL_GRP + 1;
+	private static final int CONTROL_GRP = GENERAL_GRP + 1;
+//	private static final int REMOTE_CTRL_GRP = GENERAL_GRP + 1;
+	private static final int CAMERA_CTRL_GRP = CONTROL_GRP + 1;
 	
 	private PirateDotty m_oPirateDotty;
 
@@ -59,10 +56,6 @@ public class PirateDottyRobot extends BluetoothRobot implements ICameraControlLi
 	private ZmqRemoteControlHelper m_oRemoteCtrl;
 	private ZmqRemoteControlHelper m_oCameraCtrl;
 	
-	private double m_dblSpeed;
-
-	private RobotDriveCommandListener m_oRemoteListener;
-
 	private boolean m_bCameraOn = true;
 	
 	public PirateDottyRobot(BaseActivity i_oOwner) {
@@ -83,9 +76,7 @@ public class PirateDottyRobot extends BluetoothRobot implements ICameraControlLi
         
     	m_oPirateDotty = (PirateDotty) getRobot();
     	m_oPirateDotty.setHandler(m_oUiHandler);
-    	m_oPirateDotty.setLogListener(new AndroidLogListener());
-
-		m_dblSpeed = m_oPirateDotty.getBaseSped();
+    	m_oPirateDotty.setLogListener(new AndroidLogger());
 
     	m_oZmqRemoteSender = new ZmqRemoteControlSender(m_oPirateDotty.getID());
 
@@ -163,8 +154,8 @@ public class PirateDottyRobot extends BluetoothRobot implements ICameraControlLi
 		super.onCreateOptionsMenu(menu);
 
 //		menu.add(REMOTE_CTRL_GRP, ACCEL_ID, ACCEL_ID, "Accelerometer");
-		menu.add(GENERAL_GRP, REMOTE_CONTROL_ID, REMOTE_CONTROL_ID, "Remote Control");
-		menu.add(GENERAL_GRP, CAMERA_ID, CAMERA_ID, "Camera");
+		menu.add(CONTROL_GRP, REMOTE_CONTROL_ID, REMOTE_CONTROL_ID, "Remote Control");
+		menu.add(CONTROL_GRP, CAMERA_ID, CAMERA_ID, "Camera");
 		menu.add(CAMERA_CTRL_GRP, CAMERA_DISP_ID, CAMERA_DISP_ID, "Display Camera");
 		
 		return true;
@@ -174,8 +165,8 @@ public class PirateDottyRobot extends BluetoothRobot implements ICameraControlLi
     public boolean onPrepareOptionsMenu(Menu menu) {
     	super.onPrepareOptionsMenu(menu);
     	
-//    	menu.setGroupVisible(REMOTE_CTRL_GRP, m_oRemoteCtrl.isControlEnabled());
-    	menu.setGroupVisible(CAMERA_CTRL_GRP, m_bCameraOn );
+    	menu.setGroupVisible(CONTROL_GRP, m_oPirateDotty.isConnected());
+    	menu.setGroupVisible(CAMERA_CTRL_GRP, m_oPirateDotty.isConnected() && m_bCameraOn );
 
 //    	Utils.updateOnOffMenuItem(menu.findItem(ACCEL_ID), m_bAccelerometer);
     	Utils.updateOnOffMenuItem(menu.findItem(REMOTE_CONTROL_ID), m_oRemoteCtrl.isControlEnabled());
@@ -235,7 +226,6 @@ public class PirateDottyRobot extends BluetoothRobot implements ICameraControlLi
 	@Override
 	protected void onConnect() {
 		updateButtons(true);
-//        m_oRemoteCtrl.setRemoteControl(true);
 	}
 	
 	@Override
@@ -251,19 +241,19 @@ public class PirateDottyRobot extends BluetoothRobot implements ICameraControlLi
 	
 	@Override
 	public void connect(BluetoothDevice i_oDevice) {
-//		if (m_oBTHelper.initBluetooth()) {
-			m_strAddress = i_oDevice.getAddress();
-			showConnectingDialog();
-			
-			if (m_oPirateDotty.getConnection() != null) {
-				try {
-					m_oPirateDotty.getConnection().destroyConnection();
-				}
-				catch (IOException e) { }
+		m_strAddress = i_oDevice.getAddress();
+		showConnectingDialog();
+		
+		if (m_oPirateDotty.getConnection() != null) {
+			try {
+				m_oPirateDotty.getConnection().close();
 			}
-			m_oPirateDotty.setConnection(new PirateDottyBluetooth(i_oDevice));
-			m_oPirateDotty.connect();
-//		}
+			catch (IOException e) { }
+		}
+		BaseBluetooth connection = new BaseBluetooth(i_oDevice, PirateDottyTypes.PIRATEDOTTY_UUID);
+		connection.setReceiveHandler(m_oUiHandler);
+		m_oPirateDotty.setConnection(connection);
+		m_oPirateDotty.connect();
 	}
 
 	public static void connectToPirateDotty(final BaseActivity m_oOwner, PirateDotty i_oPirateDotty, BluetoothDevice i_oDevice, final IConnectListener i_oConnectListener) {
@@ -283,7 +273,9 @@ public class PirateDottyRobot extends BluetoothRobot implements ICameraControlLi
 		}
 
 		i_oPirateDotty.setHandler(m_oRobot.getUIHandler());
-		i_oPirateDotty.setConnection(new PirateDottyBluetooth(i_oDevice));
+		BaseBluetooth connection = new BaseBluetooth(i_oDevice, PirateDottyTypes.PIRATEDOTTY_UUID);
+		connection.setReceiveHandler(m_oRobot.getUIHandler());
+		i_oPirateDotty.setConnection(connection);
 		i_oPirateDotty.connect();
 	}
 
@@ -324,20 +316,17 @@ public class PirateDottyRobot extends BluetoothRobot implements ICameraControlLi
 
 	@Override
 	public void cameraUp() {
-		// TODO Auto-generated method stub
-		
+		// NOT APPLICABLE FOR THIS ROBOT
 	}
 
 	@Override
 	public void cameraDown() {
-		// TODO Auto-generated method stub
-		
+		// NOT APPLICABLE FOR THIS ROBOT
 	}
 
 	@Override
 	public void cameraStop() {
-		// TODO Auto-generated method stub
-		
+		// NOT APPLICABLE FOR THIS ROBOT
 	}
 
 }

@@ -203,7 +203,7 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 				@Override
 				public void onClick(View v) {
 					m_bControl = !m_bControl;
-					enableControl(m_bControl);
+					enableRobotControl(m_bControl);
 					showRemoteControl(m_bControl);
 				}
 			});
@@ -271,6 +271,9 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 	
 	public void showRemoteControl(boolean visible) {
 		Utils.showLayout(m_oRemoteControl, visible);
+		if (m_bJoystickControl) {
+			Utils.showView(m_oJoystick, visible);
+		}
 	}
 	
 	private void updateControlType() {
@@ -449,8 +452,14 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 		m_oRemoteControlListener.onMove(i_oMove);
 	}
 
-	public void enableControl(boolean i_bEnable) {
+	public void enableRobotControl(boolean i_bEnable) {
 		m_oRemoteControlListener.enableControl(i_bEnable);
+	}
+	
+	public void setRemoteControl(boolean i_bOn) {
+		m_bControl = i_bOn;
+		enableRobotControl(i_bOn);
+		showRemoteControl(i_bOn);
 	}
 	
 	public boolean isControlEnabled() {

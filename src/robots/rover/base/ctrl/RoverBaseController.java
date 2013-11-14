@@ -1,4 +1,4 @@
-package robots.rover.ctrl;
+package robots.rover.base.ctrl;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -15,7 +15,7 @@ import org.dobots.utilities.log.Loggable;
 
 import android.util.Log;
 
-import robots.rover.ctrl.RoverBaseTypes.RoverParameters;
+import robots.rover.base.ctrl.RoverBaseTypes.RoverParameters;
 
 public abstract class RoverBaseController extends Loggable {
 

@@ -6,7 +6,7 @@ import org.dobots.communication.video.ZmqVideoSender;
 
 import robots.RobotType;
 import robots.ctrl.ICameraControlListener;
-import robots.rover.ctrl.RoverBase;
+import robots.rover.base.ctrl.RoverBase;
 
 public class Rover2 extends RoverBase implements ICameraControlListener {
 

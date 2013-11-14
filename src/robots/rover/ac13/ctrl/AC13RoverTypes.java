@@ -1,6 +1,6 @@
 package robots.rover.ac13.ctrl;
 
-import robots.rover.ctrl.RoverBaseTypes;
+import robots.rover.base.ctrl.RoverBaseTypes;
 
 public class AC13RoverTypes extends RoverBaseTypes {
 

@@ -4,11 +4,15 @@ import java.util.UUID;
 
 import org.dobots.utilities.log.Loggable;
 
+import android.os.Handler;
+
 
 public abstract class BaseRobot extends Loggable implements IRobotDevice {
 
 	private String m_strID;
-	
+
+	protected Handler m_oUiHandler;
+
 	public BaseRobot() {
 		m_strID = getType().toString() + " " + UUID.randomUUID();
 		m_strID = m_strID.replaceAll(" ", "_");
@@ -16,6 +20,10 @@ public abstract class BaseRobot extends Loggable implements IRobotDevice {
 	
 	public String getID() {
 		return m_strID;
+	}
+
+	public void setHandler(Handler i_oHandler) {
+		m_oUiHandler = i_oHandler;
 	}
 	
 	protected double capSpeed(double io_dblSpeed) {

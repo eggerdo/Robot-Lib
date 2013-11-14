@@ -1,4 +1,4 @@
-package robots.rover.gui;
+package robots.rover.base.gui;
 
 import org.dobots.R;
 import org.dobots.communication.control.ZmqRemoteControlHelper;
@@ -12,8 +12,8 @@ import robots.gui.IConnectListener;
 import robots.gui.SensorGatherer;
 import robots.gui.WifiRobot;
 import robots.rover.ac13.gui.AC13RoverRobot;
-import robots.rover.ctrl.RoverBase;
-import robots.rover.ctrl.RoverBaseTypes.VideoResolution;
+import robots.rover.base.ctrl.RoverBase;
+import robots.rover.base.ctrl.RoverBaseTypes.VideoResolution;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;

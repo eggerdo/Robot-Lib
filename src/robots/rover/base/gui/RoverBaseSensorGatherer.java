@@ -1,4 +1,4 @@
-package robots.rover.gui;
+package robots.rover.base.gui;
 
 import org.dobots.R;
 import org.dobots.utilities.BaseActivity;
@@ -7,8 +7,8 @@ import org.dobots.utilities.Utils;
 import org.zeromq.ZMQ.Socket;
 
 import robots.gui.SensorGatherer;
-import robots.rover.ctrl.RoverBase;
-import robots.rover.ctrl.RoverBaseTypes.VideoResolution;
+import robots.rover.base.ctrl.RoverBase;
+import robots.rover.base.ctrl.RoverBaseTypes.VideoResolution;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.Handler;

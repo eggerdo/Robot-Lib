@@ -1,13 +1,16 @@
 package robots.gui;
 
 import robots.RobotType;
+import robots.nxt.ctrl.NXTTypes;
 import robots.parrot.gui.ParrotRobot;
+import robots.piratedotty.ctrl.PirateDottyTypes;
+import robots.piratedotty.gui.PirateDottyRobot;
+import robots.replicator.gui.ReplicatorUI;
 import robots.romo.ctrl.RomoTypes;
 import robots.romo.gui.RomoRobot;
 import robots.rover.ac13.gui.AC13RoverRobot;
 import robots.rover.rover2.gui.Rover2Robot;
 import robots.spytank.gui.SpyTankRobot;
-import robots.replicator.gui.ReplicatorUI;
 
 //import org.dobots.robots.dotty.DottyTypes;
 //import org.dobots.robots.nxt.NXTTypes;
@@ -49,6 +52,8 @@ public class RobotViewFactory {
 			return ParrotRobot.class;
 		case RBT_REPLICATOR:
 			return ReplicatorUI.class;
+		case RBT_PIRATEDOTTY:
+			return PirateDottyRobot.class;
 		default:
 			return null;
 //			return UnimplementedRobot.class;
@@ -59,8 +64,8 @@ public class RobotViewFactory {
 		switch (i_eRobot) {
 //		case RBT_ROOMBA:
 //			return RoombaTypes.MAC_FILTER;
-//		case RBT_NXT:
-//			return NXTTypes.MAC_FILTER;
+		case RBT_NXT:
+			return NXTTypes.MAC_FILTER;
 //		case RBT_DOTTY:
 //			return DottyTypes.MAC_FILTER;
 //		case RBT_PARROT:
@@ -73,6 +78,8 @@ public class RobotViewFactory {
 //			return AC13RoverTypes.SSID_FILTER;
 		case RBT_ROMO:
 			return RomoTypes.SSID_FILTER;
+		case RBT_PIRATEDOTTY:
+			return PirateDottyTypes.MAC_FILTER;
 		default:
 			return "";
 		}

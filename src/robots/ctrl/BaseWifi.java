@@ -27,7 +27,6 @@ public abstract class BaseWifi extends Thread {
 	protected boolean m_bConnected = false;
 	protected boolean m_bStopped = false;
 	
-	protected String m_strRobotName = "";
 	protected String m_strSSID_Filter = "";
 	
 	protected String m_strAddress = "";

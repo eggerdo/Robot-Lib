@@ -31,8 +31,6 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 
 	private ARDrone m_oController;
 
-	private Handler m_oUiHandler;
-
 	private boolean m_bConnected = false;
 
 	private double m_dblBaseSpeed = 40.0;
@@ -51,10 +49,6 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 		m_oInstance = this;
 		
 		m_oRepeater = new MoveRepeater(this, 100);
-	}
-
-	public void setHandler(Handler i_oHandler) {
-		m_oUiHandler = i_oHandler;
 	}
 
 	@Override

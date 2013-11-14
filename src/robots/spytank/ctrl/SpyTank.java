@@ -39,6 +39,8 @@ public class SpyTank extends DifferentialRobot implements ICameraControlListener
 	}
 
 	public void setHandler(Handler m_oUiHandler) {
+		super.setHandler(m_oUiHandler);
+		
 		m_oController.setReceiveHandler(m_oUiHandler);
 	}
 

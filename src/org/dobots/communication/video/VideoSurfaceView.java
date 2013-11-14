@@ -20,6 +20,7 @@ package org.dobots.communication.video;
 
 import java.io.ByteArrayInputStream;
 
+import org.dobots.utilities.Utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -30,6 +31,7 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceView;
+import android.widget.FrameLayout.LayoutParams;
 
 public class VideoSurfaceView extends SurfaceView implements IVideoListener, IRawVideoListener {
 
@@ -182,10 +184,10 @@ public class VideoSurfaceView extends SurfaceView implements IVideoListener, IRa
 		mDispWidth = getWidth();
 		mDispHeight = getHeight();
 
-		// if height or width is 0 then the surface was not created yet (or the
+		// if height and width is 0 then the surface was not created yet (or the
 		// view has wrong layout parameters). in any case we keep trying to
 		// initialize the sizes.
-		if ((mDispHeight & mDispWidth) == 0) {
+		if ((mDispHeight == 0) && (mDispWidth == 0)) {
 			mSizeInitialized = false;
 			return;
 		}
@@ -205,7 +207,8 @@ public class VideoSurfaceView extends SurfaceView implements IVideoListener, IRa
 			
 			// if the height would be greater than the available height
 			// we rescale the width based on the height
-			if (mDispHeight > getHeight()) {
+			
+			if ((getHeight() != 0) && (mDispHeight > getHeight())) {
 				mDispHeight = getHeight();
 				mDispWidth = (int)(mBmpWidth * (double)mDispHeight / mBmpHeight);
 			}
@@ -218,6 +221,18 @@ public class VideoSurfaceView extends SurfaceView implements IVideoListener, IRa
 			mDispHeight = mBmpHeight;
 			mDispWidth = mBmpWidth;
 			
+		}
+		
+		// if only the height is 0, then the layout was set to wrap_content, so we force
+		// the view to take the height we calculated
+		if (getHeight() == 0) {
+			Utils.runAsyncUiTask(new Runnable() {
+				
+				@Override
+				public void run() {
+					setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, mDispHeight));
+				}
+			});
 		}
 		
 		mSizeInitialized = true;
@@ -243,6 +258,8 @@ public class VideoSurfaceView extends SurfaceView implements IVideoListener, IRa
 				// rotated around the center of the image, then it is scaled (if necessary)
 				canvas.scale((float) mDispWidth / mBmpWidth, (float) mDispHeight / mBmpHeight, centerX, centerY);
 				canvas.rotate(rotation, centerX, centerY);
+				
+				Log.d(TAG, "drawing video frame");
 				canvas.drawBitmap(bmp, left, top, mPainter);
 			} finally {
 				getHolder().unlockCanvasAndPost(canvas);

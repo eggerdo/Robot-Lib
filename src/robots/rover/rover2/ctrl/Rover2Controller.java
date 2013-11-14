@@ -15,7 +15,7 @@ import org.apache.http.util.ByteArrayBuffer;
 import org.dobots.utilities.Utils;
 
 import robots.rover.ac13.ctrl.AC13RoverTypes;
-import robots.rover.ctrl.RoverBaseController;
+import robots.rover.base.ctrl.RoverBaseController;
 import android.util.Log;
 
 public class Rover2Controller extends RoverBaseController {

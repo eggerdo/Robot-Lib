@@ -1,4 +1,4 @@
-package robots.rover.ctrl;
+package robots.rover.base.ctrl;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -15,8 +15,8 @@ import robots.ctrl.MoveRepeater;
 import robots.ctrl.MoveRepeater.MoveCommand;
 import robots.gui.MessageTypes;
 import robots.gui.RobotDriveCommandListener;
-import robots.rover.ctrl.RoverBaseTypes.RoverParameters;
-import robots.rover.ctrl.RoverBaseTypes.VideoResolution;
+import robots.rover.base.ctrl.RoverBaseTypes.RoverParameters;
+import robots.rover.base.ctrl.RoverBaseTypes.VideoResolution;
 import android.os.Handler;
 
 public abstract class RoverBase extends DifferentialRobot implements IMoveRepeaterListener {
@@ -26,8 +26,6 @@ public abstract class RoverBase extends DifferentialRobot implements IMoveRepeat
 	protected RoverBaseController m_oController;
 
 	protected VideoResolution m_eResolution = VideoResolution.res_unknown;
-
-	protected Handler m_oUiHandler;
 
 	protected ExecutorService executorSerive = Executors.newCachedThreadPool();
 
@@ -75,10 +73,6 @@ public abstract class RoverBase extends DifferentialRobot implements IMoveRepeat
 	}
 
 	public abstract void toggleInfrared();
-
-	public void setHandler(Handler i_oUiHandler) {
-		m_oUiHandler = i_oUiHandler;
-	}
 
 	public abstract boolean isStreaming();
 	public abstract boolean startVideo();

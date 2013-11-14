@@ -4,7 +4,7 @@ import org.dobots.communication.video.IRawVideoListener;
 import org.dobots.utilities.BaseActivity;
 
 import robots.rover.ac13.ctrl.AC13Rover;
-import robots.rover.gui.RoverBaseSensorGatherer;
+import robots.rover.base.gui.RoverBaseSensorGatherer;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;

@@ -1,62 +1,27 @@
 package robots.piratedotty.gui;
 
-import java.io.DataInputStream;
 import java.io.IOException;
-
-import org.dobots.utilities.Utils;
+import java.util.UUID;
 
 import robots.gui.BaseBluetooth;
 import robots.gui.MessageTypes;
-import robots.nxt.MsgTypes;
 import robots.piratedotty.ctrl.PirateDottyTypes;
 import android.bluetooth.BluetoothDevice;
 
 public class PirateDottyBluetooth extends BaseBluetooth {
-
-    private byte[] returnMessage;
-    
-    private DataInputStream dis;
-    
-	public PirateDottyBluetooth(BluetoothDevice i_oDevice) {
-		super(i_oDevice);
-		m_oUUID = PirateDottyTypes.PIRATEDOTTY_UUID;
-        m_strRobotName = "Dotty";
-	}
 	
-    @Override
-    public void run() {
+//	public PirateDottyBluetooth(BluetoothDevice i_oDevice) {
+//		super(i_oDevice, PirateDottyTypes.PIRATEDOTTY_UUID);
+//	}
+	
+	public PirateDottyBluetooth(BluetoothDevice i_oDevice, UUID uuid) {
+		super(i_oDevice, uuid);
+		// TODO Auto-generated constructor stub
+	}
 
-    	startUp();
-    	
-		while (connected && !m_bStopped) {
-			try {
-				returnMessage = receiveMessage();
-				if (returnMessage != null) {
-					dispatchMessage(returnMessage);
-				}
-			} catch (IOException e) {
-				if (connected) {
-                	connected = false;
-                	// TODO Auto-generated catch block
-                	e.printStackTrace();
-				}
-			}
-			
-		}
-
-    }
-    
-    @Override
-    public void connect() throws IOException {
-    	// TODO Auto-generated method stub
-    	super.connect();
-    	
-    	dis = new DataInputStream(m_oInStream);
-    }
-
-	private byte[] receiveMessage() throws IOException {
-		if (dis.available() > 0) {
-			String jsonString = dis.readLine();
+	protected byte[] receiveMessage() throws IOException {
+		if (m_oDataIn.available() > 0) {
+			String jsonString = m_oDataIn.readLine();
 			return jsonString.getBytes();
 		}
 		return null;
@@ -73,44 +38,4 @@ public class PirateDottyBluetooth extends BaseBluetooth {
 		}
 	}
 	
-	public void open() {
-		startThread();
-	}
-	
-	public void close() {
-		connected = false;
-		
-		try {
-			stopThread();
-			m_oSocket.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		m_oSocket = null;
-		m_oInStream = null;
-		m_oOutStream = null;
-	}
-	
-    private void dispatchMessage(byte[] message) {
-//    	switch (message[0]) {
-//    	case Robo40Types.HEADER:
-//    		switch (message[3]) {
-//            case Robo40Types.SENSOR_DATA:
-            	sendStateAndData(PirateDottyTypes.SENSOR_DATA, message);
-//            	break;
-//            }
-//    		break;
-//    	case Robo40Types.LOGGING:
-//    		sendStateAndData(Robo40Types.LOGGING, message);
-//        	break;
-//    	}
-        
-    }
-
-    private void sendStateAndData(int i_nCmd, byte[] i_rgbyData) {
-    	Utils.sendMessage(m_oReceiveHandler, i_nCmd, MsgTypes.assembleRawDataMsg(i_rgbyData));
-    }
-
 }

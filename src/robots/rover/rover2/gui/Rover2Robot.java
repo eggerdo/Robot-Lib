@@ -5,7 +5,7 @@ import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
 
 import robots.RobotType;
-import robots.rover.gui.RoverBaseRobot;
+import robots.rover.base.gui.RoverBaseRobot;
 import robots.rover.rover2.ctrl.Rover2;
 import robots.rover.rover2.ctrl.Rover2Types;
 import android.app.Activity;

@@ -4,72 +4,84 @@ import java.io.IOException;
 
 import org.dobots.utilities.log.Loggable;
 
-import robots.piratedotty.gui.PirateDottyBluetooth;
+import robots.ctrl.AsciiProtocolHandler;
+import robots.ctrl.AsciiProtocolHandler.IAsciiMessageHandler;
+import robots.gui.BaseBluetooth;
 
-import android.util.Log;
-
-public class PirateDottyController extends Loggable {
+public class PirateDottyController extends Loggable implements IAsciiMessageHandler {
 	
 	private static final String TAG = "PirateDottyController";
 	
-	private PirateDottyBluetooth m_oConnection;
+	private BaseBluetooth m_oConnection;
+
+	private AsciiProtocolHandler mProtocolHandler;
 	
-	public void setConnection(PirateDottyBluetooth i_oConnection) {
+	public void setConnection(BaseBluetooth i_oConnection) {
 		m_oConnection = i_oConnection;
+		mProtocolHandler = new AsciiProtocolHandler(i_oConnection, this);
 	}
 	
-	public PirateDottyBluetooth getConnection() {
+	public BaseBluetooth getConnection() {
 		return m_oConnection;
 	}
 	
 	public void destroyConnection() {
+		mProtocolHandler.close();
+		mProtocolHandler = null;
+		
 		if (m_oConnection != null) {
 			try {
-				m_oConnection.destroyConnection();
+				m_oConnection.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 		m_oConnection = null;
+		
 	}
 	
 	public boolean isConnected() {
 		if (m_oConnection != null) {
 			return m_oConnection.isConnected();
-		} else
+		} else {
 			return false;
+		}
 	}
 	
 	public void connect() {
 		m_oConnection.open();
+		mProtocolHandler.start();
 	}
 	
 	public void disconnect() {
 		byte[] message = PirateDottyTypes.getDisconnectPackage();
-		m_oConnection.sendMessage(message);
-		m_oConnection.close();
-		m_oConnection = null;
+		m_oConnection.send(message);
+		destroyConnection();
 	}
-	
-	
+
 	public void control(boolean i_bEnable) {
 		byte[] message = PirateDottyTypes.getControlCommandPackage(i_bEnable);
-		m_oConnection.sendMessage(message);
+		m_oConnection.send(message);
 	}
 	
 	public void drive(int i_nLeftVelocity, int i_nRightVelocity) {
 		debug(TAG, String.format("drive(%d, %d)", i_nLeftVelocity, i_nRightVelocity));
 		byte[] message = PirateDottyTypes.getDriveCommandPackage(i_nLeftVelocity, i_nRightVelocity);
-		m_oConnection.sendMessage(message);
+		m_oConnection.send(message);
 	}
 	
 	public void driveStop() {
 		debug(TAG, "driveStop()");
 		byte[] message = PirateDottyTypes.getDriveCommandPackage(0, 0);
-		m_oConnection.sendMessage(message);
+		m_oConnection.send(message);
 	}
-	
+
+	@Override
+	public void onMessage(String message) {
+		// TODO Auto-generated method stub
+	}
+
 //	public void requestSensorData() {
 //		byte[] message = PirateDottyTypes.getSensorRequestPackage();
 //		m_oConnection.sendMessage(message);

@@ -426,7 +426,7 @@ public class ParrotRobot extends WifiRobot implements IDriveControlListener {
 
 	@Override
 	public void enableControl(boolean i_bEnable) {
-		m_oRemoteCtrl.enableControl(i_bEnable);
+		m_oRemoteCtrl.enableRobotControl(i_bEnable);
 	}
 
 	@Override

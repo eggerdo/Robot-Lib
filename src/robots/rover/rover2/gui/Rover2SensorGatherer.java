@@ -9,7 +9,7 @@ import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
 import org.zeromq.ZMQ;
 
-import robots.rover.gui.RoverBaseSensorGatherer;
+import robots.rover.base.gui.RoverBaseSensorGatherer;
 import robots.rover.rover2.ctrl.Rover2;
 import android.graphics.Bitmap;
 import android.widget.TextView;

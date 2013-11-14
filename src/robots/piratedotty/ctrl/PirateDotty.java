@@ -1,32 +1,17 @@
 package robots.piratedotty.ctrl;
 
 import org.dobots.communication.control.ZmqRemoteControlHelper;
-import org.dobots.utilities.Utils;
 import org.dobots.utilities.log.ILogListener;
 
 import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
-import robots.gui.MessageTypes;
+import robots.gui.BaseBluetooth;
 import robots.gui.RobotDriveCommandListener;
-import robots.nxt.MsgTypes.RawDataMsg;
 import robots.piratedotty.gui.PirateDottyBluetooth;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 
 public class PirateDotty extends DifferentialRobot {
 
 	private PirateDottyController m_oController;
-
-	private Handler m_oUiHandler;
-
-	private boolean connected = false;
-
-	private int m_nWaitID;
-	private Object receiveEvent = this;
-	private boolean m_bMessageReceived = false;
-
-	private PirateDottyReceiver m_oReceiver;
 
 	private double m_dblBaseSpeed = 100.0;
 
@@ -40,81 +25,17 @@ public class PirateDotty extends DifferentialRobot {
 	// factor with the speed for each wheel
 	private int m_nInverted = 1;
 
-	private class PirateDottyReceiver extends Thread {
-		
-		private Handler m_oHandler;
-		
-		public Handler getHandler() {
-			return m_oHandler;
-		}
-
-		@Override
-		public void run() {
-		
-			Looper.prepare();
-			m_oHandler = new Handler() {
-				
-				@Override
-				public void handleMessage(Message msg) {
-
-					int messageID = msg.what;
-					
-					if (messageID == m_nWaitID) {
-						m_bMessageReceived = true;
-						synchronized(receiveEvent) {
-							receiveEvent.notify();
-						}
-					}
-					
-					switch (messageID) {
-					case MessageTypes.STATE_CONNECTED:
-						connected = true;
-						break;
-
-					case MessageTypes.STATE_CONNECTERROR_PAIRING:
-						m_oController.destroyConnection();
-						break;
-
-					case MessageTypes.STATE_RECEIVEERROR:
-					case MessageTypes.STATE_SENDERROR:
-						connected = false;
-						break;
-					
-					case PirateDottyTypes.SENSOR_DATA:
-						byte[] sensorMessage = ((RawDataMsg)msg.obj).rgbyRawData;
-//						DataPackage oData = PirateDottyTypes.assembleDataPackage(sensorMessage);
-//						msg.obj = PirateDottyTypes.assembleSensorData(oData.rgnSensor);
-					}
-
-					// forwards new message with same data to the ui handler
-					Utils.sendMessage(m_oUiHandler, messageID, msg.obj);
-//					m_oUiHandler.sendMessage(msg);
-				}
-				
-			};
-			Looper.loop();
-		}
-		
-	}
-	
 	public PirateDotty() {
 		super(PirateDottyTypes.AXLE_WIDTH, PirateDottyTypes.MIN_VELOCITY, PirateDottyTypes.MAX_VELOCITY, PirateDottyTypes.MIN_RADIUS, PirateDottyTypes.MAX_RADIUS);
-		
-		m_oReceiver = new PirateDottyReceiver();
-		m_oReceiver.start();
 
+		m_oController = new PirateDottyController();
+		
 		m_oRemoteListener = new RobotDriveCommandListener(this);
 		m_oRemoteHelper = new ZmqRemoteControlHelper();
 		m_oRemoteHelper.setDriveControlListener(m_oRemoteListener);
 		m_oRemoteHelper.startReceiver("PirateDotty");
-		
-		m_oController = new PirateDottyController();
 	}
 
-	public void setHandler(Handler i_oHandler) {
-		m_oUiHandler = i_oHandler;
-	}
-	
 	@Override
 	public void setLogListener(ILogListener listener) {
 		super.setLogListener(listener);
@@ -144,12 +65,11 @@ public class PirateDotty extends DifferentialRobot {
 		m_oController.destroyConnection();
 	}
 
-	public void setConnection(PirateDottyBluetooth i_oConnection) {
-		i_oConnection.setReceiveHandler(m_oReceiver.getHandler());
+	public void setConnection(BaseBluetooth i_oConnection) {
 		m_oController.setConnection(i_oConnection);
 	}
 	
-	public PirateDottyBluetooth getConnection() {
+	public BaseBluetooth getConnection() {
 		return m_oController.getConnection();
 	}
 
@@ -177,62 +97,6 @@ public class PirateDotty extends DifferentialRobot {
 		}
 	}
 
-//	private int capRadius(int io_nRadius) {
-//		io_nRadius = Math.min(io_nRadius, PirateDottyTypes.MAX_RADIUS);
-//		io_nRadius = Math.max(io_nRadius, -PirateDottyTypes.MAX_RADIUS);
-//
-//		return io_nRadius;
-//	}
-//	
-//	private int calculateVelocity(double i_dblSpeed) {
-//		return (int) Math.round(i_dblSpeed / 100.0 * PirateDottyTypes.MAX_VELOCITY);
-//	}
-//	
-//	private void calculateVelocity(double i_dblSpeed, int i_nRadius, int[] io_rgnVelocity) {
-//		int nBaseVelocity = calculateVelocity(i_dblSpeed);
-//		int nVelocity1, nVelocity2;
-//		
-//		// a high radius value received means that the robot should make a small/short turn
-//		// a low radius value received means that the robot should make a big/long turn
-//		// that means that the actual radius from which we calculate the velocities has to be
-//		// the opposite of the radius we receive
-//		int nCorrectedRadius = PirateDottyTypes.MAX_RADIUS - Math.abs(i_nRadius);
-//		
-//		if (i_nRadius == 0) {
-//			io_rgnVelocity[0] = nBaseVelocity;
-//			io_rgnVelocity[1] = nBaseVelocity;
-//		} else {
-//			nVelocity1 = (int) Math.round(nBaseVelocity * (nCorrectedRadius + m_dblAxleWidth) / (nCorrectedRadius + m_dblAxleWidth / 2.0));
-//			nVelocity2 = (int) Math.round(nBaseVelocity * nCorrectedRadius / (nCorrectedRadius + m_dblAxleWidth / 2.0));
-//			
-//			// we have to make sure that the higher velocity of the two wheels (velocity1) cannot be more than the MAX_VELOCITY
-//			// if it is more, we need to scale both values down so that the higher velocity equals MAX_VELOCITY. if the lower
-//			// velocity would fall below 0 we set it to 0
-//			int nOffset = nVelocity1 - PirateDottyTypes.MAX_VELOCITY;
-//			if (nOffset > 0) {
-//				nVelocity1 = 100;
-//				nVelocity2 = Math.max(nVelocity2 - nOffset, 0);
-//			}
-//			// for the same reason we have to make sure that the lower velocity of the two wheels cannot be less than 0. if the
-//			// higher velocity would go above 100 we set it to 100
-//			nOffset = -nVelocity2;
-//			if (nOffset > 0) {
-//				nVelocity1 = Math.min(nVelocity1 + nOffset, 100);
-//				nVelocity2 = 0;
-//			}
-//			
-//			if (i_nRadius > 0) {
-//				io_rgnVelocity[0] = nVelocity2;
-//				io_rgnVelocity[1] = nVelocity1;
-//			} else if (i_nRadius < 0) {
-//				io_rgnVelocity[0] = nVelocity1;
-//				io_rgnVelocity[1] = nVelocity2;
-//			}
-//		}
-//	}
-
-	
-	
 	@Override
 	public void moveForward(double i_dblSpeed) {
 		int nVelocity = calculateVelocity(i_dblSpeed);
@@ -337,7 +201,6 @@ public class PirateDotty extends DifferentialRobot {
 
 	@Override
 	public double getBaseSped() {
-		// TODO Auto-generated method stub
 		return m_dblBaseSpeed;
 	}
 
@@ -353,7 +216,7 @@ public class PirateDotty extends DifferentialRobot {
 
 	@Override
 	public boolean toggleInvertDrive() {
-		m_nInverted = m_nInverted  * -1;
+		m_nInverted *= -1;
 		return true;
 	}
 

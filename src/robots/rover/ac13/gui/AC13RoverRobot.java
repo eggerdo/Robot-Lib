@@ -7,7 +7,7 @@ import robots.RobotType;
 import robots.gui.RobotDriveCommandListener;
 import robots.rover.ac13.ctrl.AC13Rover;
 import robots.rover.ac13.ctrl.AC13RoverTypes;
-import robots.rover.gui.RoverBaseRobot;
+import robots.rover.base.gui.RoverBaseRobot;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
