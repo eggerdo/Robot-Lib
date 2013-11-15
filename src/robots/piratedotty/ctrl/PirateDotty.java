@@ -5,7 +5,7 @@ import org.dobots.utilities.log.ILogListener;
 
 import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
-import robots.gui.BaseBluetooth;
+import robots.gui.BluetoothConnection;
 import robots.gui.RobotDriveCommandListener;
 import robots.piratedotty.gui.PirateDottyBluetooth;
 
@@ -65,11 +65,11 @@ public class PirateDotty extends DifferentialRobot {
 		m_oController.destroyConnection();
 	}
 
-	public void setConnection(BaseBluetooth i_oConnection) {
+	public void setConnection(BluetoothConnection i_oConnection) {
 		m_oController.setConnection(i_oConnection);
 	}
 	
-	public BaseBluetooth getConnection() {
+	public BluetoothConnection getConnection() {
 		return m_oController.getConnection();
 	}
 

@@ -15,7 +15,7 @@ import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
 import android.os.Looper;
 
-public class BaseBluetooth {
+public class BluetoothConnection {
 
 //    public interface IMessageListener {
 //    	public void onMessage(byte[] message);
@@ -41,7 +41,7 @@ public class BaseBluetooth {
 	
 	protected String m_strMacAddress = "";
 	
-	public BaseBluetooth(BluetoothDevice i_oDevice, UUID uuid) {
+	public BluetoothConnection(BluetoothDevice i_oDevice, UUID uuid) {
 		this.m_oDevice = i_oDevice;
 		this.m_oUUID = uuid;
 		this.m_strMacAddress = i_oDevice.getAddress();
@@ -161,6 +161,7 @@ public class BaseBluetooth {
                 return;
             }
         }
+    	connected = false;
         m_oSocket = m_oDevice.createRfcommSocketToServiceRecord(m_oUUID);
     }
 
@@ -259,10 +260,7 @@ public class BaseBluetooth {
 		try {
 			m_oOutStream.write(buffer);
 		} catch (IOException e) {
-			connected = false;
-            sendState(MessageTypes.STATE_SENDERROR);
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			onWriteError(e);
 		}
 	}
 
@@ -270,10 +268,7 @@ public class BaseBluetooth {
 		try {
 			m_oDataOut.writeBytes(message);
 		} catch (IOException e) {
-			connected = false;
-            sendState(MessageTypes.STATE_SENDERROR);
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			onWriteError(e);
 		}
 	}
     
@@ -282,12 +277,7 @@ public class BaseBluetooth {
 			try {
 				return m_oDataIn.available() > 0;
 			} catch (IOException e) {
-				if (connected) {
-	            	connected = false;
-	                sendState(MessageTypes.STATE_RECEIVEERROR);
-	            }
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				onReadError(e);
 			}
 		}
 		return false;
@@ -298,12 +288,7 @@ public class BaseBluetooth {
 			try {
 				return m_oDataIn.readLine();
 			} catch (IOException e) {
-				if (connected) {
-	            	connected = false;
-	                sendState(MessageTypes.STATE_RECEIVEERROR);
-	            }
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				onReadError(e);
 			}
 		}
 		return null;
@@ -314,12 +299,7 @@ public class BaseBluetooth {
 			try {
 				return m_oDataIn.read();
 			} catch (IOException e) {
-				if (connected) {
-	            	connected = false;
-	                sendState(MessageTypes.STATE_RECEIVEERROR);
-	            }
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				onReadError(e);
 			}
 		}
 		return -1;
@@ -330,15 +310,28 @@ public class BaseBluetooth {
 			try {
 				return m_oDataIn.read(buffer, offset, length);
 			} catch (IOException e) {
-				if (connected) {
-	            	connected = false;
-	                sendState(MessageTypes.STATE_RECEIVEERROR);
-	            }
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				onReadError(e);
 			}
 		}
 		return -1;
 	}
 
+	public void onReadError(IOException e) {
+		if (connected) {
+        	connected = false;
+            sendState(MessageTypes.STATE_RECEIVEERROR);
+        }
+
+		e.printStackTrace();
+	}
+	
+	public void onWriteError(IOException e) {
+		if (connected) {
+        	connected = false;
+            sendState(MessageTypes.STATE_SENDERROR);
+        }
+
+		e.printStackTrace();
+	}
+	
 }

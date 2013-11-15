@@ -34,7 +34,7 @@ public class DoBotsMessageEncoder {
 		switch(HEADER_TYPE) {
 		case HEADER_BIG:
 			JSONObject header = new JSONObject();
-			header.put("id", message_id);
+			header.put("type", message_id);
 			header.put("tid", mTransactionID++);
 			header.put("timestamp", System.currentTimeMillis());
 			header.put("version", JSON_VERSION);

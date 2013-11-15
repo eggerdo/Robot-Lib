@@ -17,22 +17,17 @@
  *   along with MINDdroid.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-package robots.nxt.gui;
+package robots.nxt.ctrl;
 
 import java.io.IOException;
 
 import org.dobots.utilities.Utils;
 
 import robots.ctrl.ProtocolHandler;
-import robots.ctrl.ProtocolHandler.IMessageHandler;
-import robots.gui.BaseBluetooth;
-import robots.gui.MessageTypes;
+import robots.ctrl.ProtocolHandler.ICommHandler;
+import robots.gui.BluetoothConnection;
 import robots.nxt.MsgTypes;
-import robots.nxt.ctrl.LCPMessage;
-import robots.nxt.ctrl.NXTMessageTypes;
-import robots.nxt.ctrl.NXTTypes;
-import android.bluetooth.BluetoothDevice;
-import android.content.res.Resources;
+import android.os.Handler;
 
 /**
  * This class is for talking to a LEGO NXT robot via bluetooth.
@@ -40,15 +35,17 @@ import android.content.res.Resources;
  * Objects of this class can either be run as standalone thread or controlled
  * by the owners, i.e. calling the send/recive methods by themselves.
  */
-public class NXTBluetooth extends BaseBluetooth implements IMessageHandler<byte[]> {
+public class NXTController implements ICommHandler<byte[]> {
 
-    private Resources mResources;
-    
+	private BluetoothConnection m_oConnection;
+
     private byte[] returnMessage;
-    
+
+	private Handler mHandler;
+
     private class NXTProtocolHandler extends ProtocolHandler {
 
-		public NXTProtocolHandler(BaseBluetooth connection,	IMessageHandler handler) {
+		public NXTProtocolHandler(BluetoothConnection connection, ICommHandler handler) {
 			super(connection, handler);
 		}
 
@@ -63,42 +60,68 @@ public class NXTBluetooth extends BaseBluetooth implements IMessageHandler<byte[
 				returnMessage = receiveMessage();
 		        if ((returnMessage.length >= 2) && ((returnMessage[0] == LCPMessage.REPLY_COMMAND) ||
 		            (returnMessage[0] == LCPMessage.DIRECT_COMMAND_NOREPLY)))
-		            mHandler.onMessage(returnMessage);
+		            mMessageHandler.onMessage(returnMessage);
 			} catch (IOException e) {
-				if (connected) {
-	            	connected = false;
-	                sendState(MessageTypes.STATE_RECEIVEERROR);
-	            }
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				m_oConnection.onReadError(e);
 				return;
 			}
 		}
     }
     
-    private ProtocolHandler mProtocolHandler = new NXTProtocolHandler(this, this);
+    private ProtocolHandler mProtocolHandler = new NXTProtocolHandler(m_oConnection, this);
 
-    public NXTBluetooth(BluetoothDevice i_oDevice, Resources resources) {
-    	super(i_oDevice, NXTTypes.SERIAL_PORT_SERVICE_CLASS_UUID);
-        this.mResources = resources;
-    }
-    
-    @Override
-    public boolean open() {
-    	if (super.open()) {
-    		mProtocolHandler.start();
-    		return true;
-    	}
-    	return false;
-    }
-    
-    @Override
-    public void close() throws IOException {
-    	mProtocolHandler.close();
-    	super.close();
-    }
-    
-    public byte[] getReturnMessage() {
+	public void setHandler(Handler handler) {
+		mHandler = handler;
+		if (mHandler == null) {
+			int i = 0;
+		}
+	}
+	
+	public void setConnection(BluetoothConnection i_oConnection) {
+		m_oConnection = i_oConnection;
+		mProtocolHandler = new NXTProtocolHandler(m_oConnection, this);
+	}
+	
+	public BluetoothConnection getConnection() {
+		return m_oConnection;
+	}
+
+	public void destroyConnection() {
+		if (mProtocolHandler != null) {
+			mProtocolHandler.close();
+			mProtocolHandler = null;
+		}
+		
+		if (m_oConnection != null) {
+			try {
+				m_oConnection.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		m_oConnection = null;
+		
+	}
+
+	public void connect() {
+		m_oConnection.open();
+		mProtocolHandler.start();
+	}
+	
+	public void disconnect() {
+		destroyConnection();
+	}
+	
+	public boolean isConnected() {
+		if (m_oConnection != null) {
+			return m_oConnection.isConnected();
+		} else {
+			return false;
+		}
+	}
+
+	public byte[] getReturnMessage() {
         return returnMessage;
     }
 
@@ -107,14 +130,14 @@ public class NXTBluetooth extends BaseBluetooth implements IMessageHandler<byte[
      * @param message, the message as a byte array
      */
     public void sendMessage(byte[] message) throws IOException {
-        if (m_oOutStream == null)
+        if (m_oConnection == null)
             throw new IOException();
 
         // send message length
         int messageLength = message.length;
-        m_oOutStream.write(messageLength);
-        m_oOutStream.write(messageLength >> 8);
-        m_oOutStream.write(message, 0, message.length);
+        m_oConnection.getOutputStream().write(messageLength);
+        m_oConnection.getOutputStream().write(messageLength >> 8);
+        m_oConnection.getOutputStream().write(message, 0, message.length);
     }  
 
     /**
@@ -122,17 +145,17 @@ public class NXTBluetooth extends BaseBluetooth implements IMessageHandler<byte[
      * @return the message
      */                
     public byte[] receiveMessage() throws IOException {
-        if (m_oInStream == null)
+        if (m_oConnection == null)
             throw new IOException();
 
-        int length = m_oInStream.read();
+        int length = m_oConnection.getInputStream().read();
         if (length < 0) {
             throw new IOException();
         }
         
-        length = (m_oInStream.read() << 8) + length;
+        length = (m_oConnection.getInputStream().read() << 8) + length;
         byte[] returnMessage = new byte[length];
-        m_oInStream.read(returnMessage);
+        m_oConnection.getInputStream().read(returnMessage);
         return returnMessage;
     }    
 
@@ -142,24 +165,19 @@ public class NXTBluetooth extends BaseBluetooth implements IMessageHandler<byte[
      * @param message, the message as a byte array
      */
     private void sendMessageAndState(byte[] message) {
-        if (m_oOutStream == null)
+        if (m_oConnection == null)
             return;
 
         try {
             sendMessage(message);
         }
         catch (IOException e) {
-        	connected = false;
-            sendState(MessageTypes.STATE_SENDERROR);
+        	m_oConnection.onWriteError(e);
         }
     }
 
 	@Override
 	public void onMessage(byte[] message) {
-//		// TODO Auto-generated method stub
-//		
-//	}
-//    private void dispatchMessage(byte[] message) {
         switch (message[1]) {
 
             case LCPMessage.GET_OUTPUT_STATE:
@@ -327,7 +345,9 @@ public class NXTBluetooth extends BaseBluetooth implements IMessageHandler<byte[
     }
 
     private void sendStateAndData(int i_nCmd, byte[] i_rgbyData) {
-    	Utils.sendMessage(m_oUiHandler, i_nCmd, MsgTypes.assembleRawDataMsg(i_rgbyData));
+    	if (mHandler != null) {
+    		Utils.sendMessage(mHandler, i_nCmd, MsgTypes.assembleRawDataMsg(i_rgbyData));
+    	}
     }
 
 }

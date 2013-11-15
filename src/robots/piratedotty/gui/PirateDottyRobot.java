@@ -12,7 +12,7 @@ import org.dobots.utilities.log.AndroidLogger;
 
 import robots.RobotType;
 import robots.ctrl.ICameraControlListener;
-import robots.gui.BaseBluetooth;
+import robots.gui.BluetoothConnection;
 import robots.gui.BluetoothRobot;
 import robots.gui.IConnectListener;
 import robots.gui.RobotInventory;
@@ -250,7 +250,7 @@ public class PirateDottyRobot extends BluetoothRobot implements ICameraControlLi
 			}
 			catch (IOException e) { }
 		}
-		BaseBluetooth connection = new BaseBluetooth(i_oDevice, PirateDottyTypes.PIRATEDOTTY_UUID);
+		BluetoothConnection connection = new BluetoothConnection(i_oDevice, PirateDottyTypes.PIRATEDOTTY_UUID);
 		connection.setReceiveHandler(m_oUiHandler);
 		m_oPirateDotty.setConnection(connection);
 		m_oPirateDotty.connect();
@@ -273,7 +273,7 @@ public class PirateDottyRobot extends BluetoothRobot implements ICameraControlLi
 		}
 
 		i_oPirateDotty.setHandler(m_oRobot.getUIHandler());
-		BaseBluetooth connection = new BaseBluetooth(i_oDevice, PirateDottyTypes.PIRATEDOTTY_UUID);
+		BluetoothConnection connection = new BluetoothConnection(i_oDevice, PirateDottyTypes.PIRATEDOTTY_UUID);
 		connection.setReceiveHandler(m_oRobot.getUIHandler());
 		i_oPirateDotty.setConnection(connection);
 		i_oPirateDotty.connect();

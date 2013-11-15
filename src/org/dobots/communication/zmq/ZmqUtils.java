@@ -2,7 +2,7 @@ package org.dobots.communication.zmq;
 
 import org.dobots.communication.msg.RoboCommands.BaseCommand;
 import org.dobots.communication.msg.RobotMessage;
-import org.dobots.communication.msg.SensorData;
+import org.dobots.communication.msg.SensorMessageData;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMsg;
 
@@ -23,7 +23,7 @@ public class ZmqUtils {
 //		oZMsg.send(i_oSocket);
 //	}
 	
-	public static void sendSensorData(SensorData data, ZMQ.Socket socket) {
+	public static void sendSensorData(SensorMessageData data, ZMQ.Socket socket) {
 		String strJSON = data.toJSONString();
 		send(data.getRobotID(), strJSON.getBytes(), socket);
 	}

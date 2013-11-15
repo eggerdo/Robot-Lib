@@ -2,7 +2,7 @@ package robots.gui;
 
 import java.util.concurrent.TimeoutException;
 
-public interface IBluetoothConnection {
+public interface IRobotConnection {
 	
 	public void send(byte[] buffer);
 	

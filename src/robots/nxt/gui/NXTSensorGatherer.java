@@ -3,13 +3,17 @@ package robots.nxt.gui;
 import java.util.EnumMap;
 
 import org.dobots.R;
+import org.dobots.communication.msg.SensorMessageData;
+import org.dobots.communication.sensors.ZmqSensorsReceiver;
+import org.dobots.communication.sensors.ZmqSensorsReceiver.ISensorDataListener;
+import org.dobots.communication.zmq.ZmqHandler;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
+import org.zeromq.ZMQ.Socket;
 
 import robots.gui.SensorGatherer;
 import robots.nxt.ctrl.LCPMessage;
 import robots.nxt.ctrl.NXT;
-import robots.nxt.ctrl.NXTMessageTypes;
 import robots.nxt.ctrl.NXTTypes;
 import robots.nxt.ctrl.NXTTypes.DistanceData;
 import robots.nxt.ctrl.NXTTypes.ENXTMotorID;
@@ -19,82 +23,55 @@ import robots.nxt.ctrl.NXTTypes.ENXTSensorType;
 import robots.nxt.ctrl.NXTTypes.MotorData;
 import robots.nxt.ctrl.NXTTypes.SensorData;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
-public class NXTSensorGatherer extends SensorGatherer {
+public class NXTSensorGatherer extends SensorGatherer implements ISensorDataListener {
 
+	private static final String TAG = "NxtSensorGatherer";
+	
 	private NXT m_oNxt;
 	
 	private boolean m_bDebug;
 	
 	private EnumMap<ENXTSensorID, ENXTSensorType> m_oSensorTypes;
-//	private EnumMap<ENXTSensorID, Boolean> m_oSensorEnabled;
-	
-//	private EnumMap<ENXTMotorID, Boolean> m_oMotorEnabled;
 	private EnumMap<ENXTMotorID, ENXTMotorSensorType> m_oMotorSensorTypes;
-	
+
+	private Socket m_oSensorsRecvSocket;
+
+	private ZmqSensorsReceiver m_oSensorsReceiver;
 	
 	public NXTSensorGatherer(BaseActivity i_oActivity, NXT i_oNxt) {
 		super(i_oActivity, "NxtSensorGatherer");
 		m_oNxt = i_oNxt;
 		
-//		m_oGUIUpdater = new UpdateSensorDataTask();
 		m_oSensorTypes = new EnumMap<ENXTSensorID, ENXTSensorType>(ENXTSensorID.class);
-//		m_oSensorEnabled = new EnumMap<ENXTSensorID, Boolean>(ENXTSensorID.class);
-		
-//		m_oMotorEnabled = new EnumMap<NXTTypes.ENXTMotorID, Boolean>(ENXTMotorID.class);
 		m_oMotorSensorTypes = new EnumMap<NXTTypes.ENXTMotorID, NXTTypes.ENXTMotorSensorType>(ENXTMotorID.class);
+		
+		m_oSensorsRecvSocket = ZmqHandler.getInstance().obtainSensorsRecvSocket();
+		m_oSensorsRecvSocket.subscribe(m_oNxt.getID().getBytes());
+		m_oSensorsReceiver = new ZmqSensorsReceiver(ZmqHandler.getInstance().getContext().getContext(), m_oSensorsRecvSocket, "NxtSensorsReceiver");
+		m_oSensorsReceiver.setSensorDataListener(this);
+		m_oSensorsReceiver.start();
 		
 		// set up the maps
 		initialize();
-		
-//		start();
 	}
 		
 	public void initialize() {
 		// set up the maps
 		for (ENXTSensorID sensor : ENXTSensorID.values()) {
 			m_oSensorTypes.put(sensor, ENXTSensorType.sensType_None);
-//			m_oSensorEnabled.put(sensor, false);
 		}
 		
 		for (ENXTMotorID motor : ENXTMotorID.values()) {
-//			m_oMotorEnabled.put(motor, false);
 			m_oMotorSensorTypes.put(motor, ENXTMotorSensorType.motor_degreee);
 		}
 	}
 	
-	@Override
-	protected void execute() {
-		Utils.waitSomeTime(100);
-		
-//		if (m_oNxt.isConnected()) {
-//			for (ENXTSensorID sensor : m_oSensorEnabled.keySet()) {
-//				if (m_oSensorEnabled.get(sensor) && 
-//					!m_oSensorRequestActive.get(sensor) &&
-//					m_oSensorTypes.get(sensor) != ENXTSensorType.sensType_None) {
-//						ENXTSensorType eType = m_oSensorTypes.get(sensor);
-//						m_oNxt.requestSensorData(sensor, eType);
-//						m_oSensorRequestActive.put(sensor, true);
-//				}
-//			}
-//			
-//			for (ENXTMotorID motor : m_oMotorEnabled.keySet()) {
-//				if (m_oMotorEnabled.get(motor) &&
-//					!m_oMotorRequestActive.get(motor)) {
-//						m_oNxt.requestMotorData(motor);
-//						m_oMotorRequestActive.put(motor, true);
-//				}
-//			}
-//		}
-	}
-	
-	public void sendMessage(int message, Object data) {
-		Utils.sendMessage(m_oSensorDataUiUpdater, message, data);
-	}
-
 	public void setSensorType(ENXTSensorID i_eSensor, ENXTSensorType i_eSensorType) {
 		if (m_oNxt.isConnected()) {
 			m_oNxt.setSensorType(i_eSensor, i_eSensorType);
@@ -131,35 +108,34 @@ public class NXTSensorGatherer extends SensorGatherer {
 		showMotor(i_eMotor, i_bEnabled);
 	}
 
-	/**
-	 * Receive messages from the BTCommunicator
-	 */
-	final Handler m_oSensorDataUiUpdater = new Handler() {
-		@Override
-		public void handleMessage(Message myMessage) {
-			switch(myMessage.what) {
-			case NXTMessageTypes.SENSOR_DATA_RECEIVED:
-//				SensorData oSensorData = m_oNxt.getReceivedSensorData();
-				SensorData oSensorData = (SensorData) myMessage.obj;
-				updateGUI(oSensorData);
-				break;
-			case NXTMessageTypes.DISTANCE_DATA_RECEIVED:
-//				DistanceData oDistanceData = m_oNxt.getReceivedDistanceData();
-				DistanceData oDistanceData = (DistanceData) myMessage.obj;
-				updateGUI(oDistanceData);
-				break;
-			case NXTMessageTypes.MOTOR_DATA_RECEIVED:
-//				MotorData oMotorData = m_oNxt.getReceivedMotorData();
-				MotorData oMotorData = (MotorData) myMessage.obj;
-				updateGUI(oMotorData);
-				break;
+	@Override
+	public void onSensorData(final SensorMessageData data) {
+		// to update the UI we need to execute the function
+		// in the main looper.
+		if (Looper.myLooper() != Looper.getMainLooper()) {
+			Utils.runAsyncUiTask(new Runnable() {
+				
+				@Override
+				public void run() {
+					onSensorData(data);
+				}
+			});
+		} else {
+			if (data.getSensorID().equals("sensor_data")) {
+				updateGUI(NXTTypes.assembleSensorData(data));
+			} else if (data.getSensorID().equals("motor_data")) {
+				updateGUI(NXTTypes.assembleMotorData(data));
+			} else if (data.getSensorID().equals("distance_data")) {
+				updateGUI(NXTTypes.assembleDistanceData(data));
 			}
 		}
-	};
+		
+	}
 	
 	private void updateGUI(MotorData i_oMotorData) {
 		int nOutputPort = i_oMotorData.nOutputPort;
-		
+		Log.d(TAG, "update " + nOutputPort);
+
 		ENXTMotorID eMotor;
 		int nResPowerSetpointID, nResTachoCountID, nResRotationCountID;
 		
@@ -211,6 +187,7 @@ public class NXTSensorGatherer extends SensorGatherer {
 	
 	private void updateGUI(DistanceData i_oDistanceData) {
 		int nInputPort = i_oDistanceData.nInputPort;
+		Log.d(TAG, "update " + nInputPort);
 
 		ENXTSensorID eSensor;
     	int nResRawID, nResNormID, nResScaleID, nResCalibID;
@@ -270,38 +247,34 @@ public class NXTSensorGatherer extends SensorGatherer {
 
 //		m_oSensorRequestActive.put(eSensor, false);
 	}
-	
+
 	private void updateGUI(SensorData i_oSensorData) {
 		int nInputPort = i_oSensorData.nInputPort;
-		
-		ENXTSensorID eSensor;
+		Log.d(TAG, "update " + nInputPort);
+
     	int nResRawID, nResNormID, nResScaleID, nResCalibID;
     	
     	// get resource id based on sensor id
-    	switch (nInputPort) {
-    	case 0:
-    		eSensor = ENXTSensorID.sens_sensor1;
+    	switch (ENXTSensorID.fromValue(nInputPort)) {
+    	case sens_sensor1:
     		nResScaleID = R.id.txtSensor1ScaleValue;
     		nResRawID 	= R.id.txtSensor1RawValue;
     		nResNormID 	= R.id.txtSensor1NormValue;
     		nResCalibID = R.id.txtSensor1CalibValue;
     		break;
-    	case 1:
-    		eSensor = ENXTSensorID.sens_sensor2;
+    	case sens_sensor2:
     		nResRawID 	= R.id.txtSensor2RawValue;
     		nResNormID 	= R.id.txtSensor2NormValue;
     		nResScaleID = R.id.txtSensor2ScaleValue;
     		nResCalibID = R.id.txtSensor2CalibValue;
     		break;
-    	case 2:
-    		eSensor = ENXTSensorID.sens_sensor3;
+    	case sens_sensor3:
     		nResRawID 	= R.id.txtSensor3RawValue;
     		nResNormID 	= R.id.txtSensor3NormValue;
     		nResScaleID = R.id.txtSensor3ScaleValue;
     		nResCalibID = R.id.txtSensor3CalibValue;
     		break;
-    	case 3:
-    		eSensor = ENXTSensorID.sens_sensor4;
+    	case sens_sensor4:
     		nResRawID 	= R.id.txtSensor4RawValue;
     		nResNormID 	= R.id.txtSensor4NormValue;
     		nResScaleID = R.id.txtSensor4ScaleValue;
@@ -342,6 +315,95 @@ public class NXTSensorGatherer extends SensorGatherer {
 
 //		m_oSensorRequestActive.put(eSensor, false);
 	}
+
+//	private void updateGUI(SensorData i_oSensorData) {
+//		int nInputPort = 0;
+//		try {
+//			nInputPort = i_oSensorData.getItem("input_port").getInt();
+//		} catch (JSONException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		} catch (SensorValueTypeException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//			return;
+//		}
+//		
+//		ENXTSensorID eSensor;
+//    	int nResRawID, nResNormID, nResScaleID, nResCalibID;
+//    	
+//    	// get resource id based on sensor id
+//    	switch (nInputPort) {
+//    	case 0:
+//    		eSensor = ENXTSensorID.sens_sensor1;
+//    		nResScaleID = R.id.txtSensor1ScaleValue;
+//    		nResRawID 	= R.id.txtSensor1RawValue;
+//    		nResNormID 	= R.id.txtSensor1NormValue;
+//    		nResCalibID = R.id.txtSensor1CalibValue;
+//    		break;
+//    	case 1:
+//    		eSensor = ENXTSensorID.sens_sensor2;
+//    		nResRawID 	= R.id.txtSensor2RawValue;
+//    		nResNormID 	= R.id.txtSensor2NormValue;
+//    		nResScaleID = R.id.txtSensor2ScaleValue;
+//    		nResCalibID = R.id.txtSensor2CalibValue;
+//    		break;
+//    	case 2:
+//    		eSensor = ENXTSensorID.sens_sensor3;
+//    		nResRawID 	= R.id.txtSensor3RawValue;
+//    		nResNormID 	= R.id.txtSensor3NormValue;
+//    		nResScaleID = R.id.txtSensor3ScaleValue;
+//    		nResCalibID = R.id.txtSensor3CalibValue;
+//    		break;
+//    	case 3:
+//    		eSensor = ENXTSensorID.sens_sensor4;
+//    		nResRawID 	= R.id.txtSensor4RawValue;
+//    		nResNormID 	= R.id.txtSensor4NormValue;
+//    		nResScaleID = R.id.txtSensor4ScaleValue;
+//    		nResCalibID = R.id.txtSensor4CalibValue;
+//    		break;
+//		default:
+//			return;
+//    	}
+//    	
+//    	String strScaledValue, strNormalizedValue, strCalibratedValue, strRawValue;
+//    	
+//		String unknown = "????";
+//		strScaledValue = unknown;
+//		strNormalizedValue = unknown;
+//		strCalibratedValue = unknown;
+//		strRawValue = unknown;
+//    	try {
+//			if (i_oSensorData.getItem("status").getInt() == LCPMessage.SUCCESS) {
+//				strScaledValue = String.valueOf(i_oSensorData.getItem("scaled_value").getInt());
+//				strNormalizedValue = String.valueOf(i_oSensorData.getItem("normalized_value").getInt());
+//				strCalibratedValue = String.valueOf(i_oSensorData.getItem("calibrated_value").getInt());
+//				strRawValue = String.valueOf(i_oSensorData.getItem("raw_value").getInt());
+//			}
+//		} catch (JSONException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (SensorValueTypeException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//    	TextView txtScaleValue = (TextView) m_oActivity.findViewById(nResScaleID);
+//        txtScaleValue.setText(strScaledValue);
+//
+//    	if (m_bDebug) {
+//	    	TextView txtNormValue = (TextView) m_oActivity.findViewById(nResNormID);
+//	    	txtNormValue.setText(strNormalizedValue);
+//	
+//	    	TextView txtRawValue = (TextView) m_oActivity.findViewById(nResRawID);
+//	    	txtRawValue.setText(strRawValue);
+//	
+//	    	TextView txtCalibValue = (TextView) m_oActivity.findViewById(nResCalibID);
+//	    	txtCalibValue.setText(strCalibratedValue);
+//    	}
+//
+////		m_oSensorRequestActive.put(eSensor, false);
+//	}
 	
 
 	public void showSensor(ENXTSensorID i_eSensor, boolean i_bShow) {

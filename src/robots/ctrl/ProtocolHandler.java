@@ -1,27 +1,29 @@
 package robots.ctrl;
 
-import robots.gui.BaseBluetooth;
+import robots.gui.BluetoothConnection;
 
 public abstract class ProtocolHandler extends Thread {
 
-	public interface IMessageHandler<T> {
+	public interface ICommHandler<T> {
 		public void onMessage(T message);
 	}
 	
-	protected IMessageHandler mHandler = null;
+	protected ICommHandler mMessageHandler = null;
 	
-	protected BaseBluetooth mConnection = null;
+	protected BluetoothConnection mConnection = null;
 	
 	private boolean mStopped = false;
 	
-	public ProtocolHandler(BaseBluetooth connection, IMessageHandler handler) {
+	public ProtocolHandler(BluetoothConnection connection, ICommHandler handler) {
 		mConnection = connection;
-		mHandler = handler;
+		mMessageHandler = handler;
 	}
 	
 	public void run() {
-		while (mConnection.isConnected() && !mStopped) {
-			execute();
+		while (!mStopped) {
+			if (mConnection.isConnected()) {
+				execute();
+			}
 		}
 	}
 	

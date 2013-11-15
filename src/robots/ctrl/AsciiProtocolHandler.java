@@ -1,6 +1,6 @@
 package robots.ctrl;
 
-import robots.gui.BaseBluetooth;
+import robots.gui.BluetoothConnection;
 
 public class AsciiProtocolHandler extends Thread {
 
@@ -10,11 +10,11 @@ public class AsciiProtocolHandler extends Thread {
 	
 	private IAsciiMessageHandler mHandler = null;
 	
-	private BaseBluetooth mConnection = null;
+	private BluetoothConnection mConnection = null;
 	
 	private boolean mStopped = false;
 	
-	public AsciiProtocolHandler(BaseBluetooth connection, IAsciiMessageHandler handler) {
+	public AsciiProtocolHandler(BluetoothConnection connection, IAsciiMessageHandler handler) {
 		mConnection = connection;
 		mHandler = handler;
 	}

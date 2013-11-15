@@ -6,28 +6,30 @@ import org.dobots.utilities.log.Loggable;
 
 import robots.ctrl.AsciiProtocolHandler;
 import robots.ctrl.AsciiProtocolHandler.IAsciiMessageHandler;
-import robots.gui.BaseBluetooth;
+import robots.gui.BluetoothConnection;
 
 public class PirateDottyController extends Loggable implements IAsciiMessageHandler {
 	
 	private static final String TAG = "PirateDottyController";
 	
-	private BaseBluetooth m_oConnection;
+	private BluetoothConnection m_oConnection;
 
 	private AsciiProtocolHandler mProtocolHandler;
 	
-	public void setConnection(BaseBluetooth i_oConnection) {
+	public void setConnection(BluetoothConnection i_oConnection) {
 		m_oConnection = i_oConnection;
 		mProtocolHandler = new AsciiProtocolHandler(i_oConnection, this);
 	}
 	
-	public BaseBluetooth getConnection() {
+	public BluetoothConnection getConnection() {
 		return m_oConnection;
 	}
 	
 	public void destroyConnection() {
-		mProtocolHandler.close();
-		mProtocolHandler = null;
+		if (mProtocolHandler != null) {
+			mProtocolHandler.close();
+			mProtocolHandler = null;
+		}
 		
 		if (m_oConnection != null) {
 			try {

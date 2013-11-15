@@ -8,6 +8,7 @@ import org.dobots.utilities.Utils;
 
 import robots.RobotType;
 import robots.ctrl.RemoteControlHelper;
+import robots.gui.BluetoothConnection;
 import robots.gui.BluetoothRobot;
 import robots.gui.IConnectListener;
 import robots.gui.MessageTypes;
@@ -16,6 +17,7 @@ import robots.gui.RobotDriveCommandListener;
 import robots.gui.RobotInventory;
 import robots.gui.SensorGatherer;
 import robots.nxt.ctrl.NXT;
+import robots.nxt.ctrl.NXTController;
 import robots.nxt.ctrl.NXTMessageTypes;
 import robots.nxt.ctrl.NXTTypes;
 import robots.nxt.ctrl.NXTTypes.ENXTMotorID;
@@ -189,7 +191,9 @@ public class NXTRobot extends BluetoothRobot {
 			m_oNxt.disconnect();
 		}
 
-		m_oNxt.setConnection(new NXTBluetooth(i_oDevice, getResources()));
+		BluetoothConnection connection = new BluetoothConnection(i_oDevice, NXTTypes.SERIAL_PORT_SERVICE_CLASS_UUID);
+		connection.setReceiveHandler(m_oUiHandler);
+		m_oNxt.setConnection(connection);
 		m_oNxt.connect();
 	}
 	
@@ -210,7 +214,9 @@ public class NXTRobot extends BluetoothRobot {
 		}
 
 		i_oNxt.setHandler(m_oRobot.getUIHandler());
-		i_oNxt.setConnection(new NXTBluetooth(i_oDevice, m_oOwner.getResources()));
+		BluetoothConnection connection = new BluetoothConnection(i_oDevice, NXTTypes.SERIAL_PORT_SERVICE_CLASS_UUID);
+		connection.setReceiveHandler(m_oRobot.getUIHandler());
+		i_oNxt.setConnection(connection);
 		i_oNxt.connect();
 	}
 
@@ -297,26 +303,6 @@ public class NXTRobot extends BluetoothRobot {
 	public void onDisconnect() {
 		updateButtons(false);
 		m_oRemoteCtrl.resetLayout();
-	}
-	
-	@Override
-	public void handleUIMessage(Message msg) {
-		super.handleUIMessage(msg);
-		
-		switch (msg.what) {
-		case NXTMessageTypes.GET_INPUT_VALUES:
-			m_oSensorGatherer.sendMessage(NXTMessageTypes.SENSOR_DATA_RECEIVED, msg.obj);
-			break;
-			
-		case NXTMessageTypes.GET_DISTANCE:
-			m_oSensorGatherer.sendMessage(NXTMessageTypes.DISTANCE_DATA_RECEIVED, msg.obj);
-			break;
-			
-		case NXTMessageTypes.MOTOR_STATE:
-			m_oSensorGatherer.sendMessage(NXTMessageTypes.MOTOR_DATA_RECEIVED, msg.obj);
-			break;
-		
-		}
 	}
 	
 	@Override

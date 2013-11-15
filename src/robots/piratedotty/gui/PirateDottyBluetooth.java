@@ -3,12 +3,12 @@ package robots.piratedotty.gui;
 import java.io.IOException;
 import java.util.UUID;
 
-import robots.gui.BaseBluetooth;
+import robots.gui.BluetoothConnection;
 import robots.gui.MessageTypes;
 import robots.piratedotty.ctrl.PirateDottyTypes;
 import android.bluetooth.BluetoothDevice;
 
-public class PirateDottyBluetooth extends BaseBluetooth {
+public class PirateDottyBluetooth extends BluetoothConnection {
 	
 //	public PirateDottyBluetooth(BluetoothDevice i_oDevice) {
 //		super(i_oDevice, PirateDottyTypes.PIRATEDOTTY_UUID);

@@ -5,6 +5,7 @@ import org.dobots.utilities.BaseActivity;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMQ.Poller;
+import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMsg;
 
 import android.app.Activity;
@@ -37,6 +38,11 @@ public class ZmqHandler {
 	private String m_strVideoOutAddr;
 	private String m_strVideoInAddr;
 
+	private ZmqMessageHandler m_oSensorsHandler;
+	
+	private String m_strSensorsOutAddr;
+	private String m_strSensorsInAddr;
+	
 //	private String m_strVideoBase64OutAddr;
 //	private String m_strVideoBase64InAddr;
 
@@ -63,6 +69,9 @@ public class ZmqHandler {
 		m_oVideoHandler = new ZmqMessageHandler();
 //		m_oVideoBase64Handler = new ZmqMessageHandler();
 		setupVideoConnections();
+		
+		m_oSensorsHandler = new ZmqMessageHandler();
+		setupSensorsConnections();
 	}
 	
 	public static ZmqHandler initialize(BaseActivity i_oActivity) {
@@ -108,14 +117,14 @@ public class ZmqHandler {
 
 		m_strVideoOutAddr = ZmqTypes.VIDEO_ADDRESS + "/out";
 		ZMQ.Socket oVideoSendSocket = createSocket(ZMQ.PUB);
-		oVideoSendSocket.bind(m_strVideoOutAddr);
 		oVideoSendSocket.setHWM(1);
+		oVideoSendSocket.bind(m_strVideoOutAddr);
 
 		m_strVideoInAddr = ZmqTypes.VIDEO_ADDRESS + "/in";
 		ZMQ.Socket oVideoRecvSocket = createSocket(ZMQ.SUB);
+		oVideoRecvSocket.setHWM(1);
 		oVideoRecvSocket.bind(m_strVideoInAddr);
 		oVideoRecvSocket.subscribe("".getBytes());
-		oVideoRecvSocket.setHWM(1);
 
 		m_oVideoHandler.setupConnections(oVideoRecvSocket, oVideoSendSocket);
 		m_oVideoHandler.addIncomingMessageListener(new ZmqMessageListener() {
@@ -136,6 +145,30 @@ public class ZmqHandler {
 //		oVideoBase64RecvSocket.bind(m_strVideoBase64InAddr);
 
 //		m_oVideoBase64Handler.setupConnections(oVideoBase64RecvSocket, oVideoBase64SendSocket);
+		
+	}
+	
+	public void setupSensorsConnections() {
+
+		m_strSensorsOutAddr = ZmqTypes.SENSORS_ADDRESS + "/out";
+		ZMQ.Socket oSensorsSendSocket = createSocket(ZMQ.PUB);
+//		oSensorsSendSocket.setHWM(1);
+		oSensorsSendSocket.bind(m_strSensorsOutAddr);
+
+		m_strSensorsInAddr = ZmqTypes.SENSORS_ADDRESS + "/in";
+		ZMQ.Socket oSensorsRecvSocket = createSocket(ZMQ.SUB);
+//		oSensorsRecvSocket.setHWM(1);
+		oSensorsRecvSocket.bind(m_strSensorsInAddr);
+		oSensorsRecvSocket.subscribe("".getBytes());
+
+		m_oSensorsHandler.setupConnections(oSensorsRecvSocket, oSensorsSendSocket);
+		m_oSensorsHandler.addIncomingMessageListener(new ZmqMessageListener() {
+			
+			@Override
+			public void onMessage(ZMsg i_oMsg) {
+				m_oSensorsHandler.sendZmsg(i_oMsg);
+			}
+		});
 		
 	}
 	
@@ -209,6 +242,24 @@ public class ZmqHandler {
 		return socket;
 	}
 
+	public ZmqMessageHandler getSensorsHandler() {
+		return m_oSensorsHandler;
+	}
+
+	public ZMQ.Socket obtainSensorsSendSocket() {
+		ZMQ.Socket socket = createSocket(ZMQ.PUB);
+		socket.setHWM(1);
+		socket.connect(m_strSensorsInAddr);
+		return socket;
+	}
+	
+	public ZMQ.Socket obtainSensorsRecvSocket() {
+		ZMQ.Socket socket = createSocket(ZMQ.SUB);
+		socket.setHWM(1);
+		socket.connect(m_strSensorsOutAddr);
+		return socket;
+	}
+	
 //	public ZmqMessageHandler getVideoBase64Handler() {
 //		return m_oVideoBase64Handler;
 //	}
