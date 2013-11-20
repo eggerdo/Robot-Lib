@@ -20,20 +20,20 @@ public class AC13RoverRobot extends RoverBaseRobot {
 	public AC13RoverRobot(BaseActivity i_oOwner) {
 		super(i_oOwner);
 
-		RobotDriveCommandListener oListener = new RobotDriveCommandListener(getRobot());
+//		RobotDriveCommandListener oListener = new RobotDriveCommandListener(getRover());
 //		m_oRemoteCtrl = new RemoteControlHelper(m_oActivity, oListener);
 //        m_oRemoteCtrl.setProperties();
 
-        m_oRemoteCtrl.setDriveControlListener(oListener);
+//        m_oRemoteCtrl.setDriveControlListener(oListener);
 	}
 	
 	public AC13RoverRobot() {
 		super();
 	}
 	
-	private AC13Rover getRover() {
-		return (AC13Rover) getRobot();
-	}
+//	private AC13Rover getRover() {
+//		return (AC13Rover) getRobot();
+//	}
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {

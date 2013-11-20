@@ -7,6 +7,7 @@ import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
 
 import robots.RobotType;
+import robots.ctrl.IRemoteRobot;
 import robots.ctrl.RemoteControlHelper;
 import robots.gui.IConnectListener;
 import robots.gui.SensorGatherer;
@@ -42,7 +43,6 @@ public abstract class RoverBaseRobot extends WifiRobot {
 	protected static final int SENSOR_GRP = REMOTE_CTRL_GRP + 1;
 	protected static final int VIDEO_GRP = SENSOR_GRP + 1	;
 	
-	private RoverBase m_oRover;
 	protected RoverBaseSensorGatherer m_oSensorGatherer;
 	protected ZmqRemoteControlHelper m_oRemoteCtrl;
 	private ZmqRemoteControlSender m_oZmqRemoteListener;
@@ -56,13 +56,21 @@ public abstract class RoverBaseRobot extends WifiRobot {
 	private ToggleButton m_btnInfrared;
 
 	protected int m_nPort;
-
+	
+	protected boolean m_bAutoConnect = true;
+	
+	protected boolean m_bIsStreaming = false;
+	
 	public RoverBaseRobot(BaseActivity i_oOwner) {
 		super(i_oOwner);
 	}
 
 	public RoverBaseRobot() {
 		super();
+	}
+	
+	protected RoverBase getRover() {
+		return (RoverBase) getRobot();
 	}
 
 	protected SensorGatherer getSensorGatherer() {
@@ -73,26 +81,41 @@ public abstract class RoverBaseRobot extends WifiRobot {
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
 
-    	m_oRover = (RoverBase) getRobot();
-        m_oRover.setHandler(m_oUiHandler);
+//    	m_oRover = (RoverBase) getRobot();
+//        m_oRobot.setHandler(m_oUiHandler);
         
-		m_dblSpeed = m_oRover.getBaseSped();
+//		m_dblSpeed = m_oRobot.getBaseSped();
 
-    	m_oZmqRemoteListener = new ZmqRemoteControlSender(getRobot().getID());
+//    	m_oZmqRemoteListener = new ZmqRemoteControlSender(getRobot().getID());
 		m_oRemoteCtrl = new ZmqRemoteControlHelper(m_oActivity);
-		m_oRemoteCtrl.setDriveControlListener(m_oZmqRemoteListener);
+//		m_oRemoteCtrl.setDriveControlListener(m_oZmqRemoteListener);
         
         updateButtons(false);
 
     	checkConnectionSettings();
-    	m_oRover.setConnection(m_strAddress, m_nPort);
-
-        if (m_oRover.isConnected()) {
-			updateButtons(true);
-		} else {
-	        connectToRobot();
-		}
+    	if (getRover() != null) {
+    		onRobotReady();
+    	}
         
+    }
+    
+    protected void onRobotReady() {
+    	m_oZmqRemoteListener = new ZmqRemoteControlSender(getRover().getID());
+		m_oRemoteCtrl.setDriveControlListener(m_oZmqRemoteListener);
+		m_oRemoteCtrl.setCameraControlListener(m_oZmqRemoteListener);
+    	
+		m_dblSpeed = getRover().getBaseSped();
+		
+		getRover().setHandler(m_oUiHandler);
+    	
+		getRover().setConnection(m_strAddress, m_nPort);
+
+        if (getRover().isConnected()) {
+//			updateButtons(true);
+	    	onConnect();
+		} else {
+			connectToRobot();
+		}
     }
 
     @Override
@@ -114,12 +137,12 @@ public abstract class RoverBaseRobot extends WifiRobot {
     public boolean onPrepareOptionsMenu(Menu menu) {
     	super.onPrepareOptionsMenu(menu);
     	
-    	menu.setGroupVisible(REMOTE_CTRL_GRP, m_oRover.isConnected() && m_oRemoteCtrl.isControlEnabled());
-    	menu.setGroupVisible(SENSOR_GRP, m_oRover.isConnected());
-    	menu.setGroupVisible(VIDEO_GRP, m_oRover.isConnected() && m_oRover.isStreaming());
+    	menu.setGroupVisible(REMOTE_CTRL_GRP, getRover().isConnected() && m_oRemoteCtrl.isControlEnabled());
+    	menu.setGroupVisible(SENSOR_GRP, getRover().isConnected());
+    	menu.setGroupVisible(VIDEO_GRP, getRover().isConnected() && m_bIsStreaming);
     	
     	Utils.updateOnOffMenuItem(menu.findItem(ACCEL_ID), m_bAccelerometer);
-    	Utils.updateOnOffMenuItem(menu.findItem(VIDEO_ID), m_oRover.isStreaming());
+    	Utils.updateOnOffMenuItem(menu.findItem(VIDEO_ID), m_bIsStreaming);
     	
 		return true;
     }
@@ -133,17 +156,17 @@ public abstract class RoverBaseRobot extends WifiRobot {
 		case VIDEO_SETTINGS_ID:
     		showDialog(DIALOG_VIDEO_SETTINGS_ID);
     		break;
-		case ACCEL_ID:
-			m_bAccelerometer = !m_bAccelerometer;
-
-			if (m_bAccelerometer) {
-				m_bSetAccelerometerBase = true;
-			} else {
-				m_oRover.moveStop();
-			}
-			break;
+//		case ACCEL_ID:
+//			m_bAccelerometer = !m_bAccelerometer;
+//
+//			if (m_bAccelerometer) {
+//				m_bSetAccelerometerBase = true;
+//			} else {
+//				m_oRobot.moveStop();
+//			}
+//			break;
 		case VIDEO_ID:
-			m_oSensorGatherer.setVideoEnabled(!m_oRover.isStreaming());
+			m_oSensorGatherer.setVideoEnabled(!m_bIsStreaming);
 			break;
 		}
 
@@ -153,12 +176,20 @@ public abstract class RoverBaseRobot extends WifiRobot {
     @Override
     public void onStop() {
     	// first stop streaming ...
-    	if (m_oRover.isStreaming()) {
-    		m_oRover.stopVideo();
+    	if (m_bIsStreaming) {
+//    		m_oRobot.stopVideo();
     	}
     	
     	// ... then disconnect
     	super.onStop();
+    }
+    
+    @Override
+    public void onDestroy() {
+    	// TODO Auto-generated method stub
+    	super.onDestroy();
+    	
+    	m_oRemoteCtrl.close();
     }
 
 	@Override
@@ -178,7 +209,7 @@ public abstract class RoverBaseRobot extends WifiRobot {
 
 	@Override
 	protected void connect() {
-		m_oRover.connect();
+		getRover().connect();
 	}
 
 	@Override
@@ -189,7 +220,7 @@ public abstract class RoverBaseRobot extends WifiRobot {
 			
 			@Override
 			public void onClick(View v) {
-				m_oRover.toggleInfrared();
+				getRover().toggleInfrared();
 			}
 		});
     	
@@ -197,7 +228,7 @@ public abstract class RoverBaseRobot extends WifiRobot {
 
 	@Override
 	protected void disconnect() {
-		m_oRover.disconnect();
+		getRover().disconnect();
 	}
 
 	@Override
@@ -272,17 +303,17 @@ public abstract class RoverBaseRobot extends WifiRobot {
     }
     
     private void prepareVideoSettingsDialog(Dialog dialog) {
-    	switch (m_oRover.getResolution()) {
-		case res_320x240:
-			((RadioButton) dialog.findViewById(R.id.rb320x240)).setChecked(true);
-			break;
-		case res_640x480:
-			((RadioButton) dialog.findViewById(R.id.rb640x480)).setChecked(true);
-			break;
-		default:
+//    	switch (m_oRobot.getResolution()) {
+//		case res_320x240:
+//			((RadioButton) dialog.findViewById(R.id.rb320x240)).setChecked(true);
+//			break;
+//		case res_640x480:
+//			((RadioButton) dialog.findViewById(R.id.rb640x480)).setChecked(true);
+//			break;
+//		default:
 			((RadioGroup) dialog.findViewById(R.id.rgVideoResolution)).clearCheck();
-			break;
-		}
+//			break;
+//		}
     }
 
     protected void prepareConnectionSettingsDialog(Dialog dialog) {

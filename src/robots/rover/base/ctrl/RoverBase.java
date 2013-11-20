@@ -11,6 +11,7 @@ import org.dobots.utilities.Utils;
 
 import robots.ctrl.DifferentialRobot;
 import robots.ctrl.IMoveRepeaterListener;
+import robots.ctrl.IRemoteRobot;
 import robots.ctrl.MoveRepeater;
 import robots.ctrl.MoveRepeater.MoveCommand;
 import robots.gui.MessageTypes;
@@ -19,7 +20,7 @@ import robots.rover.base.ctrl.RoverBaseTypes.RoverParameters;
 import robots.rover.base.ctrl.RoverBaseTypes.VideoResolution;
 import android.os.Handler;
 
-public abstract class RoverBase extends DifferentialRobot implements IMoveRepeaterListener {
+public abstract class RoverBase extends DifferentialRobot implements IMoveRepeaterListener, IRemoteRobot {
 	
 	private static final String TAG = "RoverBase";
 
@@ -84,6 +85,9 @@ public abstract class RoverBase extends DifferentialRobot implements IMoveRepeat
 
 	@Override
 	public void destroy() {
+		m_oRemoteHelper.close();
+		m_oController.close();
+		m_oRepeater.stopThread();
 		m_oKeepAliveTimer.cancel();
 		disconnect();
 	}

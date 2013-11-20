@@ -2,6 +2,7 @@ package robots.rover.rover2.ctrl;
 
 import java.io.IOException;
 
+import org.dobots.communication.control.ZmqRemoteControlHelper.IControlListener;
 import org.dobots.communication.video.ZmqVideoSender;
 
 import robots.RobotType;
@@ -26,6 +27,7 @@ public class Rover2 extends RoverBase implements ICameraControlListener {
 		m_oController.setVideoListener(m_oVideoSender);
 
 		m_oRemoteHelper.setCameraControlListener(this);
+		m_oRemoteHelper.setControlListener(this);
 	}
 
 	@Override

@@ -9,8 +9,9 @@ import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
 import org.zeromq.ZMQ;
 
+import robots.ctrl.IRemoteRobot;
+import robots.rover.base.ctrl.RoverBase;
 import robots.rover.base.gui.RoverBaseSensorGatherer;
-import robots.rover.rover2.ctrl.Rover2;
 import android.graphics.Bitmap;
 import android.widget.TextView;
 
@@ -19,7 +20,7 @@ public class Rover2SensorGatherer extends RoverBaseSensorGatherer  implements IF
 	private VideoDisplayThread m_oVideoDisplayer;
 	private TextView m_txtBattery;
 
-	public Rover2SensorGatherer(BaseActivity i_oActivity, Rover2 i_oRover) {
+	public Rover2SensorGatherer(BaseActivity i_oActivity, RoverBase i_oRover) {
 		super(i_oActivity, i_oRover, "Rover2SensorGatherer");
 		
 		setProperties();
@@ -36,14 +37,18 @@ public class Rover2SensorGatherer extends RoverBaseSensorGatherer  implements IF
 	
 	@Override
 	protected void execute() {
-		final double battery = ((Rover2)m_oRover).getBatteryPower();
+		if (m_oRover == null) {
+			return;
+		}
 		
-		Utils.runAsyncUiTask(new Runnable() {
-			@Override
-			public void run() {
-				m_txtBattery.setText(String.format("%.0f %%", battery));
-			}
-		});
+//		final double battery = ((Rover2)m_oRover).getBatteryPower();
+//		
+//		Utils.runAsyncUiTask(new Runnable() {
+//			@Override
+//			public void run() {
+//				m_txtBattery.setText(String.format("%.0f %%", battery));
+//			}
+//		});
 	}
 	
 	@Override

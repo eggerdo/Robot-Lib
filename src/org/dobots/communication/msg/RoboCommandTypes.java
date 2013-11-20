@@ -39,13 +39,7 @@ public class RoboCommandTypes {
 	public static final String F_TYPE	 	= "type";
 	
 	// control command data fields
-	public static final String F_REQUEST	= "request";
-
-	
-	public enum Request {
-		DRIVE, CAMERA
-	}
-
-
+	public static final String F_COMMAND	= "command";
+	public static final String F_PARAMETER	= "parameter";
 	
 }

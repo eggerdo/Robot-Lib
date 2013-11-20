@@ -1,6 +1,12 @@
 package org.dobots.communication.msg;
 
-import org.dobots.communication.msg.RoboCommandTypes.Request;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,18 +24,33 @@ public class RoboCommands {
 		return INSTANCE;
 	}
 	
+	public enum HeaderType {
+		ht_small, ht_ext
+	}
+	
+	private HeaderType mHeaderType = HeaderType.ht_small;
+	
+	public void setHeaderType(HeaderType type) {
+		mHeaderType = type;
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	//// BASE command
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	
 	public static BaseCommand decodeCommand(String i_strJson) {
 		
 		JSONObject oJSON;
 		try {
 			oJSON = new JSONObject(i_strJson);
-			JSONObject header = oJSON.getJSONObject(RoboCommandTypes.S_HEADER);
 			
-			switch(header.getInt(RoboCommandTypes.F_HEADER_ID)) {
+			switch(getHeader(oJSON)) {
 			case RoboCommandTypes.DRIVE_COMMAND:
 				return getInstance().new DriveCommand(oJSON);
 			case RoboCommandTypes.CAMERA_COMMAND:
 				return getInstance().new CameraCommand(oJSON);
+			case RoboCommandTypes.CONTROL_COMMAND:
+				return getInstance().new ControlCommand(oJSON);
 			default: 
 				return null;
 			}
@@ -39,6 +60,15 @@ public class RoboCommands {
 		}
 		return null;
 		
+	}
+	
+	private static int getHeader(JSONObject json) throws JSONException {
+		if (getInstance().mHeaderType == HeaderType.ht_ext) {
+			JSONObject header = json.getJSONObject(RoboCommandTypes.S_HEADER);
+			return header.getInt(RoboCommandTypes.F_HEADER_ID);
+		} else {
+			return json.getInt(RoboCommandTypes.F_HEADER_ID);
+		}
 	}
 	
 	public abstract class BaseCommand {
@@ -57,24 +87,32 @@ public class RoboCommands {
 		}
 		
 		public BaseCommand(JSONObject i_oObj) throws JSONException {
-			JSONObject header = i_oObj.getJSONObject(RoboCommandTypes.S_HEADER);
-			nHeaderID 		= header.getInt(RoboCommandTypes.F_HEADER_ID);
-			nTransactionID 	= header.getInt(RoboCommandTypes.F_TID);
-			lTimeStamp 		= header.getLong(RoboCommandTypes.F_TIMESTAMP);
-			strRobotID		= header.getString(RoboCommandTypes.F_ROBOT_ID);
-			strVersion		= header.getString(RoboCommandTypes.F_VERSION);
+			if (mHeaderType == HeaderType.ht_ext) {
+				JSONObject header = i_oObj.getJSONObject(RoboCommandTypes.S_HEADER);
+				nHeaderID 		= header.getInt(RoboCommandTypes.F_HEADER_ID);
+				nTransactionID 	= header.getInt(RoboCommandTypes.F_TID);
+				lTimeStamp 		= header.getLong(RoboCommandTypes.F_TIMESTAMP);
+				strRobotID		= header.getString(RoboCommandTypes.F_ROBOT_ID);
+				strVersion		= header.getString(RoboCommandTypes.F_VERSION);
+			} else {
+				nHeaderID = i_oObj.getInt(RoboCommandTypes.F_HEADER_ID);
+			}
 		}
 		
 		public JSONObject toJSON() {
 			JSONObject obj = new JSONObject();
 			JSONObject header = new JSONObject();
 			try {
-				header.put(RoboCommandTypes.F_HEADER_ID, 	nHeaderID);
-				header.put(RoboCommandTypes.F_TID, 			nTransactionID);
-				header.put(RoboCommandTypes.F_TIMESTAMP, 	lTimeStamp);
-				header.put(RoboCommandTypes.F_ROBOT_ID, 	strRobotID);
-				header.put(RoboCommandTypes.F_VERSION,		strVersion);
-				obj.put(RoboCommandTypes.S_HEADER, header);
+				if (mHeaderType == HeaderType.ht_ext) {
+					header.put(RoboCommandTypes.F_HEADER_ID, 	nHeaderID);
+					header.put(RoboCommandTypes.F_TID, 			nTransactionID);
+					header.put(RoboCommandTypes.F_TIMESTAMP, 	lTimeStamp);
+					header.put(RoboCommandTypes.F_ROBOT_ID, 	strRobotID);
+					header.put(RoboCommandTypes.F_VERSION,		strVersion);
+					obj.put(RoboCommandTypes.S_HEADER, header);
+				} else {
+					obj.put(RoboCommandTypes.F_HEADER_ID, nHeaderID);
+				}
 				return obj;
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
@@ -92,6 +130,10 @@ public class RoboCommands {
 		}
 		
 	}
+
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	//// DRIVE command
+	///////////////////////////////////////////////////////////////////////////////////////////////
 	
 	public class DriveCommand extends BaseCommand {
 		
@@ -142,6 +184,10 @@ public class RoboCommands {
 		return getInstance().new DriveCommand(i_strRobot, i_eMove, i_dblSpeed, 0);
 	}
 
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	//// CAMERA command
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	
 	public enum CameraCommandType {
 		TOGGLE,
 		OFF,
@@ -187,28 +233,65 @@ public class RoboCommands {
 		return getInstance().new CameraCommand(i_strRobot, i_eType);
 	}
 	
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	//// CONTROL command
+	///////////////////////////////////////////////////////////////////////////////////////////////
+
+
+	/**
+	 * control commands are used as RPC, the command is the name of the method to be called, 
+	 * and the parameters are given to the method in the order that they are defined. works 
+	 * only if the type and order of the parameters is correct and only for primitive types,
+	 * not for objects!!
+	 * return values from methods are not (yet?) supported
+	 */
 	public class ControlCommand extends BaseCommand {
 		
-		Request eRequest;
+		public String mCommand;
+		public ArrayList<Object> mParameterList;
 		
-		public ControlCommand(String i_strRobot, Request i_eRequest) {
+		public ControlCommand(String i_strRobot, String command, Object... parameters) {
 			super(RoboCommandTypes.CONTROL_COMMAND, i_strRobot);
-			
-			eRequest = i_eRequest;
+
+			mCommand = command;
+			mParameterList = new ArrayList<Object>();
+			if (parameters != null) {
+				for (Object param : parameters) {
+					mParameterList.add(param);
+				}
+			}
 		}
 		
 		public ControlCommand(JSONObject i_oObj) throws JSONException {
 			super(i_oObj);
 			
 			JSONObject data = i_oObj.getJSONObject(RoboCommandTypes.S_DATA);
-			eRequest = (Request)data.get(RoboCommandTypes.F_REQUEST);
+			
+			mCommand = data.getString(RoboCommandTypes.F_COMMAND);
+			
+			JSONArray parameter = (JSONArray)data.get(RoboCommandTypes.F_PARAMETER);
+			
+			mParameterList = new ArrayList<Object>(parameter.length());
+			for (int i = 0; i < parameter.length(); ++i) {
+				mParameterList.add(parameter.get(i));
+			}
 		}
 		
 		public JSONObject toJSON() {
 			JSONObject obj = super.toJSON();
 			JSONObject data = new JSONObject();
 			try {
-				data.put(RoboCommandTypes.F_REQUEST, eRequest);
+				data.put(RoboCommandTypes.F_COMMAND, mCommand);
+				
+				JSONArray parameter = new JSONArray();
+//				for (String key : mParameterList.keySet()) {
+//					param.put(key, mParameterList.get(key));
+//				}
+				for (Object param : mParameterList.toArray()) {
+					parameter.put(param);
+				}
+				data.put(RoboCommandTypes.F_PARAMETER, parameter);
+				
 				obj.put(RoboCommandTypes.S_DATA, data);
 				return obj;
 			} catch (JSONException e) {
@@ -218,6 +301,130 @@ public class RoboCommands {
 			return null;
 		}
 		
+		public Object getParameter(int index) {
+			return mParameterList.get(index);
+		}
+
+		public Object[] getParameters() {
+			return mParameterList.toArray();
+		}
+		
+	}
+
+	/**
+	 * checks the object's class for it's public methods and compares them with the
+	 * command name defined in the ControlCommand. If a method matches, it is invoked
+	 * on the object with the parameters defined in the ControlCommand
+	 * 
+	 * @param command ControlCommand (contains method name and parameters)
+	 * @param object object on which the method should be invoked
+	 * 
+	 * @return true if method was invoked, false otherwise
+	 */
+	public static boolean handleControlCommand(ControlCommand command, Object object) {
+		try {
+			Method[] methods = object.getClass().getMethods();
+			for (Method method : methods) {
+				if (method.getName().equals(command.mCommand)) {
+					Object[] args = command.getParameters();
+					method.invoke(object, args);
+					return true;
+				}
+			}
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+//	public class ControlCommand extends BaseCommand {
+//		
+//		public String mCommand;
+////		KeyValue[] mParameters;
+//		public HashMap<String, String> mParameterList;
+//		
+//		public ControlCommand(String i_strRobot, String command, Map.Entry<String, String>... parameters) {
+//			super(RoboCommandTypes.CONTROL_COMMAND, i_strRobot);
+//
+//			mCommand = command;
+//			for (Map.Entry<String, String> param : parameters) {
+//				mParameterList.put(param.getKey(), param.getValue());
+//			}
+//		}
+//		
+//		public ControlCommand(String i_strRobot, String command, KeyValue... parameters) {
+//			super(RoboCommandTypes.CONTROL_COMMAND, i_strRobot);
+//			
+//			mCommand = command;
+////			mParameters = parameters;
+//			
+//			mParameterList = new HashMap<String, String>(parameters.length);
+//			for (KeyValue param : parameters) {
+//				mParameterList.put(param.mKey, param.mValue);
+//			}
+//		}
+//		
+//		public ControlCommand(JSONObject i_oObj) throws JSONException {
+//			super(i_oObj);
+//			
+//			JSONObject data = i_oObj.getJSONObject(RoboCommandTypes.S_DATA);
+//			
+//			mCommand = data.getString(RoboCommandTypes.F_COMMAND);
+//			
+//			JSONObject param = (JSONObject)data.get(RoboCommandTypes.F_PARAMETER);
+//			JSONArray param_keys = param.names();
+//			
+//			if (param_keys != null) {
+//				mParameterList = new HashMap<String, String>(param_keys.length());
+//				for (int i = 0; i < param_keys.length(); ++i) {
+//					String key = param_keys.getString(i);
+//					String value = param.getString(key);
+//					mParameterList.put(key, value);
+//				}
+//			} else {
+//				mParameterList = new HashMap<String, String>();
+//			}
+//		}
+//		
+//		public JSONObject toJSON() {
+//			JSONObject obj = super.toJSON();
+//			JSONObject data = new JSONObject();
+//			try {
+//				data.put(RoboCommandTypes.F_COMMAND, mCommand);
+//				
+//				JSONObject param = new JSONObject();
+////				for (String key : mParameterList.keySet()) {
+////					param.put(key, mParameterList.get(key));
+////				}
+//				for (Map.Entry<String, String> entry : mParameterList.entrySet()) {
+//					param.put(entry.getKey(), entry.getValue());
+//				}
+//				data.put(RoboCommandTypes.F_PARAMETER, param);
+//				
+//				obj.put(RoboCommandTypes.S_DATA, data);
+//				return obj;
+//			} catch (JSONException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			return null;
+//		}
+//		
+//		public String getParameter(String key) {
+//			return mParameterList.get(key);
+//		}
+//		
+//	}
+
+	public static ControlCommand createControlCommand(String i_strRobot, String command, Object... parameters) {
+		return getInstance().new ControlCommand(i_strRobot, command, parameters);
 	}
 
 }

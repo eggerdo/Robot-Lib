@@ -6,6 +6,7 @@ import org.dobots.utilities.IAccelerometerListener;
 import org.dobots.utilities.ProgressDlg;
 
 import robots.RobotType;
+import robots.ctrl.IRemoteRobot;
 import robots.ctrl.IRobotDevice;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -33,7 +34,7 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
 	protected RobotType m_eRobot;
 
 	protected String m_strRobotID;
-	protected Boolean m_bOwnsRobot;
+	protected Boolean m_bOwnsRobot = false;
 	
 	private IRobotDevice m_oRobot;
 
@@ -108,11 +109,11 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
     	
 		this.m_oActivity = this;
 		
-		m_eRobot = (RobotType) getIntent().getExtras().get("RobotType");
-        m_strRobotID = (String) getIntent().getExtras().get("RobotID");
-        m_bOwnsRobot = (Boolean) getIntent().getExtras().get("OwnsRobot");
+//		m_eRobot = (RobotType) getIntent().getExtras().get("RobotType");
+//        m_strRobotID = (String) getIntent().getExtras().get("RobotID");
+//        m_bOwnsRobot = (Boolean) getIntent().getExtras().get("OwnsRobot");
         
-        m_oRobot = RobotInventory.getInstance().getRobot(m_strRobotID);
+//        m_oRobot = RobotInventory.getInstance().getRobot(m_strRobotID);
 		
 		getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
 		
@@ -140,7 +141,9 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
 			AccelerometerManager.startListening(this, this);
 		}
 
-    	getSensorGatherer().startThread();
+		if (getSensorGatherer() != null) {
+			getSensorGatherer().startThread();
+		}
 	}
 	
     @Override
@@ -154,7 +157,9 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
     protected void onStop() {
     	super.onStop();
 
-    	getSensorGatherer().pauseThread();
+		if (getSensorGatherer() != null) {
+			getSensorGatherer().pauseThread();
+		}
     	
     	if (m_bOwnsRobot) {
     		disconnect();
@@ -164,8 +169,10 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
     @Override
     public void onDestroy() {
     	super.onDestroy();
-    	
-    	getSensorGatherer().stopThread();
+
+		if (getSensorGatherer() != null) {
+			getSensorGatherer().stopThread();
+		}
 
     	shutDown();
     	
@@ -312,6 +319,10 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
 	protected IRobotDevice getRobot() {
 		return m_oRobot;
 	}
+	
+	protected void setRobot(IRobotDevice robot) {
+		m_oRobot = robot;
+	}
 
     @Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -324,9 +335,9 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
 	
 	protected void shutDown() {
 		
-		if (m_bOwnsRobot) {
-			getRobot().destroy();
-		}
+//		if (m_bOwnsRobot) {
+//			getRobot().destroy();
+//		}
 		
 //		if (!m_bKeepAlive) {
 //			getRobot().destroy();

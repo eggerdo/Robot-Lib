@@ -63,6 +63,7 @@ public abstract class RoverBaseController extends Loggable {
 	}
 
 	public void setConnection(String address, int port) {
+		Log.i(TAG, String.format("setConnection(%s, %d)", address, port));
 		m_strTargetHost = address;
 		m_nTargetPort = port;
 	}
@@ -218,5 +219,7 @@ public abstract class RoverBaseController extends Loggable {
 			}
 		}
 	}
+
+	public abstract void close();
 	
 }

@@ -3,7 +3,8 @@ package robots.rover.ac13.gui;
 import org.dobots.communication.video.IRawVideoListener;
 import org.dobots.utilities.BaseActivity;
 
-import robots.rover.ac13.ctrl.AC13Rover;
+import robots.ctrl.IRemoteRobot;
+import robots.rover.base.ctrl.RoverBase;
 import robots.rover.base.gui.RoverBaseSensorGatherer;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -22,20 +23,20 @@ public class AC13RoverSensorGatherer extends RoverBaseSensorGatherer implements 
     int m_nFpsCounter = 0;
     long m_lLastTime = System.currentTimeMillis();
 
-	public AC13RoverSensorGatherer(BaseActivity i_oActivity, AC13Rover i_oRover) {
+	public AC13RoverSensorGatherer(BaseActivity i_oActivity, RoverBase i_oRover) {
 		super(i_oActivity, i_oRover, "AC13RoverSensorGatherer");
 	}
 
 	@Override
 	protected void startVideo() {
 		super.startVideo();
-		m_oRover.setVideoListener(this);
+//		m_oRover.setVideoListener(this);
 	}
 
 	@Override
 	protected void stopVideo() {
 		super.stopVideo();
-		m_oRover.removeVideoListener(this);
+//		m_oRover.removeVideoListener(this);
 	}
 
 	@Override

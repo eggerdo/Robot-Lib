@@ -3,12 +3,13 @@ package robots.ctrl;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.dobots.utilities.DoBotsThread;
 import org.dobots.utilities.Utils;
 import org.dobots.utilities.joystick.JoystickSurfaceThread;
 
 import android.util.Log;
 
-public class MoveRepeater extends Thread {
+public class MoveRepeater extends DoBotsThread {
 	
 	private static final String TAG = "MoveRepeater";
 	
@@ -34,6 +35,7 @@ public class MoveRepeater extends Thread {
 //	private long m_lDelay=70;
 	
 	public MoveRepeater(IMoveRepeaterListener i_oRobot, int i_nInterval) {
+		super("MoveRepeater");
 		m_oRobot = i_oRobot;
 		m_nInterval = i_nInterval;
 		start();
@@ -103,44 +105,43 @@ public class MoveRepeater extends Thread {
 		}
 		
 	}
-	
+
 	@Override
-	public void run() {
-		
-		while (m_bRun) {
-			
-			m_lUpdateTime = System.nanoTime();
-			
-			if (m_oCurrentMove == null) {
-				Utils.waitSomeTime(10);
-			} else {
+	protected void execute() {
+		m_lUpdateTime = System.nanoTime();
 
-				synchronized (m_oMoveMutex) {
-					m_oCurrentMove.run();
-					
-					if (!m_bRepeat) {
-						m_oCurrentMove = null;
-					}
-				}
+		if (m_oCurrentMove == null) {
+			Utils.waitSomeTime(10);
+		} else {
 
-				//SLEEP
-				//Sleep time. Time required to sleep to keep game consistent
-				//This starts with the specified delay time (in milliseconds) then subtracts from that the
-				//actual time it took to update and render the game. This allows the joystick to render smoothly.
-				this.m_lSleepTime = m_nInterval-((System.nanoTime()-m_lUpdateTime)/1000000L);
+			synchronized (m_oMoveMutex) {
+				m_oCurrentMove.run();
 
-				try {
-					//actual sleep code
-					if(m_lSleepTime>0){
-						Thread.sleep(m_lSleepTime);
-					}
-				} catch (InterruptedException ex) {
-					Logger.getLogger(JoystickSurfaceThread.class.getName()).log(Level.SEVERE, null, ex);
+				if (!m_bRepeat) {
+					m_oCurrentMove = null;
 				}
 			}
 
+			//SLEEP
+			//Sleep time. Time required to sleep to keep game consistent
+			//This starts with the specified delay time (in milliseconds) then subtracts from that the
+			//actual time it took to update and render the game. This allows the joystick to render smoothly.
+			this.m_lSleepTime = m_nInterval-((System.nanoTime()-m_lUpdateTime)/1000000L);
+
+			try {
+				//actual sleep code
+				if(m_lSleepTime>0){
+					Thread.sleep(m_lSleepTime);
+				}
+			} catch (InterruptedException ex) {
+				Logger.getLogger(JoystickSurfaceThread.class.getName()).log(Level.SEVERE, null, ex);
+			}
 		}
-		
+	}
+
+	@Override
+	public void shutDown() {
+		// nothing further to do
 	}
 
 }

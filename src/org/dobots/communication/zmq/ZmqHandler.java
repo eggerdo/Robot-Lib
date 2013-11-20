@@ -10,11 +10,14 @@ import org.zeromq.ZMsg;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 
 public class ZmqHandler {
 	
 	// !! IMPORTANT: Zmq HWM has to be set before calling connect, otherwise it doesn't
 	//    have any effect !!
+
+	private static final String TAG = "ZmqHandler";
 	
 	private static ZmqHandler INSTANCE;
 	
@@ -74,6 +77,13 @@ public class ZmqHandler {
 		setupSensorsConnections();
 	}
 	
+	public void udpate(BaseActivity i_oActivity) {
+		m_oActivity = i_oActivity;
+
+		m_oSettings = new ZmqSettings(m_oActivity);
+		m_oSettings.checkSettings();
+	}
+	
 	public static ZmqHandler initialize(BaseActivity i_oActivity) {
 		ZmqHandler zmqHandler = new ZmqHandler(i_oActivity);
         ZmqSettings settings = zmqHandler.getSettings();
@@ -84,10 +94,41 @@ public class ZmqHandler {
         
         return zmqHandler;
 	}
+
+	public ZmqHandler(Context i_oContext) {
+		INSTANCE = this;
+		
+		m_strIPCpath = i_oContext.getDir("tmp", Context.MODE_WORLD_WRITEABLE).toString();
+
+        m_oZmqContext = new ZContext();
+		
+//		m_oSettings = new ZmqSettings(m_oActivity);
+//		m_oSettings.checkSettings();
+		
+//		m_oActivity.addMenuListener(m_oSettings);
+//		m_oActivity.addDialogListener(m_oSettings);
+		
+		m_oCommandHandler = new ZmqMessageHandler();
+		setupCommandConnections();
+		
+		m_oVideoHandler = new ZmqMessageHandler();
+//		m_oVideoBase64Handler = new ZmqMessageHandler();
+		setupVideoConnections();
+		
+		m_oSensorsHandler = new ZmqMessageHandler();
+		setupSensorsConnections();
+	}
+	
+	public static ZmqHandler initialize(Context i_oContext) {
+		ZmqHandler zmqHandler = new ZmqHandler(i_oContext);
+        
+        return zmqHandler;
+	}
 	
 	public void onDestroy() {
 		m_oCommandHandler.close();
 		m_oVideoHandler.close();
+		m_oSensorsHandler.close();
 		INSTANCE = null;
 	}
 	
@@ -125,7 +166,7 @@ public class ZmqHandler {
 		oVideoRecvSocket.setHWM(1);
 		oVideoRecvSocket.bind(m_strVideoInAddr);
 		oVideoRecvSocket.subscribe("".getBytes());
-
+		
 		m_oVideoHandler.setupConnections(oVideoRecvSocket, oVideoSendSocket);
 		m_oVideoHandler.addIncomingMessageListener(new ZmqMessageListener() {
 			

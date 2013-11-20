@@ -41,9 +41,9 @@ public class Rover2Robot extends RoverBaseRobot {
 		super();
 	}
 	
-	private Rover2 getRover() {
-		return (Rover2) getRobot();
-	}
+//	private Rover2 getRover() {
+//		return (Rover2) getRobot();
+//	}
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,6 +52,12 @@ public class Rover2Robot extends RoverBaseRobot {
 		instance = this;
 		
         m_oSensorGatherer = new Rover2SensorGatherer(this, getRover());
+    }
+    
+    @Override
+    protected void onRobotReady() {
+    	m_oSensorGatherer.setRover(getRover());
+    	super.onRobotReady();
     }
 
 	@Override
@@ -64,7 +70,7 @@ public class Rover2Robot extends RoverBaseRobot {
 			
 			@Override
 			public void onClick(View arg0) {
-				getRover().toggleLight();
+				((Rover2)getRover()).toggleLight();
 			}
 		});
     	
@@ -77,10 +83,10 @@ public class Rover2Robot extends RoverBaseRobot {
 				switch (action & MotionEvent.ACTION_MASK) {
 				case MotionEvent.ACTION_CANCEL:
 				case MotionEvent.ACTION_UP:
-					getRover().cameraStop();
+					m_oRemoteCtrl.cameraStop();
 					break;
 				case MotionEvent.ACTION_DOWN:
-					getRover().cameraUp();
+					m_oRemoteCtrl.cameraUp();
 					break;
 				}
 				return true;
@@ -96,10 +102,10 @@ public class Rover2Robot extends RoverBaseRobot {
 				switch (action & MotionEvent.ACTION_MASK) {
 				case MotionEvent.ACTION_CANCEL:
 				case MotionEvent.ACTION_UP:
-					getRover().cameraStop();
+					m_oRemoteCtrl.cameraStop();
 					break;
 				case MotionEvent.ACTION_DOWN:
-					getRover().cameraDown();
+					m_oRemoteCtrl.cameraDown();
 					break;
 				}
 				return true;

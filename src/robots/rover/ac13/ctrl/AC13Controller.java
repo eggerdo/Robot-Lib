@@ -46,6 +46,10 @@ public class AC13Controller extends RoverBaseController {
 
 		parameters = new RoverBaseTypes().new RoverParameters();
 	}
+	
+	public void close() {
+		// nothing to do
+	}
 
 	public boolean isConnected() {
 		return m_bConnected;
