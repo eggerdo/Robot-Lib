@@ -20,9 +20,7 @@ import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMsg;
 
 import robots.ctrl.ICameraControlListener;
-import robots.ctrl.IDriveControlListener;
 import robots.ctrl.RemoteControlHelper;
-import android.app.Activity;
 import android.util.Log;
 
 public class ZmqRemoteControlHelper extends RemoteControlHelper {
@@ -101,15 +99,15 @@ public class ZmqRemoteControlHelper extends RemoteControlHelper {
 		}
 	}
 	
-	public void switchCameraOn() {
+	public void startVideo() {
 		if (m_oCameraListener != null) {
-			m_oCameraListener.switchCameraOn();
+			m_oCameraListener.startVideo();
 		}
 	}
 
-	public void switchCameraOff() {
+	public void stopVideo() {
 		if (m_oCameraListener != null) {
-			m_oCameraListener.switchCameraOff();
+			m_oCameraListener.stopVideo();
 		}
 	}
 	
@@ -183,10 +181,10 @@ public class ZmqRemoteControlHelper extends RemoteControlHelper {
 						CameraCommand oCameraCmd = (CameraCommand)oCmd;
 						switch(oCameraCmd.eType) {
 						case OFF:
-							switchCameraOff();
+							stopVideo();
 							break;
 						case ON:
-							switchCameraOn();
+							startVideo();
 							break;
 						case TOGGLE:
 							toggleInvertDrive();

@@ -72,7 +72,7 @@ public class RobotCalibration extends BaseActivity {
 							
 							@Override
 							public void onClick(double i_nTime, double i_nSpeed) {
-								m_oRobot.executeCircle(i_nTime, i_nSpeed);
+//								m_oRobot.executeCircle(i_nTime, i_nSpeed);
 							}
 						});
 			}
@@ -88,7 +88,7 @@ public class RobotCalibration extends BaseActivity {
 							
 							@Override
 							public void onClick(double i_nTime, double i_nSpeed) {
-								m_oRobot.executeCircle(i_nTime, i_nSpeed);
+//								m_oRobot.executeCircle(i_nTime, i_nSpeed);
 							}
 						});
 			}

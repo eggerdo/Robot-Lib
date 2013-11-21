@@ -78,6 +78,11 @@ public class SpyTankRobot extends WifiRobot {
     	}
     }
 
+    @Override
+    public void onRobotCtrlReady() {
+    	
+    }
+    
 	@Override
 	protected void connect() {
 		m_oSpyTank.connect();

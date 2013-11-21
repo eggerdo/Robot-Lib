@@ -8,13 +8,12 @@ import org.dobots.communication.control.ZmqRemoteControlHelper;
 import org.dobots.communication.video.IRawVideoListener;
 import org.dobots.communication.video.ZmqVideoSender;
 
-import android.os.Handler;
-import android.util.Log;
-
 import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
 import robots.ctrl.ICameraControlListener;
 import robots.gui.RobotDriveCommandListener;
+import android.os.Handler;
+import android.util.Log;
 
 public class Replicator extends DifferentialRobot implements ICameraControlListener {
 	
@@ -168,18 +167,12 @@ public class Replicator extends DifferentialRobot implements ICameraControlListe
 	}
 
 	@Override
-	public void executeCircle(double i_dblTime, double i_dblSpeed) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void setBaseSpeed(double i_dblSpeed) {
 		m_dblBaseSpeed = i_dblSpeed;
 	}
 
 	@Override
-	public double getBaseSped() {
+	public double getBaseSpeed() {
 		// TODO Auto-generated method stub
 		return m_dblBaseSpeed;
 	}
@@ -220,7 +213,7 @@ public class Replicator extends DifferentialRobot implements ICameraControlListe
 	}
 
 	@Override
-	public void switchCameraOn() {
+	public void startVideo() {
 		executorSerive.submit(new Runnable() {
 			
 			@Override
@@ -231,7 +224,7 @@ public class Replicator extends DifferentialRobot implements ICameraControlListe
 	}
 
 	@Override
-	public void switchCameraOff() {
+	public void stopVideo() {
 		m_oController.stopVideo();
 	}
 	

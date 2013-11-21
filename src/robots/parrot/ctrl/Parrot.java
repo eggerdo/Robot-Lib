@@ -13,7 +13,6 @@ import robots.ctrl.MoveRepeater;
 import robots.ctrl.MoveRepeater.MoveCommand;
 import robots.gui.IConnectListener;
 import robots.gui.MessageTypes;
-import android.os.Handler;
 import android.os.SystemClock;
 
 import com.codeminders.ardrone.ARDrone;
@@ -730,17 +729,12 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 	// Execute Circle ------------------------------------------------------
 
 	@Override
-	public void executeCircle(double i_nTime, double i_nSpeed) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
 	public void setBaseSpeed(double i_dblSpeed) {
 		m_dblBaseSpeed = i_dblSpeed;
 	}
 
 	@Override
-	public double getBaseSped() {
+	public double getBaseSpeed() {
 		return m_dblBaseSpeed;
 	}
 

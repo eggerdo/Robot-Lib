@@ -22,7 +22,7 @@ public class RobotDriveCommandListener implements IDriveControlListener {
 	public void onMove(Move i_oMove, double i_dblSpeed, double i_dblAngle) {
 
 		if (i_dblSpeed == -1) {
-			i_dblSpeed = m_oRobot.getBaseSped();
+			i_dblSpeed = m_oRobot.getBaseSpeed();
 		}
 		
 		// execute this move

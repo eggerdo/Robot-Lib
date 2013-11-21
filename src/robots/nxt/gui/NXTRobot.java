@@ -17,8 +17,6 @@ import robots.gui.RobotDriveCommandListener;
 import robots.gui.RobotInventory;
 import robots.gui.SensorGatherer;
 import robots.nxt.ctrl.NXT;
-import robots.nxt.ctrl.NXTController;
-import robots.nxt.ctrl.NXTMessageTypes;
 import robots.nxt.ctrl.NXTTypes;
 import robots.nxt.ctrl.NXTTypes.ENXTMotorID;
 import robots.nxt.ctrl.NXTTypes.ENXTMotorSensorType;
@@ -27,7 +25,6 @@ import robots.nxt.ctrl.NXTTypes.ENXTSensorType;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -109,7 +106,7 @@ public class NXTRobot extends BluetoothRobot {
 		m_oNxt.setHandler(m_oUiHandler);
 		
 		m_oSensorGatherer = new NXTSensorGatherer(this, m_oNxt);
-		m_dblSpeed = m_oNxt.getBaseSped();
+		m_dblSpeed = m_oNxt.getBaseSpeed();
 
     	m_oZmqRemoteListener = new ZmqRemoteControlSender(getRobot().getID());
 		m_oRemoteCtrl = new ZmqRemoteControlHelper(m_oActivity);
@@ -123,6 +120,11 @@ public class NXTRobot extends BluetoothRobot {
 		} else {
 			connectToRobot();
 		}
+    }
+    
+    @Override
+    public void onRobotCtrlReady() {
+    	
     }
     
     public void setNXT(NXT i_oNxt) {

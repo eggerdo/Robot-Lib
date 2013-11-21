@@ -22,7 +22,6 @@ import robots.piratedotty.ctrl.PirateDottyTypes;
 import android.bluetooth.BluetoothDevice;
 import android.hardware.Camera;
 import android.os.Bundle;
-import android.os.Looper;
 import android.os.Message;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -100,7 +99,12 @@ public class PirateDottyRobot extends BluetoothRobot implements ICameraControlLi
 			connectToRobot();
 		}
     }
-	
+
+    @Override
+    public void onRobotCtrlReady() {
+    	
+    }
+    
 	@Override
 	public void onDestroy() {
 		m_oCamera.stopCamera();
@@ -193,9 +197,9 @@ public class PirateDottyRobot extends BluetoothRobot implements ICameraControlLi
 			break;
 		case CAMERA_ID:
 			if (m_bCameraOn) {
-				switchCameraOff();
+				startVideo();
 			} else {
-				switchCameraOn();
+				stopVideo();
 			}
 			m_bCameraOn = !m_bCameraOn;
 			break;
@@ -284,25 +288,21 @@ public class PirateDottyRobot extends BluetoothRobot implements ICameraControlLi
 		// toggle camera only works if it is executed by the UI thread
 		// so we check if the calling thread is the main thread, otherwise
 		// we call the function again inside the main thread.
-		if (Looper.myLooper() != Looper.getMainLooper()) {
-			Utils.runAsyncUiTask(new Runnable() {
-				@Override
-				public void run() {
-					toggleCamera();
-				}
-			});
-		} else {
-			m_oCamera.toggleCamera();
-		}
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				m_oCamera.toggleCamera();
+			}
+		});
 	}
 
 	@Override
-	public void switchCameraOn() {
+	public void startVideo() {
 		m_oCamera.startCamera();
 	}
 
 	@Override
-	public void switchCameraOff() {
+	public void stopVideo() {
 		m_oCamera.stopCamera();
 	}
 	

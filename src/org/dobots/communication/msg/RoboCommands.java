@@ -3,8 +3,6 @@ package org.dobots.communication.msg;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -319,21 +317,41 @@ public class RoboCommands {
 	 * @param command ControlCommand (contains method name and parameters)
 	 * @param object object on which the method should be invoked
 	 * 
-	 * @return true if method was invoked, false otherwise
+	 * @return return value of the invoked function
 	 */
-	public static boolean handleControlCommand(ControlCommand command, Object object) {
+	public static Object handleControlCommand(ControlCommand command, Object object) {
 		try {
 			Method[] methods = object.getClass().getMethods();
 			for (Method method : methods) {
+				
+				// first compare the method name to find the correct method
 				if (method.getName().equals(command.mCommand)) {
+					
 					Object[] args = command.getParameters();
-					method.invoke(object, args);
-					return true;
+					Class[] types = method.getParameterTypes();
+					
+					// make sure that the number of parameters is correct (overloaded methods)
+					if (types.length == args.length) {
+						
+						// check parameters for enumerations. those parameters have to be converted
+						// from string (received from json) to the correct enum
+						for (int i = 0; i < types.length; ++i) {
+							if (Enum.class.isAssignableFrom(types[i])) {
+								args[i] = Enum.valueOf(types[i], (String)args[i]);
+							}
+						}
+						
+						try {
+							// invoke the method
+							return method.invoke(object, args);
+						} catch (IllegalArgumentException e) {
+							e.printStackTrace();
+							// if it failed because of the parameters, try again to find another 
+							// method with the same name and a different parameter set ...
+						}
+					}
 				}
 			}
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -341,7 +359,7 @@ public class RoboCommands {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return false;
+		return null;
 	}
 	
 //	public class ControlCommand extends BaseCommand {

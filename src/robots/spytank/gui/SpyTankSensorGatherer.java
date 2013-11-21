@@ -103,7 +103,7 @@ public class SpyTankSensorGatherer extends SensorGatherer implements IFpsListene
 	}
 	
 	protected void stopVideo() {
-		m_oSpyTank.switchCameraOff();
+		m_oSpyTank.stopVideo();
 		m_bVideoStopped = true;
 		showVideoMsg("");
 
@@ -111,7 +111,7 @@ public class SpyTankSensorGatherer extends SensorGatherer implements IFpsListene
 	}
 	
 	protected void startVideo() {
-		m_oSpyTank.switchCameraOn();
+		m_oSpyTank.startVideo();
 		m_bVideoConnected = false;
 		m_bVideoStopped = false;
 		showVideoLoading(true);
@@ -194,7 +194,7 @@ public class SpyTankSensorGatherer extends SensorGatherer implements IFpsListene
 
 		// since the function is not called from the main thread we have to call the main thread from
 		// here in order to update the fps display
-		Utils.runAsyncUiTask(new Runnable() {
+		m_oActivity.runOnUiThread(new Runnable() {
 
 			@Override
 			public void run() {

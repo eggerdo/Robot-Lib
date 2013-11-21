@@ -6,7 +6,7 @@ import org.dobots.utilities.Utils;
 
 import robots.RobotType;
 import robots.rover.base.gui.RoverBaseRobot;
-import robots.rover.rover2.ctrl.Rover2;
+import robots.rover.rover2.ctrl.IRover2;
 import robots.rover.rover2.ctrl.Rover2Types;
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -41,9 +41,9 @@ public class Rover2Robot extends RoverBaseRobot {
 		super();
 	}
 	
-//	private Rover2 getRover() {
-//		return (Rover2) getRobot();
-//	}
+	private IRover2 getRover() {
+		return (IRover2) getRobot();
+	}
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,12 +54,6 @@ public class Rover2Robot extends RoverBaseRobot {
         m_oSensorGatherer = new Rover2SensorGatherer(this, getRover());
     }
     
-    @Override
-    protected void onRobotReady() {
-    	m_oSensorGatherer.setRover(getRover());
-    	super.onRobotReady();
-    }
-
 	@Override
 	protected void setProperties(RobotType i_eRobot) {
     	m_oActivity.setContentView(R.layout.rover2_main);
@@ -70,7 +64,7 @@ public class Rover2Robot extends RoverBaseRobot {
 			
 			@Override
 			public void onClick(View arg0) {
-				((Rover2)getRover()).toggleLight();
+				getRover().toggleLight();
 			}
 		});
     	

@@ -196,18 +196,12 @@ public class SpyTank extends DifferentialRobot implements ICameraControlListener
 	}
 
 	@Override
-	public void executeCircle(double i_dblTime, double i_dblSpeed) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void setBaseSpeed(double i_dblSpeed) {
 		// nothing to do, there is only one speed
 	}
 
 	@Override
-	public double getBaseSped() {
+	public double getBaseSpeed() {
 		return 100.0;
 	}
 
@@ -247,7 +241,7 @@ public class SpyTank extends DifferentialRobot implements ICameraControlListener
 	}
 
 	@Override
-	public void switchCameraOn() {
+	public void startVideo() {
 		executorSerive.submit(new Runnable() {
 			
 			@Override
@@ -258,7 +252,7 @@ public class SpyTank extends DifferentialRobot implements ICameraControlListener
 	}
 
 	@Override
-	public void switchCameraOff() {
+	public void stopVideo() {
 		m_oController.stopVideo();
 	}
 

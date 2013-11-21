@@ -2,14 +2,13 @@ package robots.rover.rover2.ctrl;
 
 import java.io.IOException;
 
-import org.dobots.communication.control.ZmqRemoteControlHelper.IControlListener;
 import org.dobots.communication.video.ZmqVideoSender;
 
 import robots.RobotType;
 import robots.ctrl.ICameraControlListener;
 import robots.rover.base.ctrl.RoverBase;
 
-public class Rover2 extends RoverBase implements ICameraControlListener {
+public class Rover2 extends RoverBase implements IRover2, ICameraControlListener {
 
 	private static final String TAG = "Rover2";
 	
@@ -29,7 +28,7 @@ public class Rover2 extends RoverBase implements ICameraControlListener {
 		m_oRemoteHelper.setCameraControlListener(this);
 		m_oRemoteHelper.setControlListener(this);
 	}
-
+	
 	@Override
 	public RobotType getType() {
 		return RobotType.RBT_ROVER2;
@@ -130,16 +129,15 @@ public class Rover2 extends RoverBase implements ICameraControlListener {
 	}
 
 	@Override
-	public boolean startVideo() {
+	public void startVideo() {
 		try {
 //			Log.w(TAG, "isStreaming");
 			if (!isStreaming()) {
-				return getController().enableVideo();
+				getController().enableVideo();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return false;
 	}
 
 	@Override
@@ -158,16 +156,6 @@ public class Rover2 extends RoverBase implements ICameraControlListener {
 		// rover has only one camera
 	}
 
-	@Override
-	public void switchCameraOn() {
-		startVideo();
-	}
-
-	@Override
-	public void switchCameraOff() {
-		stopVideo();
-	}
-	
 	public double getBatteryPower() {
 		return ((Rover2Controller)m_oController).getBatteryPower();
 	}

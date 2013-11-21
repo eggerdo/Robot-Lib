@@ -28,7 +28,6 @@ import org.dobots.utilities.joystick.Joystick;
 
 import android.app.Activity;
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;

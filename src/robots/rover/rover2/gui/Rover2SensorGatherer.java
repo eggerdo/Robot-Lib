@@ -6,21 +6,19 @@ import org.dobots.communication.video.IVideoListener;
 import org.dobots.communication.video.VideoDisplayThread;
 import org.dobots.communication.zmq.ZmqHandler;
 import org.dobots.utilities.BaseActivity;
-import org.dobots.utilities.Utils;
 import org.zeromq.ZMQ;
 
-import robots.ctrl.IRemoteRobot;
-import robots.rover.base.ctrl.RoverBase;
 import robots.rover.base.gui.RoverBaseSensorGatherer;
+import robots.rover.rover2.ctrl.IRover2;
 import android.graphics.Bitmap;
 import android.widget.TextView;
 
-public class Rover2SensorGatherer extends RoverBaseSensorGatherer  implements IFpsListener, IVideoListener {
+public class Rover2SensorGatherer extends RoverBaseSensorGatherer implements IFpsListener, IVideoListener {
 
 	private VideoDisplayThread m_oVideoDisplayer;
 	private TextView m_txtBattery;
 
-	public Rover2SensorGatherer(BaseActivity i_oActivity, RoverBase i_oRover) {
+	public Rover2SensorGatherer(BaseActivity i_oActivity, IRover2 i_oRover) {
 		super(i_oActivity, i_oRover, "Rover2SensorGatherer");
 		
 		setProperties();
@@ -87,7 +85,7 @@ public class Rover2SensorGatherer extends RoverBaseSensorGatherer  implements IF
 
 	@Override
 	public void onFPS(final int i_nFPS) {
-		Utils.runAsyncUiTask(new Runnable() {
+		m_oActivity.runOnUiThread(new Runnable() {
 
 			@Override
 			public void run() {

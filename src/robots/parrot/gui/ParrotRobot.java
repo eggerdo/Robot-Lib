@@ -94,7 +94,7 @@ public class ParrotRobot extends WifiRobot implements IDriveControlListener {
     	m_oParrot.setHandler(m_oUiHandler);
 
 		m_oSensorGatherer = new ParrotSensorGatherer(this, m_oParrot);
-		m_dblSpeed = m_oParrot.getBaseSped();
+		m_dblSpeed = m_oParrot.getBaseSpeed();
 
 		m_oRobotRemoteListener = new RobotDriveCommandListener(m_oParrot);
 		m_oRemoteCtrl = new RemoteControlHelper(m_oActivity);
@@ -113,6 +113,11 @@ public class ParrotRobot extends WifiRobot implements IDriveControlListener {
 		}
     }
 
+    @Override
+    public void onRobotCtrlReady() {
+    	
+    }
+    
     @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);

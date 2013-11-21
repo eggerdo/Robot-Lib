@@ -3,6 +3,7 @@ package robots.ctrl;
 import java.io.IOException;
 
 import robots.RobotType;
+import android.os.Handler;
 
 public interface IRobotDevice {
 	
@@ -11,6 +12,8 @@ public interface IRobotDevice {
 	public String getID();
 
 	public void destroy();
+	
+	public void setHandler(Handler i_oHandler);
 	
 	// connection methods
 	public void connect() throws IOException;
@@ -37,10 +40,10 @@ public interface IRobotDevice {
 	
 	public void moveStop();
 	
-	public void executeCircle(double i_dblTime, double i_dblSpeed);
+//	public void executeCircle(double i_dblTime, double i_dblSpeed);
 	
 	public void setBaseSpeed(double i_dblSpeed);
-	public double getBaseSped();
+	public double getBaseSpeed();
 	
 	public void moveForward();
 	public void moveBackward();

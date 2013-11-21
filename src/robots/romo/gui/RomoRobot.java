@@ -4,7 +4,6 @@ import org.dobots.R;
 import org.dobots.communication.control.ZmqRemoteControlHelper;
 import org.dobots.communication.control.ZmqRemoteControlSender;
 import org.dobots.utilities.CameraPreview;
-import org.dobots.utilities.Utils;
 import org.dobots.utilities.log.ILogListener;
 import org.dobots.utilities.log.LogTypes;
 
@@ -17,7 +16,6 @@ import robots.romo.ctrl.Romo;
 import android.app.Activity;
 import android.hardware.Camera;
 import android.os.Bundle;
-import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -64,6 +62,11 @@ public class RomoRobot extends RobotView implements ICameraControlListener, ILog
 		m_oCamera.setFrameListener(m_oSensorGatherer);
 	}
 
+    @Override
+    public void onRobotCtrlReady() {
+    	
+    }
+    
 	@Override
 	protected void setProperties(RobotType i_eRobot) {
 
@@ -159,25 +162,21 @@ public class RomoRobot extends RobotView implements ICameraControlListener, ILog
 		// toggle camera only works if it is executed by the UI thread
 		// so we check if the calling thread is the main thread, otherwise
 		// we call the function again inside the main thread.
-		if (Looper.myLooper() != Looper.getMainLooper()) {
-			Utils.runAsyncUiTask(new Runnable() {
-				@Override
-				public void run() {
-					toggleCamera();
-				}
-			});
-		} else {
-			m_oCamera.toggleCamera();
-		}
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				m_oCamera.toggleCamera();
+			}
+		});
 	}
 
 	@Override
-	public void switchCameraOn() {
+	public void startVideo() {
 		m_oCamera.startCamera();
 	}
 
 	@Override
-	public void switchCameraOff() {
+	public void stopVideo() {
 		m_oCamera.stopCamera();
 	}
 

@@ -1,5 +1,7 @@
 package robots.rover.base.gui;
 
+import java.io.IOException;
+
 import org.dobots.R;
 import org.dobots.communication.control.ZmqRemoteControlHelper;
 import org.dobots.communication.control.ZmqRemoteControlSender;
@@ -7,12 +9,11 @@ import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
 
 import robots.RobotType;
-import robots.ctrl.IRemoteRobot;
-import robots.ctrl.RemoteControlHelper;
 import robots.gui.IConnectListener;
 import robots.gui.SensorGatherer;
 import robots.gui.WifiRobot;
 import robots.rover.ac13.gui.AC13RoverRobot;
+import robots.rover.base.ctrl.IRoverBase;
 import robots.rover.base.ctrl.RoverBase;
 import robots.rover.base.ctrl.RoverBaseTypes.VideoResolution;
 import android.app.AlertDialog;
@@ -59,8 +60,6 @@ public abstract class RoverBaseRobot extends WifiRobot {
 	
 	protected boolean m_bAutoConnect = true;
 	
-	protected boolean m_bIsStreaming = false;
-	
 	public RoverBaseRobot(BaseActivity i_oOwner) {
 		super(i_oOwner);
 	}
@@ -69,8 +68,8 @@ public abstract class RoverBaseRobot extends WifiRobot {
 		super();
 	}
 	
-	protected RoverBase getRover() {
-		return (RoverBase) getRobot();
+	private IRoverBase getRover() {
+		return (IRoverBase) getRobot();
 	}
 
 	protected SensorGatherer getSensorGatherer() {
@@ -93,26 +92,32 @@ public abstract class RoverBaseRobot extends WifiRobot {
         updateButtons(false);
 
     	checkConnectionSettings();
-    	if (getRover() != null) {
-    		onRobotReady();
-    	}
+//    	if (getRover() != null) {
+//    		onRobotReady();
+//    	}
         
     }
     
-    protected void onRobotReady() {
+    public void onRobotCtrlReady() {
     	m_oZmqRemoteListener = new ZmqRemoteControlSender(getRover().getID());
 		m_oRemoteCtrl.setDriveControlListener(m_oZmqRemoteListener);
 		m_oRemoteCtrl.setCameraControlListener(m_oZmqRemoteListener);
     	
-		m_dblSpeed = getRover().getBaseSped();
+		m_dblSpeed = getRover().getBaseSpeed();
 		
 		getRover().setHandler(m_oUiHandler);
     	
 		getRover().setConnection(m_strAddress, m_nPort);
 
         if (getRover().isConnected()) {
-//			updateButtons(true);
-	    	onConnect();
+        	runOnUiThread(new Runnable() {
+
+    			@Override
+    			public void run() {
+//					updateButtons(true);
+			    	onConnect();
+    			}
+    		});
 		} else {
 			connectToRobot();
 		}
@@ -137,12 +142,16 @@ public abstract class RoverBaseRobot extends WifiRobot {
     public boolean onPrepareOptionsMenu(Menu menu) {
     	super.onPrepareOptionsMenu(menu);
     	
-    	menu.setGroupVisible(REMOTE_CTRL_GRP, getRover().isConnected() && m_oRemoteCtrl.isControlEnabled());
-    	menu.setGroupVisible(SENSOR_GRP, getRover().isConnected());
-    	menu.setGroupVisible(VIDEO_GRP, getRover().isConnected() && m_bIsStreaming);
+    	// to minimize calls to the robot (service)
+    	boolean connected = getRover().isConnected();
+    	boolean streaming = getRover().isStreaming();
+    	
+    	menu.setGroupVisible(REMOTE_CTRL_GRP, connected && m_oRemoteCtrl.isControlEnabled());
+    	menu.setGroupVisible(SENSOR_GRP, connected);
+    	menu.setGroupVisible(VIDEO_GRP, connected && streaming);
     	
     	Utils.updateOnOffMenuItem(menu.findItem(ACCEL_ID), m_bAccelerometer);
-    	Utils.updateOnOffMenuItem(menu.findItem(VIDEO_ID), m_bIsStreaming);
+    	Utils.updateOnOffMenuItem(menu.findItem(VIDEO_ID), streaming);
     	
 		return true;
     }
@@ -166,7 +175,7 @@ public abstract class RoverBaseRobot extends WifiRobot {
 //			}
 //			break;
 		case VIDEO_ID:
-			m_oSensorGatherer.setVideoEnabled(!m_bIsStreaming);
+			m_oSensorGatherer.setVideoEnabled(!getRover().isStreaming());
 			break;
 		}
 
@@ -176,8 +185,8 @@ public abstract class RoverBaseRobot extends WifiRobot {
     @Override
     public void onStop() {
     	// first stop streaming ...
-    	if (m_bIsStreaming) {
-//    		m_oRobot.stopVideo();
+    	if (getRover().isStreaming()) {
+    		getRover().stopVideo();
     	}
     	
     	// ... then disconnect
@@ -209,7 +218,12 @@ public abstract class RoverBaseRobot extends WifiRobot {
 
 	@Override
 	protected void connect() {
-		getRover().connect();
+		try {
+			getRover().connect();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -303,17 +317,17 @@ public abstract class RoverBaseRobot extends WifiRobot {
     }
     
     private void prepareVideoSettingsDialog(Dialog dialog) {
-//    	switch (m_oRobot.getResolution()) {
-//		case res_320x240:
-//			((RadioButton) dialog.findViewById(R.id.rb320x240)).setChecked(true);
-//			break;
-//		case res_640x480:
-//			((RadioButton) dialog.findViewById(R.id.rb640x480)).setChecked(true);
-//			break;
-//		default:
+    	switch (getRover().getResolution()) {
+		case res_320x240:
+			((RadioButton) dialog.findViewById(R.id.rb320x240)).setChecked(true);
+			break;
+		case res_640x480:
+			((RadioButton) dialog.findViewById(R.id.rb640x480)).setChecked(true);
+			break;
+		default:
 			((RadioGroup) dialog.findViewById(R.id.rgVideoResolution)).clearCheck();
-//			break;
-//		}
+			break;
+		}
     }
 
     protected void prepareConnectionSettingsDialog(Dialog dialog) {

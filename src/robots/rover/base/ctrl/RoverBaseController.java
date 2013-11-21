@@ -13,9 +13,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.dobots.communication.video.IRawVideoListener;
 import org.dobots.utilities.log.Loggable;
 
-import android.util.Log;
-
 import robots.rover.base.ctrl.RoverBaseTypes.RoverParameters;
+import android.util.Log;
 
 public abstract class RoverBaseController extends Loggable {
 

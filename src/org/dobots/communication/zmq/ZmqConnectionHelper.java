@@ -1,7 +1,6 @@
 package org.dobots.communication.zmq;
 
 import org.dobots.communication.zmq.ZmqMessageHandler.ZmqMessageListener;
-import org.dobots.communication.zmq.ZmqSettings.SettingsChangeListener;
 import org.dobots.communication.zmq.ZmqSettings.ZmqSettingsInvalidException;
 import org.dobots.utilities.Utils;
 import org.zeromq.ZMQ;
@@ -60,9 +59,9 @@ public class ZmqConnectionHelper {
 //			}
 //		});
 
-        m_oVideoHandler = new ZmqMessageHandler();
+        m_oVideoHandler = new ZmqMessageHandler(m_oZmqHandler.getContext());
 
-        m_oCmdHandler = new ZmqMessageHandler();
+        m_oCmdHandler = new ZmqMessageHandler(m_oZmqHandler.getContext());
         
 		if (!m_oSettings.isValid()) {
 			m_oActivity.onZmqFailed();

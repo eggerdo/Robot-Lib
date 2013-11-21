@@ -45,8 +45,8 @@ public class AC13Rover extends RoverBase {
 		return getController().isInfraredEnabled();
 	}
 	
-	public boolean startVideo() {
-		return getController().startStreaming();
+	public void startVideo() {
+		getController().startStreaming();
 	}
 	
 	public void stopVideo() {

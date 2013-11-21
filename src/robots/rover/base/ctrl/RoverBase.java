@@ -11,16 +11,14 @@ import org.dobots.utilities.Utils;
 
 import robots.ctrl.DifferentialRobot;
 import robots.ctrl.IMoveRepeaterListener;
-import robots.ctrl.IRemoteRobot;
 import robots.ctrl.MoveRepeater;
 import robots.ctrl.MoveRepeater.MoveCommand;
 import robots.gui.MessageTypes;
 import robots.gui.RobotDriveCommandListener;
 import robots.rover.base.ctrl.RoverBaseTypes.RoverParameters;
 import robots.rover.base.ctrl.RoverBaseTypes.VideoResolution;
-import android.os.Handler;
 
-public abstract class RoverBase extends DifferentialRobot implements IMoveRepeaterListener, IRemoteRobot {
+public abstract class RoverBase extends DifferentialRobot implements IMoveRepeaterListener {
 	
 	private static final String TAG = "RoverBase";
 
@@ -76,7 +74,7 @@ public abstract class RoverBase extends DifferentialRobot implements IMoveRepeat
 	public abstract void toggleInfrared();
 
 	public abstract boolean isStreaming();
-	public abstract boolean startVideo();
+	public abstract void startVideo();
 	public abstract void stopVideo();
 
 	public void setConnection(String address, int port) {
@@ -268,17 +266,12 @@ public abstract class RoverBase extends DifferentialRobot implements IMoveRepeat
 	// ------------------------------------------------------------------------------------------
 
 	@Override
-	public void executeCircle(double i_dblTime, double i_dblSpeed) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
 	public void setBaseSpeed(double i_dblSpeed) {
 		m_dblBaseSpeed = i_dblSpeed;
 	}
 
 	@Override
-	public double getBaseSped() {
+	public double getBaseSpeed() {
 		return m_dblBaseSpeed;
 	}
 

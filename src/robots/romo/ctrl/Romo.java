@@ -181,17 +181,12 @@ public class Romo extends DifferentialRobot {
 	}
 
 	@Override
-	public void executeCircle(double i_dblTime, double i_dblSpeed) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
 	public void setBaseSpeed(double i_dblSpeed) {
 		m_dblBaseSpeed = i_dblSpeed;
 	}
 
 	@Override
-	public double getBaseSped() {
+	public double getBaseSpeed() {
 		return m_dblBaseSpeed;
 	}
 

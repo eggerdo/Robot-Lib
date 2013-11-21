@@ -22,9 +22,6 @@ import robots.nxt.ctrl.NXTTypes.ENXTSensorID;
 import robots.nxt.ctrl.NXTTypes.ENXTSensorType;
 import robots.nxt.ctrl.NXTTypes.MotorData;
 import robots.nxt.ctrl.NXTTypes.SensorData;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
 import android.widget.TableLayout;
 import android.widget.TextView;
@@ -112,24 +109,19 @@ public class NXTSensorGatherer extends SensorGatherer implements ISensorDataList
 	public void onSensorData(final SensorMessageData data) {
 		// to update the UI we need to execute the function
 		// in the main looper.
-		if (Looper.myLooper() != Looper.getMainLooper()) {
-			Utils.runAsyncUiTask(new Runnable() {
-				
-				@Override
-				public void run() {
-					onSensorData(data);
+		m_oActivity.runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				if (data.getSensorID().equals("sensor_data")) {
+					updateGUI(NXTTypes.assembleSensorData(data));
+				} else if (data.getSensorID().equals("motor_data")) {
+					updateGUI(NXTTypes.assembleMotorData(data));
+				} else if (data.getSensorID().equals("distance_data")) {
+					updateGUI(NXTTypes.assembleDistanceData(data));
 				}
-			});
-		} else {
-			if (data.getSensorID().equals("sensor_data")) {
-				updateGUI(NXTTypes.assembleSensorData(data));
-			} else if (data.getSensorID().equals("motor_data")) {
-				updateGUI(NXTTypes.assembleMotorData(data));
-			} else if (data.getSensorID().equals("distance_data")) {
-				updateGUI(NXTTypes.assembleDistanceData(data));
 			}
-		}
-		
+		});
 	}
 	
 	private void updateGUI(MotorData i_oMotorData) {

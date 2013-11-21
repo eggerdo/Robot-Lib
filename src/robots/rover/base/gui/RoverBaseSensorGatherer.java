@@ -6,9 +6,8 @@ import org.dobots.utilities.ScalableImageView;
 import org.dobots.utilities.Utils;
 import org.zeromq.ZMQ.Socket;
 
-import robots.ctrl.IRemoteRobot;
 import robots.gui.SensorGatherer;
-import robots.rover.base.ctrl.RoverBase;
+import robots.rover.base.ctrl.IRoverBase;
 import robots.rover.base.ctrl.RoverBaseTypes.VideoResolution;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -20,7 +19,7 @@ import android.widget.TextView;
 
 public abstract class RoverBaseSensorGatherer extends SensorGatherer {
 
-	protected IRemoteRobot m_oRover;
+	protected IRoverBase m_oRover;
 
 	protected boolean m_bVideoEnabled = true;
 	protected boolean m_bVideoConnected = false;
@@ -38,7 +37,7 @@ public abstract class RoverBaseSensorGatherer extends SensorGatherer {
 
 	protected TextView m_lblFPS;
 
-	public RoverBaseSensorGatherer(BaseActivity i_oActivity, RoverBase i_oRover, String i_strThreadName) {
+	public RoverBaseSensorGatherer(BaseActivity i_oActivity, IRoverBase i_oRover, String i_strThreadName) {
 		super(i_oActivity, i_strThreadName);
 		m_oRover = i_oRover;
 		
@@ -50,10 +49,6 @@ public abstract class RoverBaseSensorGatherer extends SensorGatherer {
 		initialize();
 		
 		start();
-	}
-	
-	public void setRover(RoverBase rover) {
-		m_oRover = rover;
 	}
 	
 	private void initialize() {
@@ -166,7 +161,7 @@ public abstract class RoverBaseSensorGatherer extends SensorGatherer {
 	}
 
 	public void setResolution(final VideoResolution i_eResolution) {
-//		m_oRover.setResolution(i_eResolution);
+		m_oRover.setResolution(i_eResolution);
 	}
 
 }

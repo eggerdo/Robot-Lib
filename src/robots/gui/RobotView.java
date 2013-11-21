@@ -6,7 +6,6 @@ import org.dobots.utilities.IAccelerometerListener;
 import org.dobots.utilities.ProgressDlg;
 
 import robots.RobotType;
-import robots.ctrl.IRemoteRobot;
 import robots.ctrl.IRobotDevice;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -33,10 +32,10 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
 	protected BaseActivity m_oActivity;
 	protected RobotType m_eRobot;
 
-	protected String m_strRobotID;
+	protected String m_strRobotID = "";
 	protected Boolean m_bOwnsRobot = false;
 	
-	private IRobotDevice m_oRobot;
+	private IRobotDevice m_oRobot = null;
 
 	protected String m_strAddress = "";
 
@@ -109,11 +108,13 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
     	
 		this.m_oActivity = this;
 		
-//		m_eRobot = (RobotType) getIntent().getExtras().get("RobotType");
-//        m_strRobotID = (String) getIntent().getExtras().get("RobotID");
-//        m_bOwnsRobot = (Boolean) getIntent().getExtras().get("OwnsRobot");
-        
-//        m_oRobot = RobotInventory.getInstance().getRobot(m_strRobotID);
+		if (getIntent().getExtras() != null) {
+			m_eRobot = (RobotType) getIntent().getExtras().get("RobotType");
+	        m_strRobotID = (String) getIntent().getExtras().get("RobotID");
+	        m_bOwnsRobot = (Boolean) getIntent().getExtras().get("OwnsRobot");
+	        
+	        m_oRobot = RobotInventory.getInstance().getRobot(m_strRobotID);
+		}
 		
 		getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
 		
@@ -335,9 +336,9 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
 	
 	protected void shutDown() {
 		
-//		if (m_bOwnsRobot) {
-//			getRobot().destroy();
-//		}
+		if (m_bOwnsRobot) {
+			getRobot().destroy();
+		}
 		
 //		if (!m_bKeepAlive) {
 //			getRobot().destroy();
@@ -351,7 +352,13 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
     }
 
 	public void showConnectingDialog() {
-    	connectingProgressDialog = ProgressDialog.show(m_oActivity, "", "Connecting to the robot.\nPlease wait...");
+		runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				connectingProgressDialog = ProgressDialog.show(m_oActivity, "", "Connecting to the robot.\nPlease wait...");
+			}
+		});
     }
     
     protected static ProgressDialog showConnectingDialog(Context i_oContext) {
@@ -372,4 +379,5 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
 		return "";
 	}
 
+	public abstract void onRobotCtrlReady();
 }

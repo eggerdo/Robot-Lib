@@ -6,8 +6,6 @@ import org.dobots.communication.control.ZmqRemoteControlSender;
 import org.dobots.utilities.Utils;
 
 import robots.RobotType;
-import robots.ctrl.RemoteControlHelper;
-import robots.gui.RobotDriveCommandListener;
 import robots.gui.SensorGatherer;
 import robots.gui.WifiRobot;
 import robots.replicator.ctrl.Replicator;
@@ -23,7 +21,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TableRow;
 
@@ -77,7 +74,11 @@ public class ReplicatorUI extends WifiRobot {
 			connectToRobot();
 		}
 	}
-	
+
+    @Override
+    public void onRobotCtrlReady() {
+    	
+    }
 	
 	@Override
 	protected void connect() {

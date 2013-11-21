@@ -17,15 +17,17 @@ public abstract class BaseRobot extends Loggable implements IRobotDevice {
 		m_strID = getType().toString() + " " + UUID.randomUUID();
 		m_strID = m_strID.replaceAll(" ", "_");
 	}
-	
+
+	@Override
 	public String getID() {
 		return m_strID;
 	}
 
+	@Override
 	public void setHandler(Handler i_oHandler) {
 		m_oUiHandler = i_oHandler;
 	}
-	
+
 	protected double capSpeed(double io_dblSpeed) {
 		// if a negative value was provided as speed
 		// use the absolute value of it.

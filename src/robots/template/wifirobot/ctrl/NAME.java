@@ -107,19 +107,13 @@ public class NAME extends DifferentialRobot {
 	}
 
 	@Override
-	public void executeCircle(double i_dblTime, double i_dblSpeed) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void setBaseSpeed(double i_dblSpeed) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public double getBaseSped() {
+	public double getBaseSpeed() {
 		// TODO Auto-generated method stub
 		return 0;
 	}

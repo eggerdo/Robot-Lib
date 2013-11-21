@@ -7,7 +7,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketException;
 
 import org.dobots.communication.video.IRawVideoListener;
 import org.dobots.utilities.Utils;

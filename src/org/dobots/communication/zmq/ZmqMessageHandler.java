@@ -30,13 +30,13 @@ public class ZmqMessageHandler {
 	
 	private ArrayList<ZmqMessageListener> m_oMessageListeners;
 	
-	public ZmqMessageHandler() {
-		m_oZContext = ZmqHandler.getInstance().getContext();
+	public ZmqMessageHandler(ZContext context) {
+		m_oZContext = context;
 		m_oMessageListeners = new ArrayList<ZmqMessageListener>();
 	}
 
 	/**
-	 * If only incoming video should be handled, supply null as the OutSockete parameter (or vice versa)
+	 * If only incoming video should be handled, supply null as the OutSocket parameter (or vice versa)
 	 * @param i_oInSocket
 	 * @param i_oOutSocket
 	 */

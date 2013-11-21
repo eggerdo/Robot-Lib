@@ -5,7 +5,6 @@ import org.dobots.communication.msg.VideoMessage;
 import org.dobots.communication.zmq.ZmqHandler;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.CameraPreview.CameraPreviewCallback;
-import org.dobots.utilities.Utils;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMsg;
 
@@ -50,7 +49,7 @@ public class RomoSensorGatherer extends SensorGatherer implements CameraPreviewC
             if ((now - m_lLastTimePartner) >= 1000)
             {
             	final int nFPS = m_nFpsCounterPartner;
-				Utils.runAsyncUiTask(new Runnable() {
+            	m_oActivity.runOnUiThread(new Runnable() {
 					
 					@Override
 					public void run() {

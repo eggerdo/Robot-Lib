@@ -193,7 +193,7 @@ public class VideoHelper implements IVideoListener, IFpsListener, IRawVideoListe
 	 */
 	@Override
 	public void onFPS(final int i_nFPS) {
-		Utils.runAsyncUiTask(new Runnable() {
+		m_oActivity.runOnUiThread(new Runnable() {
 
 			@Override
 			public void run() {
@@ -232,7 +232,7 @@ public class VideoHelper implements IVideoListener, IFpsListener, IRawVideoListe
 	@Override
 	public void onFrame(byte[] rgb, int rotation) {
 		if (!m_bVideoStopped) {
-			Utils.runAsyncUiTask(new Runnable() {
+			m_oActivity.runOnUiThread(new Runnable() {
 				
 				@Override
 				public void run() {

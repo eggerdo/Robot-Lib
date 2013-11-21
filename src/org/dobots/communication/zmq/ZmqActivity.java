@@ -20,7 +20,6 @@ package org.dobots.communication.zmq;
 
 import org.dobots.communication.zmq.ZmqSettings.SettingsChangeListener;
 import org.dobots.utilities.BaseActivity;
-import org.dobots.utilities.Utils;
 
 import android.os.Bundle;
 
@@ -37,11 +36,7 @@ public abstract class ZmqActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		mZmqHandler = ZmqHandler.getInstance();
-		
-		if (mZmqHandler == null) {
-			mZmqHandler = new ZmqHandler(this);
-		}
+		ZmqHandler.initialize(this);
 		
 		mSettings = mZmqHandler.getSettings();
 		mSettings.setSettingsChangeListener(new SettingsChangeListener() {
@@ -63,7 +58,7 @@ public abstract class ZmqActivity extends BaseActivity {
 		addDialogListener(mSettings);
 		
 		if (checkSettings()) {
-			Utils.runAsyncUiTask(new Runnable() {
+			runOnUiThread(new Runnable() {
 				
 				@Override
 				public void run() {

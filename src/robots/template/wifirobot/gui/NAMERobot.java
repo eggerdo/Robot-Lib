@@ -6,6 +6,11 @@ import robots.gui.WifiRobot;
 
 public class NAMERobot extends WifiRobot {
 
+    @Override
+    public void onRobotCtrlReady() {
+    	
+    }
+    
 	@Override
 	protected void connect() {
 		// TODO Auto-generated method stub

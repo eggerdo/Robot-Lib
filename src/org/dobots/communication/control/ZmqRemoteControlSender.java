@@ -72,11 +72,11 @@ public class ZmqRemoteControlSender implements IDriveControlListener, ICameraCon
 		sendCameraCommand(CameraCommandType.TOGGLE);
 	}
 	
-	public void switchCameraOn() {
+	public void startVideo() {
 		sendCameraCommand(CameraCommandType.ON);
 	}
 
-	public void switchCameraOff() {
+	public void stopVideo() {
 		sendCameraCommand(CameraCommandType.OFF);
 	}
 

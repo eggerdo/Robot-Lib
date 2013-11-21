@@ -7,7 +7,6 @@ import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
 import robots.gui.BluetoothConnection;
 import robots.gui.RobotDriveCommandListener;
-import robots.piratedotty.gui.PirateDottyBluetooth;
 
 public class PirateDotty extends DifferentialRobot {
 
@@ -169,12 +168,6 @@ public class PirateDotty extends DifferentialRobot {
 	}
 
 	@Override
-	public void executeCircle(double i_nTime, double i_nSpeed) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void moveForward() {
 		moveForward(m_dblBaseSpeed);
 	}
@@ -200,7 +193,7 @@ public class PirateDotty extends DifferentialRobot {
 	}
 
 	@Override
-	public double getBaseSped() {
+	public double getBaseSpeed() {
 		return m_dblBaseSpeed;
 	}
 

@@ -546,7 +546,6 @@ public class NXT extends DifferentialRobot {
 	}
 
 	Handler executor = new Handler();
-	@Override
 	public void executeCircle(final double i_dblTime, final double i_dblSpeed) {
 		executor.post(new Runnable() {
 			
@@ -654,7 +653,7 @@ public class NXT extends DifferentialRobot {
 	}
 
 	@Override
-	public double getBaseSped() {
+	public double getBaseSpeed() {
 		// TODO Auto-generated method stub
 		return m_dblBaseSpeed;
 	}

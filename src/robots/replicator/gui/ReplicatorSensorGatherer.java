@@ -1,13 +1,11 @@
 package robots.replicator.gui;
 
-import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.dobots.R;
 import org.dobots.communication.video.FpsCounter;
 import org.dobots.communication.video.IFpsListener;
-import org.dobots.communication.video.IRawVideoListener;
 import org.dobots.communication.video.IVideoListener;
 import org.dobots.communication.video.VideoDisplayThread;
 import org.dobots.communication.zmq.ZmqHandler;
@@ -18,11 +16,8 @@ import org.zeromq.ZMQ;
 
 import robots.gui.SensorGatherer;
 import robots.replicator.ctrl.Replicator;
-import robots.replicator.ctrl.ReplicatorTypes;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
@@ -102,7 +97,7 @@ public class ReplicatorSensorGatherer extends SensorGatherer implements IVideoLi
 	}
 	
 	protected void startVideo() {
-		m_oReplicator.switchCameraOn();
+		m_oReplicator.startVideo();
 		m_bVideoConnected = false;
 		m_bVideoStopped = false;
 		showVideoLoading(true);
@@ -165,7 +160,7 @@ public class ReplicatorSensorGatherer extends SensorGatherer implements IVideoLi
 	}
 
 	protected void stopVideo() {
-		m_oReplicator.switchCameraOff();
+		m_oReplicator.stopVideo();
 		m_bVideoStopped = true;
 		showVideoMsg("");
 		setVideoListening(false);

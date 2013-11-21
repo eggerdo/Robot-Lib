@@ -4,9 +4,8 @@ import org.dobots.R;
 import org.dobots.utilities.BaseActivity;
 
 import robots.RobotType;
-import robots.gui.RobotDriveCommandListener;
-import robots.rover.ac13.ctrl.AC13Rover;
 import robots.rover.ac13.ctrl.AC13RoverTypes;
+import robots.rover.ac13.ctrl.IAC13Rover;
 import robots.rover.base.gui.RoverBaseRobot;
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -31,9 +30,9 @@ public class AC13RoverRobot extends RoverBaseRobot {
 		super();
 	}
 	
-//	private AC13Rover getRover() {
-//		return (AC13Rover) getRobot();
-//	}
+	private IAC13Rover getRover() {
+		return (IAC13Rover) getRobot();
+	}
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {

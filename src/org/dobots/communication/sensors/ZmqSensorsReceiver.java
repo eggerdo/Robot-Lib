@@ -5,10 +5,7 @@ import org.dobots.communication.msg.SensorMessageData;
 import org.dobots.communication.zmq.ZmqReceiveThread;
 import org.dobots.utilities.Utils;
 import org.zeromq.ZMQ;
-import org.zeromq.ZMQ.Context;
 import org.zeromq.ZMsg;
-
-import android.util.Log;
 
 public class ZmqSensorsReceiver extends ZmqReceiveThread {
 	
