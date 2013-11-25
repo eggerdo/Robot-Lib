@@ -61,6 +61,8 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 	//   differ from robot to robot
 	
 	protected IDriveControlListener m_oRemoteControlListener = null;
+
+	protected ICameraControlListener m_oCameraListener = null;
 	
 	private Move lastMove = Move.NONE;
 
@@ -522,5 +524,49 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 		
 		return true;
 	}
-		
+
+	/**
+	 * assign a camera control listener which will handle camera on/off, toggle, and up/down commands
+	 * @param i_oCameraListener object implementing the ICameraControlListener interface
+	 */
+	public void setCameraControlListener(ICameraControlListener i_oCameraListener) {
+		m_oCameraListener = i_oCameraListener;
+	}
+	
+	public void toggleCamera() {
+		if (m_oCameraListener != null) {
+			m_oCameraListener.toggleCamera();
+		}
+	}
+	
+	public void startVideo() {
+		if (m_oCameraListener != null) {
+			m_oCameraListener.startVideo();
+		}
+	}
+
+	public void stopVideo() {
+		if (m_oCameraListener != null) {
+			m_oCameraListener.stopVideo();
+		}
+	}
+	
+	public void cameraUp() {
+		if (m_oCameraListener != null) {
+			m_oCameraListener.cameraUp();
+		}
+	}
+
+	public void cameraDown() {
+		if (m_oCameraListener != null) {
+			m_oCameraListener.cameraDown();
+		}
+	}
+
+	public void cameraStop() {
+		if (m_oCameraListener != null) {
+			m_oCameraListener.cameraStop();
+		}
+	}
+	
 }

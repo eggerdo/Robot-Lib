@@ -7,7 +7,7 @@ import org.dobots.R;
 import org.dobots.communication.video.FpsCounter;
 import org.dobots.communication.video.IFpsListener;
 import org.dobots.communication.video.IVideoListener;
-import org.dobots.communication.video.VideoDisplayThread;
+import org.dobots.communication.video.ZmqVideoReceiver;
 import org.dobots.communication.zmq.ZmqHandler;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.ScalableImageView;
@@ -127,7 +127,7 @@ public class ReplicatorSensorGatherer extends SensorGatherer implements IVideoLi
 		}
 	};
 
-	private VideoDisplayThread m_oVideoDisplayer;
+	private ZmqVideoReceiver m_oVideoDisplayer;
 	
 	protected void showVideoMsg(String i_strMsg) {
 		if (m_layCamera == null) {
@@ -192,7 +192,7 @@ public class ReplicatorSensorGatherer extends SensorGatherer implements IVideoLi
 		oVideoRecvSocket.subscribe(m_oReplicator.getID().getBytes());
 
 		// start a video display thread which receives video frames from the socket and displays them
-		m_oVideoDisplayer = new VideoDisplayThread(ZmqHandler.getInstance().getContext().getContext(), oVideoRecvSocket);
+		m_oVideoDisplayer = new ZmqVideoReceiver(oVideoRecvSocket);
 		m_oVideoDisplayer.setVideoListener(this);
 		m_oVideoDisplayer.start();
 	}

@@ -1,6 +1,7 @@
 package org.dobots.communication.video;
 
 import org.dobots.communication.msg.VideoMessage;
+import org.dobots.communication.zmq.ZmqHandler;
 import org.dobots.communication.zmq.ZmqReceiveThread;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMQ.Socket;
@@ -27,7 +28,7 @@ import android.util.Log;
  * see Utils.runAsyncUITask
  * 
  */
-public class VideoDisplayThread extends ZmqReceiveThread {
+public class ZmqVideoReceiver extends ZmqReceiveThread {
 	
 	private IRawVideoListener m_oRawVideoListener;
 	private IVideoListener m_oVideoListener;
@@ -36,8 +37,8 @@ public class VideoDisplayThread extends ZmqReceiveThread {
 	
 	private FpsCounter mFpsInCounter = new FpsCounter();
 
-	public VideoDisplayThread(ZMQ.Context i_oContext, Socket i_oInSocket) {
-		super(i_oContext, i_oInSocket, "VideoDisplayer");
+	public ZmqVideoReceiver(Socket i_oInSocket) {
+		super(ZmqHandler.getInstance().getContext().getContext(), i_oInSocket, "VideoReceiver");
 		
 		mFpsInCounter.setListener(new IFpsListener() {
 			

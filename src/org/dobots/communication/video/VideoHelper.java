@@ -52,6 +52,8 @@ public class VideoHelper implements IVideoListener, IFpsListener, IRawVideoListe
 	
 	private long mLastFrameRecv = 0;
 	
+	private boolean mVideoTimeout = true;
+	
 	private boolean mDebug = false;
 
 	/**
@@ -89,7 +91,7 @@ public class VideoHelper implements IVideoListener, IFpsListener, IRawVideoListe
 	protected Runnable m_oWatchdog = new Runnable() {
 		
 		public void run() {
-			if (m_bVideoConnected && !m_bVideoStopped) {
+			if (mVideoTimeout && m_bVideoConnected && !m_bVideoStopped) {
 				if (System.currentTimeMillis() - mLastFrameRecv > WATCHDOG_TIMEOUT) {
 					m_bVideoConnected = false;
 					showVideoLoading(true);
@@ -111,6 +113,10 @@ public class VideoHelper implements IVideoListener, IFpsListener, IRawVideoListe
 			}
 		}
 	};
+	
+	public void setVideoTimeout(boolean enabled) {
+		mVideoTimeout = enabled;
+	}
 
 	// TODO: neccessary?
 	public void resetLayout() {

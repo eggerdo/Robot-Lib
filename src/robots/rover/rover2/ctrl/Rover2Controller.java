@@ -48,6 +48,8 @@ public class Rover2Controller extends RoverBaseController {
 	private TimerTask m_oBatteryTask;
 	private double m_dblBatteryPower;
 
+	private boolean m_bConnecting;
+
 	public Rover2Controller() {
 
 		INSTANCE = this;
@@ -70,7 +72,7 @@ public class Rover2Controller extends RoverBaseController {
 		m_oBatteryTask = new TimerTask() {
 			public void run() {
 				try {
-					if (m_bConnected) {
+					if (m_bConnected && !m_bConnecting) {
 						byte[] request = CommandEncoder.cmdBatteryPowerReq();
 						send(request);
 						return;
@@ -89,7 +91,7 @@ public class Rover2Controller extends RoverBaseController {
 	@Override
 	public void keepAlive() {
 		try {
-			if (m_bConnected) {
+			if (m_bConnected && !m_bConnecting) {
 				byte[] request = CommandEncoder.cmdKeepAlive();
 				send(request);
 				return;
@@ -163,7 +165,7 @@ public class Rover2Controller extends RoverBaseController {
 		String challenge_3 = Utils.intToHex(newChallenge[2]);
 		String challenge_4 = Utils.intToHex(newChallenge[3]);
 		
-		Log.w(TAG, "challenge:" + challenge_1 + "," + challenge_2 + "," + challenge_3 + "," + challenge_4);
+//		Log.d(TAG, "challenge:" + challenge_1 + "," + challenge_2 + "," + challenge_3 + "," + challenge_4);
 		
 		return newChallenge;
 	}
@@ -387,13 +389,16 @@ public class Rover2Controller extends RoverBaseController {
 		try {
 			Log.i(TAG, "connecting ...");
 			m_bConnected = true;
+			m_bConnecting = true;
 			connectCommand();
 			Log.i(TAG, "... ok");
+			m_bConnecting = false;
 			return true;
 		} catch (IOException e) {
 			Log.e(TAG, "... failed");
 			e.printStackTrace();
 		}
+		m_bConnecting = false;
 		m_bConnected = false;
 		return false;
 	}

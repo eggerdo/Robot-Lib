@@ -3,7 +3,7 @@ package robots.spytank.gui;
 import org.dobots.R;
 import org.dobots.communication.video.IFpsListener;
 import org.dobots.communication.video.IVideoListener;
-import org.dobots.communication.video.VideoDisplayThread;
+import org.dobots.communication.video.ZmqVideoReceiver;
 import org.dobots.communication.zmq.ZmqHandler;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
@@ -40,7 +40,7 @@ public class SpyTankSensorGatherer extends SensorGatherer implements IFpsListene
 
 	protected TextView m_lblFPS;
 
-	private VideoDisplayThread m_oVideoDisplayer;
+	private ZmqVideoReceiver m_oVideoDisplayer;
 
 	public SpyTankSensorGatherer(BaseActivity i_oActivity, SpyTank spyTank) {
 		super(i_oActivity, "SpyTankSensorGatherer");
@@ -183,7 +183,7 @@ public class SpyTankSensorGatherer extends SensorGatherer implements IFpsListene
 		oVideoRecvSocket.subscribe(m_oSpyTank.getID().getBytes());
 
 		// start a video display thread which receives video frames from the socket and displays them
-		m_oVideoDisplayer = new VideoDisplayThread(ZmqHandler.getInstance().getContext().getContext(), oVideoRecvSocket);
+		m_oVideoDisplayer = new ZmqVideoReceiver(oVideoRecvSocket);
 		m_oVideoDisplayer.setVideoListener(this);
 		m_oVideoDisplayer.setFPSListener(this);
 		m_oVideoDisplayer.start();

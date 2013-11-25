@@ -185,7 +185,7 @@ public abstract class RoverBaseRobot extends WifiRobot {
     @Override
     public void onStop() {
     	// first stop streaming ...
-    	if (getRover().isStreaming()) {
+    	if (m_bOwnsRobot && getRover().isStreaming()) {
     		getRover().stopVideo();
     	}
     	

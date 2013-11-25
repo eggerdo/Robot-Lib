@@ -7,6 +7,7 @@ import org.dobots.communication.video.ZmqVideoSender;
 import robots.RobotType;
 import robots.ctrl.ICameraControlListener;
 import robots.rover.base.ctrl.RoverBase;
+import android.util.Log;
 
 public class Rover2 extends RoverBase implements IRover2, ICameraControlListener {
 
@@ -45,6 +46,7 @@ public class Rover2 extends RoverBase implements IRover2, ICameraControlListener
 
 	public void toggleInfrared() {
 
+		Log.d(TAG, "toggleInfrared");
 		if (bInfrared) {
 			disableInfrared();
 		} else {
@@ -73,6 +75,7 @@ public class Rover2 extends RoverBase implements IRover2, ICameraControlListener
 
 	public void toggleLight() {
 
+		Log.d(TAG, "toggleLight");
 		if (bLight) {
 			disableLight();
 		} else {

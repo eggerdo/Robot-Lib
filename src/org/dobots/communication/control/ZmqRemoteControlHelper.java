@@ -37,8 +37,6 @@ public class ZmqRemoteControlHelper extends RemoteControlHelper {
 	
 	private CommandReceiveThread m_oReceiver;
 
-	private ICameraControlListener m_oCameraListener;
-	
 	private Object m_oControlListener;
 
 	/**
@@ -80,53 +78,9 @@ public class ZmqRemoteControlHelper extends RemoteControlHelper {
 		m_oReceiver = new CommandReceiveThread(m_oZContext.getContext(), m_oCmdRecvSocket, i_strName + "ZmqRC");
 		m_oReceiver.start();
 	}
-	
-	/**
-	 * assign a camera control listener which will handle camera on/off, toggle, and up/down commands
-	 * @param i_oCameraListener object implementing the ICameraControlListener interface
-	 */
-	public void setCameraControlListener(ICameraControlListener i_oCameraListener) {
-		m_oCameraListener = i_oCameraListener;
-	}
-	
+
 	public void setControlListener(Object listener) {
 		m_oControlListener = listener;
-	}
-	
-	public void toggleCamera() {
-		if (m_oCameraListener != null) {
-			m_oCameraListener.toggleCamera();
-		}
-	}
-	
-	public void startVideo() {
-		if (m_oCameraListener != null) {
-			m_oCameraListener.startVideo();
-		}
-	}
-
-	public void stopVideo() {
-		if (m_oCameraListener != null) {
-			m_oCameraListener.stopVideo();
-		}
-	}
-	
-	public void cameraUp() {
-		if (m_oCameraListener != null) {
-			m_oCameraListener.cameraUp();
-		}
-	}
-
-	public void cameraDown() {
-		if (m_oCameraListener != null) {
-			m_oCameraListener.cameraDown();
-		}
-	}
-
-	public void cameraStop() {
-		if (m_oCameraListener != null) {
-			m_oCameraListener.cameraStop();
-		}
 	}
 	
 	public void doMove(Move i_eMove, double i_dblSpeed, double i_dblRadius) {

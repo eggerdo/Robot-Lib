@@ -3,12 +3,12 @@ package robots.rover.rover2.ctrl.remote;
 import java.util.concurrent.TimeoutException;
 
 import robots.RobotType;
-import robots.ctrl.RemoteRobot;
+import robots.ctrl.RemoteWrapperUi;
 import robots.gui.RobotView;
 import robots.rover.base.ctrl.RoverBaseTypes.VideoResolution;
 import robots.rover.rover2.ctrl.IRover2;
 
-public class Rover2Remote extends RemoteRobot implements IRover2 {
+public class Rover2Remote extends RemoteWrapperUi implements IRover2 {
 	
 	public Rover2Remote(RobotView activity, RobotType type, Class serviceClass) {
 		super(activity, type, serviceClass);

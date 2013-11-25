@@ -5,6 +5,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.dobots.communication.msg.RoboCommands;
 import org.dobots.communication.msg.RoboCommands.ControlCommand;
+import org.dobots.utilities.ThreadMessenger;
 import org.dobots.utilities.Utils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,7 +26,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 
-public class RemoteRobot implements IRobotDevice {
+public class RemoteWrapperUi implements IRobotDevice {
 	
 	private static final String TAG = "RemoteRobot";
 	
@@ -46,14 +47,11 @@ public class RemoteRobot implements IRobotDevice {
 	
 	private RobotView mRobotView = null;
 	
-	public RemoteRobot(RobotView activity, RobotType type, Class serviceClass) {
+	public RemoteWrapperUi(RobotView activity, RobotType type, Class serviceClass) {
 		mRobotView = activity;
 		
 		mType = type;
 		
-		mReceiver = new Receiver();
-		mReceiver.start();
-
 		Intent intent = new Intent(activity, serviceClass);
 		activity.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 		
@@ -102,6 +100,8 @@ public class RemoteRobot implements IRobotDevice {
 			mRobotView.unbindService(mConnection);
             mBound = false;
         }
+		
+		mReceiver.destroy();
 	}
 
 	@Override
@@ -276,7 +276,7 @@ public class RemoteRobot implements IRobotDevice {
 		
 		ControlCommand cmd = RoboCommands.createControlCommand(getID(), command, parameters);
 		
-		Message msg = Message.obtain(null, RemoteRobot.RPC);
+		Message msg = Message.obtain(null, RemoteWrapperUi.RPC);
 		Bundle bundle = new Bundle();
 		bundle.putString("data", cmd.toJSONString());
 		msg.setData(bundle);
@@ -308,62 +308,45 @@ public class RemoteRobot implements IRobotDevice {
 	private String mReply;
 	private JSONObject mReplyJson;
 
-	private Receiver mReceiver;
-	class Receiver extends Thread {
+	private ThreadMessenger mReceiver = new ThreadMessenger("remoteWrapperUi") {
 		
-		private Messenger mMessenger = null;
-		
-		public Messenger getMessenger() {
-			return mMessenger;
-		}
-		
-		public void run() {
-			
-			Looper.prepare();
-			mMessenger = new Messenger(new Handler() {
-				
-				@Override
-				public void handleMessage(Message msg) {
+		@Override
+		protected boolean handleIncomingMessage(Message msg) {
+			switch(msg.what) {
+			case INIT:
+				mRobotId = msg.getData().getString("robot_id");
+				Utils.runAsyncTask(new Runnable() {
 					
-					switch(msg.what) {
-					case INIT:
-						mRobotId = msg.getData().getString("robot_id");
-						Utils.runAsyncTask(new Runnable() {
-							
-							@Override
-							public void run() {
-								mRobotView.onRobotCtrlReady();
-							}
-						});
-						break;
-					case CLOSE:
-						mRobotId = null;
-						break;
-					case REPLY:
-						synchronized (mWaitForReply) {
-							mReply = msg.getData().getString("data");
-							
-							try {
-								mReplyJson = new JSONObject(mReply);
-							} catch (JSONException e) {
-								mReplyJson = null;
-							}
-							
-							mWaitForReply.notify();
-						}
-						break;
-					default:
-						// forward messages to the UI
-						Message newMessage = Message.obtain();
-						newMessage.copyFrom(msg);
-						m_oUiHandler.sendMessage(newMessage);
+					@Override
+					public void run() {
+						mRobotView.onRobotCtrlReady();
+					}
+				});
+				break;
+			case CLOSE:
+				mRobotId = null;
+				break;
+			case REPLY:
+				synchronized (mWaitForReply) {
+					mReply = msg.getData().getString("data");
+					
+					try {
+						mReplyJson = new JSONObject(mReply);
+					} catch (JSONException e) {
+						mReplyJson = null;
 					}
 					
+					mWaitForReply.notify();
 				}
-			});
-			Looper.loop();
-			
-		};
+				break;
+			default:
+				// forward messages to the UI
+				Message newMessage = Message.obtain();
+				newMessage.copyFrom(msg);
+				m_oUiHandler.sendMessage(newMessage);
+			}
+			return true;
+		}
 	};
 	
 	private Messenger getInMessenger() {
