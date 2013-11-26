@@ -10,7 +10,7 @@ import robots.gui.RobotDriveCommandListener;
 
 import com.romotive.library.RomoCommandInterface;
 
-public class Romo extends DifferentialRobot {
+public class Romo extends DifferentialRobot implements IRomo {
 	
 	private static final String TAG = "Romo";
 	

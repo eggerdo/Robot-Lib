@@ -1,4 +1,4 @@
-package robots.ctrl;
+package robots.remote;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -11,8 +11,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import robots.RobotType;
+import robots.ctrl.IRobotDevice;
 import robots.gui.MessageTypes;
 import robots.gui.RobotView;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -20,13 +23,12 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 
-public class RemoteWrapperUi implements IRobotDevice {
+public class RemoteRobotMessenger implements IRobotDevice {
 	
 	private static final String TAG = "RemoteRobot";
 	
@@ -47,18 +49,26 @@ public class RemoteWrapperUi implements IRobotDevice {
 	
 	private RobotView mRobotView = null;
 	
-	public RemoteWrapperUi(RobotView activity, RobotType type, Class serviceClass) {
+	private Class mRobotServiceClass;
+	
+	public RemoteRobotMessenger(RobotView activity, RobotType type, Class serviceClass) {
 		mRobotView = activity;
+		mRobotServiceClass = serviceClass;
 		
 		mType = type;
 		
 		Intent intent = new Intent(activity, serviceClass);
 		activity.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-		
-//		Intent intent = new Intent(activity, RobotService.class);
-//		intent.putExtra("robot_type", mType.name());
-//		activity.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-		
+	}
+
+	private boolean isServiceRunning() {
+	    ActivityManager manager = (ActivityManager) mRobotView.getSystemService(Context.ACTIVITY_SERVICE);
+	    for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+	        if (mRobotServiceClass.getName().equals(service.service.getClassName())) {
+	            return true;
+	        }
+	    }
+	    return false;
 	}
 	
 	@Override
@@ -94,6 +104,9 @@ public class RemoteWrapperUi implements IRobotDevice {
 
 	@Override
 	public void destroy() {
+		// we don't automatically send a disconnect to the robot, 
+		// because the service could be running still.
+		
 		closeRemoteConnection();
 		
 		if (mBound) {
@@ -103,7 +116,7 @@ public class RemoteWrapperUi implements IRobotDevice {
 		
 		mReceiver.destroy();
 	}
-
+	
 	@Override
 	public void connect() throws IOException {
 		sendRPC("connect");
@@ -276,7 +289,7 @@ public class RemoteWrapperUi implements IRobotDevice {
 		
 		ControlCommand cmd = RoboCommands.createControlCommand(getID(), command, parameters);
 		
-		Message msg = Message.obtain(null, RemoteWrapperUi.RPC);
+		Message msg = Message.obtain(null, RemoteRobotMessenger.RPC);
 		Bundle bundle = new Bundle();
 		bundle.putString("data", cmd.toJSONString());
 		msg.setData(bundle);

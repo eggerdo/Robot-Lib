@@ -1,17 +1,16 @@
 package org.dobots.communication.zmq;
 
+import org.dobots.utilities.DoBotsThread;
 import org.dobots.utilities.Utils;
 import org.zeromq.ZMQ;
 
 import android.os.Looper;
 
-public abstract class ZmqReceiveThread extends Thread {
+public abstract class ZmqReceiveThread extends DoBotsThread {
 
 	protected ZMQ.Socket m_oInSocket;
 	
 	private ZMQ.Poller m_oPoller;
-	
-	private boolean bPause = false; 
 	
 	public ZmqReceiveThread(ZMQ.Context i_oContext, ZMQ.Socket i_oInSocket, String i_strThreadName) {
 		super(i_strThreadName);
@@ -26,12 +25,16 @@ public abstract class ZmqReceiveThread extends Thread {
 		Looper.prepare();
 		while(!Thread.currentThread().isInterrupted()) {
 			try {
-				if (!bPause) {
+				if (!m_bPaused) {
 					if (m_oPoller.poll(1000) > 0) {
 						execute();
 					}
 				} else {
-					Utils.waitSomeTime(10);
+					sleep(10);
+				}
+			} catch (InterruptedException e) {
+				if (!m_bStopped) {
+					e.printStackTrace();
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -40,18 +43,13 @@ public abstract class ZmqReceiveThread extends Thread {
 		m_oPoller.unregister(m_oInSocket);
 	}
 	
-	protected abstract void execute();
-	
 	public void close() {
-		interrupt();
+		stopThread();
 	}
-	
-	public void pauseThread() {
-		bPause = true;
+
+	@Override
+	public void shutDown() {
+		// TODO Auto-generated method stub
+		
 	}
-	
-	public void resumeThread() {
-		bPause = false;
-	}
-	
 }

@@ -110,9 +110,7 @@ public class MoveRepeater extends DoBotsThread {
 	protected void execute() {
 		m_lUpdateTime = System.nanoTime();
 
-		if (m_oCurrentMove == null) {
-			Utils.waitSomeTime(10);
-		} else {
+		if (m_oCurrentMove != null) {
 
 			synchronized (m_oMoveMutex) {
 				m_oCurrentMove.run();

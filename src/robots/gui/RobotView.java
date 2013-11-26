@@ -7,8 +7,11 @@ import org.dobots.utilities.ProgressDlg;
 
 import robots.RobotType;
 import robots.ctrl.IRobotDevice;
+import robots.remote.RemoteRobotMessenger;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -162,6 +165,8 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
 			getSensorGatherer().pauseThread();
 		}
     	
+		// if we own the robot, disconnect when
+		// the UI is hidden
     	if (m_bOwnsRobot) {
     		disconnect();
     	}
@@ -380,4 +385,28 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
 	}
 
 	public abstract void onRobotCtrlReady();
+	
+	@Override
+	public void onBackPressed() {
+		// if we don't own the robot and the robot is connected
+		// ask if we should disconnect before closing the UI
+		if (!m_bOwnsRobot && getRobot().isConnected()) {
+			
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+	        builder.setMessage("Disconnect from robot?")
+	               .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+	                   public void onClick(DialogInterface dialog, int id) {
+	                       disconnect();
+	                       finish();
+	                   }
+	               })
+	               .setNegativeButton("No", new DialogInterface.OnClickListener() {
+	                   public void onClick(DialogInterface dialog, int id) {
+	                	   finish();
+	                   }
+	               });
+	        builder.create().show();
+		}
+	}
+
 }

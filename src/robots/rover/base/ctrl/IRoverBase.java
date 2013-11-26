@@ -7,8 +7,6 @@ import android.os.Handler;
 
 public interface IRoverBase extends IRobotDevice, ICameraRobot {
 
-	public void setHandler(Handler handler);
-	
 	public void setConnection(String address, int port);
 
 	public void toggleInfrared();

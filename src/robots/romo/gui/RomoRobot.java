@@ -43,28 +43,35 @@ public class RomoRobot extends RobotView implements ICameraControlListener, ILog
 		
         CONTEXT = this;
         
-        Romo oRomo = (Romo) getRobot();
-        oRomo.setDebug(true);
-        oRomo.setLogListener(this);
+//        Romo oRomo = (Romo) getRobot();
+//        oRomo.setDebug(true);
+//        oRomo.setLogListener(this);
 
-    	m_oZmqRemoteSender = new ZmqRemoteControlSender(oRomo.getID());
+//    	m_oZmqRemoteSender = new ZmqRemoteControlSender(oRomo.getID());
 
     	// remote control helper, handles ui buttons and sends commands over zmq
 		m_oRemoteCtrl = new ZmqRemoteControlHelper(m_oActivity);
-		m_oRemoteCtrl.setDriveControlListener(m_oZmqRemoteSender);
+//		m_oRemoteCtrl.setDriveControlListener(m_oZmqRemoteSender);
 		
 		// receives and handles incoming camera control commands
 		m_oCameraCtrl = new ZmqRemoteControlHelper();
-		m_oCameraCtrl.setCameraControlListener(this);
-		m_oCameraCtrl.startReceiver("RomoUI");
+//		m_oCameraCtrl.setCameraControlListener(this);
+//		m_oCameraCtrl.startReceiver("RomoUI");
 
-        m_oSensorGatherer = new RomoSensorGatherer(this, m_strRobotID);
-		m_oCamera.setFrameListener(m_oSensorGatherer);
+//        m_oSensorGatherer = new RomoSensorGatherer(this, m_strRobotID);
+//		m_oCamera.setFrameListener(m_oSensorGatherer);
 	}
 
     @Override
     public void onRobotCtrlReady() {
-    	
+    	m_oZmqRemoteSender = new ZmqRemoteControlSender(getRobot().getID());
+		m_oRemoteCtrl.setDriveControlListener(m_oZmqRemoteSender);
+
+		m_oCameraCtrl.setCameraControlListener(this);
+		m_oCameraCtrl.startReceiver("RomoUI");
+
+		m_oSensorGatherer = new RomoSensorGatherer(this, getRobot().getID());
+		m_oCamera.setFrameListener(m_oSensorGatherer);
     }
     
 	@Override

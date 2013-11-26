@@ -1,4 +1,4 @@
-package robots.ctrl;
+package robots.remote;
 
 import java.util.ArrayList;
 
@@ -12,14 +12,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.zeromq.ZMQ;
 
+import robots.ctrl.IRobotDevice;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 
-public class RemoteWrapperRobot {
+public class RobotServiceMessenger {
 	
 	private static final String TAG = "RemoteWrapperRobot";
 	
@@ -27,8 +30,8 @@ public class RemoteWrapperRobot {
 
 	// socket to forward commands coming in over the messenger to the zmq handler
 	private ZMQ.Socket m_oZmqForwarder;
-
-	public RemoteWrapperRobot(IRobotDevice robot) {
+	
+	public RobotServiceMessenger(IRobotDevice robot) {
 		mRobot = robot;
 
 		m_oZmqForwarder = ZmqHandler.getInstance().obtainCommandSendSocket();
@@ -36,7 +39,6 @@ public class RemoteWrapperRobot {
 		mRobot.setHandler(mUiHandler);
 	}
 
-	
 	private ArrayList<Messenger> mServiceOutMessengers = new ArrayList<Messenger>();
 	
 	private ThreadMessenger mReceiver = new ThreadMessenger("serviceInMessenger") {
@@ -45,7 +47,7 @@ public class RemoteWrapperRobot {
 		protected boolean handleIncomingMessage(Message msg) {
 
 			switch(msg.what) {
-			case RemoteWrapperUi.RPC:
+			case RemoteRobotMessenger.RPC:
 				String data = msg.getData().getString("data");
 
 				Log.d(TAG, "recv rpc: " + data);
@@ -58,10 +60,10 @@ public class RemoteWrapperRobot {
 					}
 				}
 				break;
-			case RemoteWrapperUi.INIT:
+			case RemoteRobotMessenger.INIT:
 				mServiceOutMessengers.add(msg.replyTo);
 				
-				Message reply = Message.obtain(null, RemoteWrapperUi.INIT);
+				Message reply = Message.obtain(null, RemoteRobotMessenger.INIT);
 				Bundle bundle = new Bundle();
 				bundle.putString("robot_id", mRobot.getID());
 				reply.setData(bundle);
@@ -73,7 +75,7 @@ public class RemoteWrapperRobot {
 				}
 				
 				break;
-			case RemoteWrapperUi.CLOSE:
+			case RemoteRobotMessenger.CLOSE:
 				mServiceOutMessengers.remove(msg.replyTo);
 				break;
 //			case RemoteRobot.REGISTER:
@@ -87,17 +89,13 @@ public class RemoteWrapperRobot {
 		
 	};
 	
-	public Messenger getInMessenger() {
-		return mReceiver.getMessenger();
-	}
-	
 	private void sendReply(Messenger replyTo, ControlCommand cmd, Object result) {
 		
 		JSONObject replyJson = new JSONObject();
 		try {
 			replyJson.put(cmd.mCommand, result);
 
-			Message reply = Message.obtain(null, RemoteWrapperUi.REPLY);
+			Message reply = Message.obtain(null, RemoteRobotMessenger.REPLY);
 			
 			Bundle bundle = new Bundle();
 			bundle.putString("data", replyJson.toString());
@@ -138,7 +136,6 @@ public class RemoteWrapperRobot {
 
 	public void destroy() {
 		mRobot.destroy();
-
 		mReceiver.destroy();
 	}
 
@@ -158,6 +155,14 @@ public class RemoteWrapperRobot {
 				ZmqUtils.sendCommand(cmd, m_oZmqForwarder);
 			}
 		}
+	}
+
+	public IBinder getBinder() {
+		return mReceiver.getMessenger().getBinder();
+	}
+
+	public IBinder onBind(Intent intent) {
+		return getBinder();
 	}
 	
 }

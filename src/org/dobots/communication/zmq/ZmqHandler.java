@@ -72,9 +72,9 @@ public class ZmqHandler {
 			getInstance().setSettings(new ZmqSettings(i_oActivity));
 		}
 
-		if (!getInstance().getSettings().checkSettings()) {
-			getInstance().getSettings().showDialog(i_oActivity);
-		}
+//		if (!getInstance().getSettings().checkSettings()) {
+//			getInstance().getSettings().showDialog(i_oActivity);
+//		}
 
 		return getInstance();
 	}
