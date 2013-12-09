@@ -1,8 +1,10 @@
 package robots.ctrl;
 
+import org.dobots.utilities.DoBotsThread;
+
 import robots.gui.BluetoothConnection;
 
-public class AsciiProtocolHandler extends Thread {
+public class AsciiProtocolHandler extends DoBotsThread {
 
 	public interface IAsciiMessageHandler {
 		public void onMessage(String message);
@@ -12,22 +14,10 @@ public class AsciiProtocolHandler extends Thread {
 	
 	private BluetoothConnection mConnection = null;
 	
-	private boolean mStopped = false;
-	
 	public AsciiProtocolHandler(BluetoothConnection connection, IAsciiMessageHandler handler) {
+		super("AsciiProtocolHandler");
 		mConnection = connection;
 		mHandler = handler;
-	}
-	
-	public void run() {
-		while (mConnection.isConnected() && !mStopped) {
-			String message = receiveMessage();
-			if (message != null) {
-				if (mHandler != null) {
-					mHandler.onMessage(message);
-				}
-			}
-		}
 	}
 	
 	public String receiveMessage() {
@@ -38,8 +28,20 @@ public class AsciiProtocolHandler extends Thread {
 		return null;
 	}
 	
-	public void close() {
-		mStopped = true;
+	@Override
+	public void shutDown() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void execute() {
+		String message = receiveMessage();
+		if (message != null) {
+			if (mHandler != null) {
+				mHandler.onMessage(message);
+			}
+		}
 	}
 	
 };

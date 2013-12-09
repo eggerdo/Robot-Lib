@@ -4,6 +4,8 @@ import android.bluetooth.BluetoothDevice;
 
 public interface IBluetoothConnectionListener {
 
-	public void connect(BluetoothDevice i_oDevice);
+	public void setConnection(BluetoothDevice i_oDevice);
+	
+	public void connect();
 
 }

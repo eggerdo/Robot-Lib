@@ -1,6 +1,8 @@
 package robots.gui;
 
 import robots.RobotType;
+import robots.arduino.ctrl.ArduinoTypes;
+import robots.arduino.gui.ArduinoUI;
 import robots.nxt.ctrl.NXTTypes;
 import robots.parrot.gui.ParrotRobot;
 import robots.piratedotty.ctrl.PirateDottyTypes;
@@ -54,6 +56,8 @@ public class RobotViewFactory {
 			return ReplicatorUI.class;
 		case RBT_PIRATEDOTTY:
 			return PirateDottyRobot.class;
+		case RBT_ARDUINO:
+			return ArduinoUI.class;
 		default:
 			return null;
 //			return UnimplementedRobot.class;
@@ -80,6 +84,8 @@ public class RobotViewFactory {
 			return RomoTypes.SSID_FILTER;
 		case RBT_PIRATEDOTTY:
 			return PirateDottyTypes.MAC_FILTER;
+		case RBT_ARDUINO:
+			return ArduinoTypes.MAC_FILTER;
 		default:
 			return "";
 		}

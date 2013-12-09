@@ -1,13 +1,13 @@
 package robots.parrot.gui;
 
 import org.dobots.R;
+import org.dobots.lib.comm.Move;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
 
 import robots.RobotType;
 import robots.ctrl.IDriveControlListener;
 import robots.ctrl.RemoteControlHelper;
-import robots.ctrl.RemoteControlHelper.Move;
 import robots.gui.IConnectListener;
 import robots.gui.RobotDriveCommandListener;
 import robots.gui.SensorGatherer;

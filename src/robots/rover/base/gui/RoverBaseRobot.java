@@ -1,12 +1,10 @@
 package robots.rover.base.gui;
 
-import java.io.IOException;
-
 import org.dobots.R;
-import org.dobots.communication.control.ZmqRemoteControlHelper;
-import org.dobots.communication.control.ZmqRemoteControlSender;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
+import org.dobots.zmq.ZmqRemoteControlHelper;
+import org.dobots.zmq.ZmqRemoteControlSender;
 
 import robots.RobotType;
 import robots.gui.IConnectListener;
@@ -20,6 +18,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -175,7 +174,11 @@ public abstract class RoverBaseRobot extends WifiRobot {
 //			}
 //			break;
 		case VIDEO_ID:
-			m_oSensorGatherer.setVideoEnabled(!getRover().isStreaming());
+			if (getRover().isStreaming()) {
+				m_oSensorGatherer.stopVideo();
+			} else {
+				m_oSensorGatherer.startVideo();
+			}
 			break;
 		}
 
@@ -218,12 +221,7 @@ public abstract class RoverBaseRobot extends WifiRobot {
 
 	@Override
 	protected void connect() {
-		try {
-			getRover().connect();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		getRover().connect();
 	}
 
 	@Override

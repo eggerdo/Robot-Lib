@@ -7,7 +7,6 @@ import org.dobots.utilities.ProgressDlg;
 
 import robots.RobotType;
 import robots.ctrl.IRobotDevice;
-import robots.remote.RemoteRobotMessenger;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -78,7 +77,9 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
 			break;
 			
 		case MessageTypes.STATE_CONNECTED:
-			connectingProgressDialog.dismiss();
+			if (connectingProgressDialog != null) {
+				connectingProgressDialog.dismiss();				
+			}
 			showToast("Connection OK", Toast.LENGTH_SHORT);
 			onConnect();
 			break;
@@ -88,7 +89,9 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
 			break;
 
 		case MessageTypes.STATE_CONNECTERROR:
-			connectingProgressDialog.dismiss();
+			if (connectingProgressDialog != null) {
+				connectingProgressDialog.dismiss();
+			}
 		case MessageTypes.STATE_RECEIVEERROR:
 		case MessageTypes.STATE_SENDERROR:
 	    	if (btErrorPending == false) {
@@ -406,6 +409,8 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
 	                   }
 	               });
 	        builder.create().show();
+		} else {
+			finish();
 		}
 	}
 

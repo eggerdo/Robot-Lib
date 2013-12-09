@@ -1,14 +1,15 @@
 package robots.spytank.gui;
 
+import java.net.Socket;
+
 import org.dobots.R;
-import org.dobots.communication.video.IFpsListener;
-import org.dobots.communication.video.IVideoListener;
-import org.dobots.communication.video.ZmqVideoReceiver;
-import org.dobots.communication.zmq.ZmqHandler;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
+import org.dobots.zmq.ZmqHandler;
+import org.dobots.zmq.video.IFpsListener;
+import org.dobots.zmq.video.IVideoListener;
+import org.dobots.zmq.video.ZmqVideoReceiver;
 import org.zeromq.ZMQ;
-import org.zeromq.ZMQ.Socket;
 
 import robots.gui.SensorGatherer;
 import robots.spytank.ctrl.SpyTank;

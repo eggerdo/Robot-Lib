@@ -15,7 +15,7 @@
         android:indeterminateBehavior="repeat"
         android:visibility="invisible" />
 
-    <org.dobots.communication.video.VideoSurfaceView
+    <org.dobots.zmq.video.gui.VideoSurfaceView
         android:id="@+id/ivCamera"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

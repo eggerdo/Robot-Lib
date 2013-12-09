@@ -16,6 +16,7 @@ public enum RobotType {
 	RBT_SPYTANK		("I-Spy Tank",		true,	true),
 	RBT_ROBO40		("Robo 40",			true,	true),
 	RBT_REPLICATOR	("Replicator",		true,	true),
+	RBT_ARDUINO		("Arduino",			true,	true),
 	RBT_FINCH		("Finch", 			false,	true),
 	RBT_SURVEYOR	("Surveyor", 		false,	true),
 	RBT_TRAKR		("Trakr", 			false,	true),

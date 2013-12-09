@@ -3,7 +3,6 @@ package robots.rover.base.ctrl;
 import robots.ctrl.ICameraRobot;
 import robots.ctrl.IRobotDevice;
 import robots.rover.base.ctrl.RoverBaseTypes.VideoResolution;
-import android.os.Handler;
 
 public interface IRoverBase extends IRobotDevice, ICameraRobot {
 

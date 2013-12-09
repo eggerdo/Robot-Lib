@@ -1,9 +1,9 @@
 package robots.replicator.gui;
 
 import org.dobots.R;
-import org.dobots.communication.control.ZmqRemoteControlHelper;
-import org.dobots.communication.control.ZmqRemoteControlSender;
 import org.dobots.utilities.Utils;
+import org.dobots.zmq.ZmqRemoteControlHelper;
+import org.dobots.zmq.ZmqRemoteControlSender;
 
 import robots.RobotType;
 import robots.gui.SensorGatherer;

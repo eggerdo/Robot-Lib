@@ -3,6 +3,7 @@ package robots.gui;
 import org.dobots.utilities.BaseActivity;
 
 import robots.ctrl.IRobotDevice;
+import robots.gui.BluetoothConnectionHelper.BTEnableCallback;
 import robots.nxt.ctrl.NXT;
 import robots.nxt.gui.NXTRobot;
 import robots.parrot.ctrl.Parrot;
@@ -41,20 +42,32 @@ public class ConnectionHelper {
 		final BluetoothConnectionHelper oBTHelper = new BluetoothConnectionHelper(i_oActivity, RobotViewFactory.getRobotAddressFilter(i_oRobot.getType()));
 		oBTHelper.SetOnConnectListener(new IBluetoothConnectionListener() {
 			
+			BluetoothDevice mDevice;
+			
 			@Override
-			public void connect(BluetoothDevice i_oDevice) {
-				
+			public void setConnection(BluetoothDevice i_oDevice) {
+				mDevice = i_oDevice;
+			}
+
+			@Override
+			public void connect() {
 				try {
-					ConnectionHelper.connectToBluetoothRobot(i_oActivity, i_oRobot, i_oDevice, i_oListener);
+					ConnectionHelper.connectToBluetoothRobot(i_oActivity, i_oRobot, mDevice, i_oListener);
 				} catch (Exception e) {
 					Toast.makeText(i_oActivity, "Robot not available", Toast.LENGTH_LONG);
 				}
 			}
+			
+			
 		});
 		
-		if (oBTHelper.initBluetooth()) {
-			oBTHelper.selectRobot();
-		}
+		oBTHelper.initBluetooth(new BTEnableCallback() {
+			
+			@Override
+			public void onEnabled() {
+				oBTHelper.selectRobot();
+			}
+		});
 		
 		return true;
 	}

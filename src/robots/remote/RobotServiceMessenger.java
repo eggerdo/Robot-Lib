@@ -2,12 +2,12 @@ package robots.remote;
 
 import java.util.ArrayList;
 
-import org.dobots.communication.msg.RoboCommands;
-import org.dobots.communication.msg.RoboCommands.BaseCommand;
-import org.dobots.communication.msg.RoboCommands.ControlCommand;
-import org.dobots.communication.zmq.ZmqHandler;
-import org.dobots.communication.zmq.ZmqUtils;
+import org.dobots.lib.comm.msg.RoboCommands;
+import org.dobots.lib.comm.msg.RoboCommands.BaseCommand;
+import org.dobots.lib.comm.msg.RoboCommands.ControlCommand;
 import org.dobots.utilities.ThreadMessenger;
+import org.dobots.zmq.ZmqHandler;
+import org.dobots.zmq.ZmqUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.zeromq.ZMQ;
@@ -152,7 +152,7 @@ public class RobotServiceMessenger {
 				// Assumption: messages that arrive on this port are for this robot
 				// if that is not the case, the robot id has to be added to the header
 				cmd.strRobotID = mRobot.getID();
-				ZmqUtils.sendCommand(cmd, m_oZmqForwarder);
+				ZmqUtils.send(mRobot.getID(), cmd.toJSONString(), m_oZmqForwarder);
 			}
 		}
 	}

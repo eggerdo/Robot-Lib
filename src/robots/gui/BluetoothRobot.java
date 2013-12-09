@@ -3,8 +3,9 @@ package robots.gui;
 import org.dobots.R;
 import org.dobots.utilities.BaseActivity;
 
+import robots.gui.BluetoothConnectionHelper.BTEnableCallback;
 import android.app.AlertDialog;
-import android.bluetooth.BluetoothSocket;
+import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,7 +16,7 @@ public abstract class BluetoothRobot extends RobotView implements IBluetoothConn
 	protected BluetoothConnectionHelper m_oBTHelper;
 
 //	protected BluetoothAdapter m_oBTAdapter = null;
-	protected BluetoothSocket m_oSocket = null;
+//	protected BluetoothSocket m_oSocket = null;
 	protected boolean m_bBTOnByUs = false;
 
 	public BluetoothRobot(BaseActivity i_oOwner) {
@@ -41,9 +42,14 @@ public abstract class BluetoothRobot extends RobotView implements IBluetoothConn
     	// when activity is restarted, connect to the robot again if it's not already connected, but only
     	// if we have a valid address
     	if (m_strAddress != "" && !getRobot().isConnected()) {
-    		if (m_oBTHelper.initBluetooth()) {
-    			connect(m_oBTHelper.getRemoteDevice(m_strAddress));
-    		}
+    		m_oBTHelper.initBluetooth(new BTEnableCallback() {
+    			
+    			@Override
+    			public void onEnabled() {
+    				setConnection(m_oBTHelper.getRemoteDevice(m_strAddress));
+        			connect();
+    			}
+    		});
     	}
     }
 
@@ -87,8 +93,39 @@ public abstract class BluetoothRobot extends RobotView implements IBluetoothConn
 	protected void connectToRobot() {
 		// if bluetooth is not yet enabled, initBluetooth will return false
 		// and the device selection will be called in the onActivityResult
-		if (m_oBTHelper.initBluetooth())
-			m_oBTHelper.selectRobot();
+		m_oBTHelper.initBluetooth(new BTEnableCallback() {
+			
+			@Override
+			public void onEnabled() {
+				m_oBTHelper.selectRobot();				
+			}
+		});
+	}
+	
+	protected void setConnection(final String strRobotAddress) {
+		m_oBTHelper.initBluetooth(new BTEnableCallback() {
+			
+			@Override
+			public void onEnabled() {
+				setConnection(m_oBTHelper.getRemoteDevice(strRobotAddress));				
+			}
+		});
+	}
+	
+	public interface BTDeviceCallback {
+		public void onDeviceFound(BluetoothDevice device);
+	}
+	
+	public static void getConnection(BaseActivity activity, final String address, final BTDeviceCallback callback) {
+		
+		final BluetoothConnectionHelper btHelper = new BluetoothConnectionHelper(activity, "");
+		btHelper.initBluetooth(new BTEnableCallback() {
+			
+			@Override
+			public void onEnabled() {
+				callback.onDeviceFound(btHelper.getRemoteDevice(address));
+			}
+		});
 	}
 
 }

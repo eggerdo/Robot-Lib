@@ -16,7 +16,7 @@ public interface IRobotDevice {
 	public void setHandler(Handler i_oHandler);
 	
 	// connection methods
-	public void connect() throws IOException;
+	public void connect();
 	public void disconnect();
 	public boolean isConnected();
 	

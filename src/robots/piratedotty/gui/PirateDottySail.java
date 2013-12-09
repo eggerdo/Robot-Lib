@@ -2,7 +2,6 @@ package robots.piratedotty.gui;
 
 import java.io.InputStream;
 
-import org.dobots.R;
 import org.dobots.utilities.Utils;
 
 import android.content.Context;
@@ -20,27 +19,24 @@ public class PirateDottySail extends View {
 	
 	public PirateDottySail(Context context) {
         super(context);
-        load();
 	}
 
     public PirateDottySail(Context context, AttributeSet attrs) {
         super(context, attrs);
-        load();  
     }
 
     public PirateDottySail(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        load();
     }
     
-    private void load() {
+    public void load(final int resourceId) {
 //        setFocusable(true);
         
     	Utils.runAsyncTask(new Runnable() {
 			
 			@Override
 			public void run() {
-				InputStream is = getResources().openRawResource(R.drawable.animated_sail);
+				InputStream is = getResources().openRawResource(resourceId);
 				mMovie = Movie.decodeStream(is);
 			}
 		});

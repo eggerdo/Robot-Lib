@@ -10,8 +10,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.dobots.communication.video.IRawVideoListener;
 import org.dobots.utilities.log.Loggable;
+import org.dobots.zmq.video.IRawVideoListener;
 
 import robots.rover.base.ctrl.RoverBaseTypes.RoverParameters;
 import android.util.Log;

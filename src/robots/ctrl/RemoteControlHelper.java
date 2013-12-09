@@ -19,6 +19,7 @@
 package robots.ctrl;
 
 import org.dobots.R;
+import org.dobots.lib.comm.Move;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.IMenuListener;
 import org.dobots.utilities.LockableScrollView;
@@ -49,10 +50,6 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 	final static int STRAIGHT_THRESHOLD = 2;
 	final static int DIRECTION_THRESHOLD_1 = 10;
 	final static int DIRECTION_THRESHOLD_2 = 30;
-	
-	public enum Move {
-		NONE, STRAIGHT_FORWARD, FORWARD, STRAIGHT_BACKWARD, BACKWARD, ROTATE_LEFT, ROTATE_RIGHT, LEFT, RIGHT
-	}
 	
 	// negative angle -> right radius
 	// positive angle -> left radius
@@ -99,7 +96,8 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 	
 	private Joystick m_oJoystick;
 	
-	private int mAlpha = 99;
+	private int mAlpha = 128;
+	private boolean mTransparent = false;
 
 	private class RemoteControlTouchListener implements OnTouchListener {
 
@@ -161,6 +159,50 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 		
 		m_oActivity = i_oActivity;
 		setProperties();
+	}
+	
+	public void setTransparency(boolean transparent) {
+		mTransparent = transparent;
+	}
+	
+	public void adjustTransparency() {
+		int alpha = mTransparent ? mAlpha : 255;
+		
+		if (m_btnFwdLeft != null) {
+			m_btnFwdLeft.getBackground().setAlpha(alpha);
+		}
+		
+		if (m_btnFwd != null) {
+			m_btnFwd.getBackground().setAlpha(alpha);
+		}
+		
+		if (m_btnFwdRight != null) {
+			m_btnFwdRight.getBackground().setAlpha(alpha);
+		}
+
+		if (m_btnLeft != null) {
+			m_btnLeft.getBackground().setAlpha(alpha);
+		}
+		
+		if (m_btnStop != null) {
+			m_btnStop.getBackground().setAlpha(alpha);
+		}
+		
+		if (m_btnRight != null) {
+			m_btnRight.getBackground().setAlpha(alpha);
+		}
+		
+		if (m_btnBwdLeft != null) {
+			m_btnBwdLeft.getBackground().setAlpha(alpha);
+		}
+		
+		if (m_btnBwd != null) {
+			m_btnBwd.getBackground().setAlpha(alpha);
+		}
+		
+		if (m_btnBwdRight != null) {
+			m_btnBwdRight.getBackground().setAlpha(alpha);
+		}
 	}
 	
 	public void destroy() {
@@ -267,6 +309,7 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 			m_btnBwdRight.setOnTouchListener(new RemoteControlTouchListener(Move.BACKWARD, -80));
 		}
 		
+		adjustTransparency();
 		resetLayout();
 	}
 	
@@ -459,6 +502,9 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 	
 	public void setRemoteControl(boolean i_bOn) {
 		m_bControl = i_bOn;
+		if (hasControlButton()) {
+			m_btnControl.setChecked(i_bOn);
+		}
 		enableRobotControl(i_bOn);
 		showRemoteControl(i_bOn);
 	}
@@ -519,7 +565,14 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 
 		if (m_bJoystickControlAvailable) {
 			menu.setGroupVisible(GRP_REMOTE_CTRL, m_bControl);
-			Utils.updateOnOffMenuItem(menu.findItem(MENU_JOYSTICK_CTRL), m_bJoystickControl);
+			// with API >= 11, setting icon on a menu item doesn't work anymore
+			// so now we have to change the name of the menu item
+			//			Utils.updateOnOffMenuItem(menu.findItem(MENU_JOYSTICK_CTRL), m_bJoystickControl);
+			if (m_bJoystickControl) {
+				menu.findItem(MENU_JOYSTICK_CTRL).setTitle(R.string.keypad);
+			} else {
+				menu.findItem(MENU_JOYSTICK_CTRL).setTitle(R.string.joystick);
+			}
 		}	
 		
 		return true;

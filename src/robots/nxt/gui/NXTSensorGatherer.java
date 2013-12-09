@@ -3,12 +3,12 @@ package robots.nxt.gui;
 import java.util.EnumMap;
 
 import org.dobots.R;
-import org.dobots.communication.msg.SensorMessageData;
-import org.dobots.communication.sensors.ZmqSensorsReceiver;
-import org.dobots.communication.sensors.ZmqSensorsReceiver.ISensorDataListener;
-import org.dobots.communication.zmq.ZmqHandler;
+import org.dobots.lib.comm.msg.ISensorDataListener;
+import org.dobots.lib.comm.msg.SensorMessageArray;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
+import org.dobots.zmq.ZmqHandler;
+import org.dobots.zmq.sensors.ZmqSensorsReceiver;
 import org.zeromq.ZMQ.Socket;
 
 import robots.gui.SensorGatherer;
@@ -50,7 +50,7 @@ public class NXTSensorGatherer extends SensorGatherer implements ISensorDataList
 		
 		m_oSensorsRecvSocket = ZmqHandler.getInstance().obtainSensorsRecvSocket();
 		m_oSensorsRecvSocket.subscribe(m_oNxt.getID().getBytes());
-		m_oSensorsReceiver = new ZmqSensorsReceiver(ZmqHandler.getInstance().getContext().getContext(), m_oSensorsRecvSocket, "NxtSensorsReceiver");
+		m_oSensorsReceiver = new ZmqSensorsReceiver(m_oSensorsRecvSocket, "NxtSensorsReceiver");
 		m_oSensorsReceiver.setSensorDataListener(this);
 		m_oSensorsReceiver.start();
 		
@@ -106,9 +106,11 @@ public class NXTSensorGatherer extends SensorGatherer implements ISensorDataList
 	}
 
 	@Override
-	public void onSensorData(final SensorMessageData data) {
+	public void onSensorData(String json) {
 		// to update the UI we need to execute the function
 		// in the main looper.
+		final SensorMessageArray data = SensorMessageArray.decodeJSON(m_oNxt.getID(), json);
+		
 		m_oActivity.runOnUiThread(new Runnable() {
 			
 			@Override

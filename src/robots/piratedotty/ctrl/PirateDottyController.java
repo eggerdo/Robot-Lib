@@ -27,7 +27,7 @@ public class PirateDottyController extends Loggable implements IAsciiMessageHand
 	
 	public void destroyConnection() {
 		if (mProtocolHandler != null) {
-			mProtocolHandler.close();
+			mProtocolHandler.destroy();
 			mProtocolHandler = null;
 		}
 		

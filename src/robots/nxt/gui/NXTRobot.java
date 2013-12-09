@@ -1,10 +1,10 @@
 package robots.nxt.gui;
 
 import org.dobots.R;
-import org.dobots.communication.control.ZmqRemoteControlHelper;
-import org.dobots.communication.control.ZmqRemoteControlSender;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
+import org.dobots.zmq.ZmqRemoteControlHelper;
+import org.dobots.zmq.ZmqRemoteControlSender;
 
 import robots.RobotType;
 import robots.ctrl.RemoteControlHelper;
@@ -185,7 +185,7 @@ public class NXTRobot extends BluetoothRobot {
 	}
 
 	@Override
-	public void connect(BluetoothDevice i_oDevice) {
+	public void setConnection(BluetoothDevice i_oDevice) {
 		m_strAddress = i_oDevice.getAddress();
 		showConnectingDialog();
 		
@@ -196,8 +196,12 @@ public class NXTRobot extends BluetoothRobot {
 		BluetoothConnection connection = new BluetoothConnection(i_oDevice, NXTTypes.SERIAL_PORT_SERVICE_CLASS_UUID);
 		connection.setReceiveHandler(m_oUiHandler);
 		m_oNxt.setConnection(connection);
-		m_oNxt.connect();
 	}
+	
+	@Override
+	public void connect() {
+		m_oNxt.connect();
+	};
 	
 	public static void connectToNXT(final BaseActivity m_oOwner, NXT i_oNxt, BluetoothDevice i_oDevice, final IConnectListener i_oConnectListener) {
 		NXTRobot m_oRobot = new NXTRobot(m_oOwner) {

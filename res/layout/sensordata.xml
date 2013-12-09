@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dip"
+        android:background="#FF909090" />
+
+    <TextView
+        android:id="@+id/lblSensorData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium" 
+        android:text="Sensor Data" />
+
+    <ListView
+        android:id="@+id/lvSensorList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" >
+
+    </ListView>
+    
+    <TextView
+        android:id="@+id/lblNoData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:text="no data received" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dip"
+        android:background="#FF909090" />
+    
+</LinearLayout>
+

@@ -5,7 +5,6 @@ import robots.gui.RobotView;
 import robots.remote.RemoteRobotBinder;
 import robots.rover.base.ctrl.RoverBaseTypes.VideoResolution;
 import robots.rover.rover2.ctrl.IRover2;
-import robots.rover.rover2.ctrl.Rover2;
 
 public class Rover2RemoteBinder extends RemoteRobotBinder implements IRover2 {
 

@@ -35,7 +35,7 @@ public class NAME extends DifferentialRobot {
 	}
 
 	@Override
-	public void connect() throws IOException {
+	public void connect() {
 		// TODO Auto-generated method stub
 
 	}

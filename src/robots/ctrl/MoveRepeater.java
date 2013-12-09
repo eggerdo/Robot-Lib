@@ -4,7 +4,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.dobots.utilities.DoBotsThread;
-import org.dobots.utilities.Utils;
 import org.dobots.utilities.joystick.JoystickSurfaceThread;
 
 import android.util.Log;

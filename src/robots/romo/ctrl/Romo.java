@@ -1,16 +1,28 @@
 package robots.romo.ctrl;
 
-import java.io.IOException;
-
-import org.dobots.communication.control.ZmqRemoteControlHelper;
+import org.dobots.utilities.CameraPreview;
+import org.dobots.utilities.CameraPreview.CameraPreviewCallback;
+import org.dobots.utilities.Utils;
+import org.dobots.zmq.ZmqRemoteControlHelper;
+import org.dobots.zmq.video.FpsCounter;
+import org.dobots.zmq.video.IFpsListener;
+import org.dobots.zmq.video.ZmqVideoSender;
 
 import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
+import robots.ctrl.ICameraControlListener;
 import robots.gui.RobotDriveCommandListener;
+import android.content.Context;
+import android.graphics.PixelFormat;
+import android.util.Log;
+import android.view.SurfaceHolder;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.WindowManager.LayoutParams;
 
 import com.romotive.library.RomoCommandInterface;
 
-public class Romo extends DifferentialRobot implements IRomo {
+public class Romo extends DifferentialRobot implements IRomo, ICameraControlListener {
 	
 	private static final String TAG = "Romo";
 	
@@ -23,6 +35,10 @@ public class Romo extends DifferentialRobot implements IRomo {
 	private ZmqRemoteControlHelper m_oRemoteHelper;
 
 	private boolean m_bInverted;
+	
+	private CameraPreview mCamera;
+
+	private ZmqVideoSender mVideoSender;
 
 	public Romo() {
 		super(RomoTypes.AXLE_WIDTH, RomoTypes.MIN_VELOCITY, RomoTypes.MAX_VELOCITY, RomoTypes.MIN_RADIUS, RomoTypes.MAX_RADIUS);
@@ -33,6 +49,26 @@ public class Romo extends DifferentialRobot implements IRomo {
 		m_oRemoteHelper = new ZmqRemoteControlHelper();
 		m_oRemoteHelper.setDriveControlListener(m_oRemoteListener);
 		m_oRemoteHelper.startReceiver("Romo");
+		
+		mVideoSender = new ZmqVideoSender(getID());
+		
+		m_oRemoteHelper.setCameraControlListener(this);
+		
+	}
+	
+	public void startCamera(Context context) {
+		mCamera = CameraPreview.createCameraWithoutSurface(context);
+		mCamera.setPreviewSize(320, 240);
+		mCamera.setFrameListener(new CameraPreviewCallback() {
+			@Override
+			public void onFrame(byte[] rgb, int width, int height, int rotation) {
+				mVideoSender.onFrame(rgb, rotation);
+			}
+		});
+	}
+	
+	public void startCamera(CameraPreview camera) {
+		mCamera = camera;
 	}
 
 	@Override
@@ -47,11 +83,15 @@ public class Romo extends DifferentialRobot implements IRomo {
 
 	@Override
 	public void destroy() {
+		if (mCamera != null) {
+			mCamera.destroy();
+			mCamera = null;
+		}
 		m_oRemoteHelper.close();
 	}
 
 	@Override
-	public void connect() throws IOException {
+	public void connect() {
 		// nothing to do, Romo has to be connected over the audio wire
 	}
 
@@ -220,4 +260,44 @@ public class Romo extends DifferentialRobot implements IRomo {
 		assert false : "not available";
 	}
 
+	@Override
+	public void toggleCamera() {
+		// toggle camera only works if it is executed by the UI thread
+		// so we check if the calling thread is the main thread, otherwise
+		// we call the function again inside the main thread.
+		Utils.runAsyncUiTask(new Runnable() {
+			@Override
+			public void run() {
+				mCamera.toggleCamera();
+			}
+		});
+	}
+
+	@Override
+	public void startVideo() {
+		mCamera.startCamera();
+	}
+
+	@Override
+	public void stopVideo() {
+		mCamera.stopCamera();
+	}
+
+	@Override
+	public void cameraUp() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void cameraDown() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void cameraStop() {
+		// TODO Auto-generated method stub
+		
+	}
 }

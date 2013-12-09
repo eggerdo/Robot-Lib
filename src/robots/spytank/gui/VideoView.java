@@ -1,9 +1,9 @@
 package robots.spytank.gui;
 
-import org.dobots.communication.video.FpsCounter;
-import org.dobots.communication.video.IFpsListener;
-import org.dobots.communication.video.IRawVideoListener;
-import org.dobots.communication.video.IVideoListener;
+import org.dobots.zmq.video.FpsCounter;
+import org.dobots.zmq.video.IFpsListener;
+import org.dobots.zmq.video.IRawVideoListener;
+import org.dobots.zmq.video.IVideoListener;
 
 import android.content.Context;
 import android.graphics.Bitmap;

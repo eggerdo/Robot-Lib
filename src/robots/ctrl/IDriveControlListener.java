@@ -1,6 +1,6 @@
 package robots.ctrl;
 
-import robots.ctrl.RemoteControlHelper.Move;
+import org.dobots.lib.comm.Move;
 
 public interface IDriveControlListener {
 	

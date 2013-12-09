@@ -2,7 +2,7 @@ package robots.rover.rover2.ctrl;
 
 import java.io.IOException;
 
-import org.dobots.communication.video.ZmqVideoSender;
+import org.dobots.zmq.video.ZmqVideoSender;
 
 import robots.RobotType;
 import robots.ctrl.ICameraControlListener;

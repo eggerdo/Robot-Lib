@@ -12,6 +12,10 @@ import android.util.Log;
 
 public class BluetoothConnectionHelper implements IActivityResultListener {
 	
+	public interface BTEnableCallback {
+		public void onEnabled();
+	}
+	
 	public static String TAG = "BTHelper";
 
 	private BaseActivity m_oParent;
@@ -28,6 +32,8 @@ public class BluetoothConnectionHelper implements IActivityResultListener {
 
 	private String m_strTitle = "";
 	
+	private BTEnableCallback mCallback;
+	
 	public BluetoothConnectionHelper(BaseActivity i_oParent, String i_strMacFilter) {
 		m_oParent = i_oParent;
 		m_strMacFilter = i_strMacFilter;
@@ -37,7 +43,9 @@ public class BluetoothConnectionHelper implements IActivityResultListener {
 		m_oListener = i_oListener;
 	}
 
-	public boolean initBluetooth() {
+	public void initBluetooth(BTEnableCallback callback) {
+
+		mCallback = callback;
 		try {
 			m_oBTAdapter = BluetoothAdapter.getDefaultAdapter();
 			if (m_oBTAdapter == null) {
@@ -48,13 +56,11 @@ public class BluetoothConnectionHelper implements IActivityResultListener {
 				m_bBTOnByUs = true;
 				Intent oEnableBTIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 				m_oParent.startActivityForResult(oEnableBTIntent, MessageTypes.REQUEST_ENABLE_BT, this);
-				return false;
 			} else
-				return true;
+				mCallback.onEnabled();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return false;
 		}
 	}
 	
@@ -91,13 +97,16 @@ public class BluetoothConnectionHelper implements IActivityResultListener {
 				// Get the device MAC address and connect to the robot
 				String address = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
 				
-				m_oListener.connect(m_oBTAdapter.getRemoteDevice(address));
+				m_oListener.setConnection(m_oBTAdapter.getRemoteDevice(address));
+				m_oListener.connect();
 			}
 			break;
 		case MessageTypes.REQUEST_ENABLE_BT:
 			Log.d(TAG, "SelectRobot request received");
 			if (resultCode == Activity.RESULT_OK) {
-				selectRobot();
+				if (mCallback != null) {
+					mCallback.onEnabled();
+				}
 			}
 			break;
 		}

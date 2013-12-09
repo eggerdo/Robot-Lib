@@ -83,7 +83,7 @@ public abstract class RemoteRobotBinder implements IRobotDevice {
 	}
 
 	@Override
-	public void connect() throws IOException {
+	public void connect() {
 		if (mBound) {
 			mRobot.connect();
 		}

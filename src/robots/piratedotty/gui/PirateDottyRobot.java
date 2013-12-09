@@ -3,12 +3,12 @@ package robots.piratedotty.gui;
 import java.io.IOException;
 
 import org.dobots.R;
-import org.dobots.communication.control.ZmqRemoteControlHelper;
-import org.dobots.communication.control.ZmqRemoteControlSender;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.CameraPreview;
 import org.dobots.utilities.Utils;
 import org.dobots.utilities.log.AndroidLogger;
+import org.dobots.zmq.ZmqRemoteControlHelper;
+import org.dobots.zmq.ZmqRemoteControlSender;
 
 import robots.RobotType;
 import robots.ctrl.ICameraControlListener;
@@ -244,7 +244,7 @@ public class PirateDottyRobot extends BluetoothRobot implements ICameraControlLi
 	}
 	
 	@Override
-	public void connect(BluetoothDevice i_oDevice) {
+	public void setConnection(BluetoothDevice i_oDevice) {
 		m_strAddress = i_oDevice.getAddress();
 		showConnectingDialog();
 		
@@ -257,6 +257,10 @@ public class PirateDottyRobot extends BluetoothRobot implements ICameraControlLi
 		BluetoothConnection connection = new BluetoothConnection(i_oDevice, PirateDottyTypes.PIRATEDOTTY_UUID);
 		connection.setReceiveHandler(m_oUiHandler);
 		m_oPirateDotty.setConnection(connection);
+	}
+	
+	@Override
+	public void connect() {
 		m_oPirateDotty.connect();
 	}
 

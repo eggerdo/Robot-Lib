@@ -1,7 +1,7 @@
 package robots.piratedotty.ctrl;
 
-import org.dobots.communication.control.ZmqRemoteControlHelper;
 import org.dobots.utilities.log.ILogListener;
+import org.dobots.zmq.ZmqRemoteControlHelper;
 
 import robots.RobotType;
 import robots.ctrl.DifferentialRobot;

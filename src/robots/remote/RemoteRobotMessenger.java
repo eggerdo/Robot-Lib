@@ -3,8 +3,8 @@ package robots.remote;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-import org.dobots.communication.msg.RoboCommands;
-import org.dobots.communication.msg.RoboCommands.ControlCommand;
+import org.dobots.lib.comm.msg.RoboCommands;
+import org.dobots.lib.comm.msg.RoboCommands.ControlCommand;
 import org.dobots.utilities.ThreadMessenger;
 import org.dobots.utilities.Utils;
 import org.json.JSONException;
@@ -118,7 +118,7 @@ public class RemoteRobotMessenger implements IRobotDevice {
 	}
 	
 	@Override
-	public void connect() throws IOException {
+	public void connect() {
 		sendRPC("connect");
 	}
 

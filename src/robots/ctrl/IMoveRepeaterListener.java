@@ -2,6 +2,7 @@ package robots.ctrl;
 
 import robots.ctrl.MoveRepeater.MoveCommand;
 
+
 public interface IMoveRepeaterListener {
 	
 	void onDoMove(MoveCommand i_eMove, double i_dblSpeed);

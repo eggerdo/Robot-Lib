@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-import org.dobots.communication.video.IRawVideoListener;
 import org.dobots.utilities.Utils;
+import org.dobots.zmq.video.IRawVideoListener;
 
 import robots.ctrl.BaseWifi;
 import robots.replicator.ctrl.ReplicatorMessage.MessageType;

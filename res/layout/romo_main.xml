@@ -3,14 +3,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    
-    <org.dobots.utilities.CameraPreview
-        android:id="@+id/svCamera"
+
+    <LinearLayout
+        android:orientation="vertical" 
+        android:id="@+id/layCameraContainer"
 	    android:scaleType="fitCenter" 
 	    android:layout_height="wrap_content" 
 	    android:layout_width="match_parent" 
 	    android:adjustViewBounds="true" />
-
+    
     <ImageButton
         android:id="@+id/btnCameraToggle"
         android:layout_width="wrap_content"
@@ -22,17 +23,6 @@
 		android:src="@android:drawable/ic_menu_camera"
 		android:background="@null" />
 
-    <TextView 
-        android:id="@+id/lblFPS"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#e0ff0000"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
-        android:textSize="24sp" />
-    
     <ToggleButton
         android:id="@+id/btnRemoteControl"
         android:layout_width="wrap_content"
