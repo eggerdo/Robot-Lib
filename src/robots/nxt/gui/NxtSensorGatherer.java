@@ -13,24 +13,24 @@ import org.zeromq.ZMQ.Socket;
 
 import robots.gui.SensorGatherer;
 import robots.nxt.ctrl.LCPMessage;
-import robots.nxt.ctrl.NXT;
-import robots.nxt.ctrl.NXTTypes;
-import robots.nxt.ctrl.NXTTypes.DistanceData;
-import robots.nxt.ctrl.NXTTypes.ENXTMotorID;
-import robots.nxt.ctrl.NXTTypes.ENXTMotorSensorType;
-import robots.nxt.ctrl.NXTTypes.ENXTSensorID;
-import robots.nxt.ctrl.NXTTypes.ENXTSensorType;
-import robots.nxt.ctrl.NXTTypes.MotorData;
-import robots.nxt.ctrl.NXTTypes.SensorData;
+import robots.nxt.ctrl.Nxt;
+import robots.nxt.ctrl.NxtTypes;
+import robots.nxt.ctrl.NxtTypes.DistanceData;
+import robots.nxt.ctrl.NxtTypes.ENXTMotorID;
+import robots.nxt.ctrl.NxtTypes.ENXTMotorSensorType;
+import robots.nxt.ctrl.NxtTypes.ENXTSensorID;
+import robots.nxt.ctrl.NxtTypes.ENXTSensorType;
+import robots.nxt.ctrl.NxtTypes.MotorData;
+import robots.nxt.ctrl.NxtTypes.SensorData;
 import android.util.Log;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
-public class NXTSensorGatherer extends SensorGatherer implements ISensorDataListener {
+public class NxtSensorGatherer extends SensorGatherer implements ISensorDataListener {
 
 	private static final String TAG = "NxtSensorGatherer";
 	
-	private NXT m_oNxt;
+	private Nxt m_oNxt;
 	
 	private boolean m_bDebug;
 	
@@ -41,12 +41,12 @@ public class NXTSensorGatherer extends SensorGatherer implements ISensorDataList
 
 	private ZmqSensorsReceiver m_oSensorsReceiver;
 	
-	public NXTSensorGatherer(BaseActivity i_oActivity, NXT i_oNxt) {
+	public NxtSensorGatherer(BaseActivity i_oActivity, Nxt i_oNxt) {
 		super(i_oActivity, "NxtSensorGatherer");
 		m_oNxt = i_oNxt;
 		
 		m_oSensorTypes = new EnumMap<ENXTSensorID, ENXTSensorType>(ENXTSensorID.class);
-		m_oMotorSensorTypes = new EnumMap<NXTTypes.ENXTMotorID, NXTTypes.ENXTMotorSensorType>(ENXTMotorID.class);
+		m_oMotorSensorTypes = new EnumMap<NxtTypes.ENXTMotorID, NxtTypes.ENXTMotorSensorType>(ENXTMotorID.class);
 		
 		m_oSensorsRecvSocket = ZmqHandler.getInstance().obtainSensorsRecvSocket();
 		m_oSensorsRecvSocket.subscribe(m_oNxt.getID().getBytes());
@@ -116,11 +116,11 @@ public class NXTSensorGatherer extends SensorGatherer implements ISensorDataList
 			@Override
 			public void run() {
 				if (data.getSensorID().equals("sensor_data")) {
-					updateGUI(NXTTypes.assembleSensorData(data));
+					updateGUI(NxtTypes.assembleSensorData(data));
 				} else if (data.getSensorID().equals("motor_data")) {
-					updateGUI(NXTTypes.assembleMotorData(data));
+					updateGUI(NxtTypes.assembleMotorData(data));
 				} else if (data.getSensorID().equals("distance_data")) {
-					updateGUI(NXTTypes.assembleDistanceData(data));
+					updateGUI(NxtTypes.assembleDistanceData(data));
 				}
 			}
 		});

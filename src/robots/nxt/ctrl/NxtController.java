@@ -35,7 +35,7 @@ import android.os.Handler;
  * Objects of this class can either be run as standalone thread or controlled
  * by the owners, i.e. calling the send/recive methods by themselves.
  */
-public class NXTController implements ICommHandler<byte[]> {
+public class NxtController implements ICommHandler<byte[]> {
 
 	private BluetoothConnection m_oConnection;
 
@@ -183,14 +183,14 @@ public class NXTController implements ICommHandler<byte[]> {
             case LCPMessage.GET_OUTPUT_STATE:
 
                 if (message.length >= 25)
-                    sendStateAndData(NXTMessageTypes.MOTOR_STATE, message);
+                    sendStateAndData(NxtMessageTypes.MOTOR_STATE, message);
 
                 break;
 
             case LCPMessage.GET_FIRMWARE_VERSION:
 
                 if (message.length >= 7)
-                    sendStateAndData(NXTMessageTypes.FIRMWARE_VERSION, message);
+                    sendStateAndData(NxtMessageTypes.FIRMWARE_VERSION, message);
 
                 break;
 
@@ -200,7 +200,7 @@ public class NXTController implements ICommHandler<byte[]> {
                 if (message.length >= 28) {
                     // Success
                     if (message[2] == 0)
-                        sendStateAndData(NXTMessageTypes.FIND_FILES, message);
+                        sendStateAndData(NxtMessageTypes.FIND_FILES, message);
                 }
 
                 break;
@@ -208,7 +208,7 @@ public class NXTController implements ICommHandler<byte[]> {
             case LCPMessage.GET_CURRENT_PROGRAM_NAME:
 
                 if (message.length >= 23) {
-                    sendStateAndData(NXTMessageTypes.PROGRAM_NAME, message);
+                    sendStateAndData(NxtMessageTypes.PROGRAM_NAME, message);
                 }
                 
                 break;
@@ -216,27 +216,27 @@ public class NXTController implements ICommHandler<byte[]> {
             case LCPMessage.SAY_TEXT:
                 
                 if (message.length == 22) {
-                    sendStateAndData(NXTMessageTypes.SAY_TEXT, message);
+                    sendStateAndData(NxtMessageTypes.SAY_TEXT, message);
                 }
                 
             case LCPMessage.VIBRATE_PHONE:
                 if (message.length == 3) {
-                    sendStateAndData(NXTMessageTypes.VIBRATE_PHONE, message);
+                    sendStateAndData(NxtMessageTypes.VIBRATE_PHONE, message);
                 }               
                 
             case LCPMessage.GET_INPUT_VALUES:
             	if (message.length == 16) {
-            		sendStateAndData(NXTMessageTypes.GET_INPUT_VALUES, message);
+            		sendStateAndData(NxtMessageTypes.GET_INPUT_VALUES, message);
             	}
             	
             case LCPMessage.LS_GET_STATUS:
             	if (message.length == 4) {
-            		sendStateAndData(NXTMessageTypes.LS_GET_STATUS, message);
+            		sendStateAndData(NxtMessageTypes.LS_GET_STATUS, message);
             	}
             	
             case LCPMessage.LS_READ:
             	if (message.length == 20) {
-            		sendStateAndData(NXTMessageTypes.LS_READ, message);
+            		sendStateAndData(NxtMessageTypes.LS_READ, message);
             	}
             
         }

@@ -29,7 +29,7 @@ import android.widget.ToggleButton;
 
 import com.codeminders.ardrone.ARDrone.VideoChannel;
 
-public class ParrotRobot extends WifiRobot implements IDriveControlListener {
+public class ParrotUI extends WifiRobot implements IDriveControlListener {
 
 	private static String TAG = "Parrot";
 	
@@ -74,11 +74,11 @@ public class ParrotRobot extends WifiRobot implements IDriveControlListener {
 
 //	private Button m_btnEmergency;
 
-	public ParrotRobot(BaseActivity i_oOwner) {
+	public ParrotUI(BaseActivity i_oOwner) {
 		super(i_oOwner);
 	}
 	
-	public ParrotRobot() {
+	public ParrotUI() {
 		super();
 	}
 
@@ -171,7 +171,7 @@ public class ParrotRobot extends WifiRobot implements IDriveControlListener {
 	}
 
 	public static void connectToARDrone(final BaseActivity m_oOwner, Parrot i_oParrot, final IConnectListener i_oConnectListener) {
-		ParrotRobot m_oRobot = new ParrotRobot(m_oOwner) {
+		ParrotUI m_oRobot = new ParrotUI(m_oOwner) {
 			public void onConnect() {
 				i_oConnectListener.onConnect(true);
 			};

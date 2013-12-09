@@ -20,21 +20,21 @@ import robots.nxt.MsgTypes.RawDataMsg;
 import robots.nxt.MsgTypes.ResetMotorPositionMsg;
 import robots.nxt.MsgTypes.SensorDataRequestMsg;
 import robots.nxt.MsgTypes.SensorTypeMsg;
-import robots.nxt.ctrl.NXTTypes.DistanceData;
-import robots.nxt.ctrl.NXTTypes.ENXTMotorID;
-import robots.nxt.ctrl.NXTTypes.ENXTSensorID;
-import robots.nxt.ctrl.NXTTypes.ENXTSensorType;
-import robots.nxt.ctrl.NXTTypes.MotorData;
-import robots.nxt.ctrl.NXTTypes.SensorData;
+import robots.nxt.ctrl.NxtTypes.DistanceData;
+import robots.nxt.ctrl.NxtTypes.ENXTMotorID;
+import robots.nxt.ctrl.NxtTypes.ENXTSensorID;
+import robots.nxt.ctrl.NxtTypes.ENXTSensorType;
+import robots.nxt.ctrl.NxtTypes.MotorData;
+import robots.nxt.ctrl.NxtTypes.SensorData;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 
-public class NXT extends DifferentialRobot {
+public class Nxt extends DifferentialRobot {
 
 	private static String TAG = "NXT";
 
-	private NXTController m_oController;
+	private NxtController m_oController;
 
 	private double m_dblBaseSpeed = 50.0;
 	
@@ -104,9 +104,9 @@ public class NXT extends DifferentialRobot {
 					case MessageTypes.STATE_SENDERROR:
 						break;
 
-					case NXTMessageTypes.DESTROY:
+					case NxtMessageTypes.DESTROY:
 						m_oController = null;
-					case NXTMessageTypes.FIRMWARE_VERSION:
+					case NxtMessageTypes.FIRMWARE_VERSION:
 
 						if (m_oController != null) {
 							byte[] firmwareMessage = ((RawDataMsg)msg.obj).rgbyRawData;
@@ -114,10 +114,10 @@ public class NXT extends DifferentialRobot {
 
 						break;
 	
-					case NXTMessageTypes.GET_INPUT_VALUES:
+					case NxtMessageTypes.GET_INPUT_VALUES:
 						
 						byte[] sensorMessage = ((RawDataMsg)msg.obj).rgbyRawData;
-						SensorData sensorResult = NXTTypes.assembleSensorData(getID(), sensorMessage);
+						SensorData sensorResult = NxtTypes.assembleSensorData(getID(), sensorMessage);
 						m_oSensorsSender.sendSensors(sensorResult.sensorData);
 						
 //						SensorData oSensorData = NXTTypes.assembleSensorData(sensorMessage); 
@@ -128,10 +128,10 @@ public class NXT extends DifferentialRobot {
 						
 						return;
 
-					case NXTMessageTypes.MOTOR_STATE:
+					case NxtMessageTypes.MOTOR_STATE:
 						
 						byte[] motorMessage = ((RawDataMsg)msg.obj).rgbyRawData;
-						MotorData motorResult = NXTTypes.assembleMotorData(getID(), motorMessage);
+						MotorData motorResult = NxtTypes.assembleMotorData(getID(), motorMessage);
 						m_oSensorsSender.sendSensors(motorResult.sensorData);
 						
 						ENXTMotorID motor = ENXTMotorID.fromValue(motorResult.nOutputPort);
@@ -175,40 +175,40 @@ public class NXT extends DifferentialRobot {
 
 					if (m_oController.isConnected()) {
 			            switch (msg.what) {
-			                case NXTMessageTypes.GET_FIRMWARE_VERSION:
+			                case NxtMessageTypes.GET_FIRMWARE_VERSION:
 			                	m_oController.requestFirmwareVersion();
 			                    break;
-			                case NXTMessageTypes.SET_INPUT_MODE:
+			                case NxtMessageTypes.SET_INPUT_MODE:
 			                	SensorTypeMsg cmdSensorTypeMsg = (SensorTypeMsg)msg.obj;
 			                	m_oController.setInputMode(cmdSensorTypeMsg.nPort, cmdSensorTypeMsg.byType, cmdSensorTypeMsg.byMode);
 			                	break;
-			                case NXTMessageTypes.GET_INPUT_VALUES:
+			                case NxtMessageTypes.GET_INPUT_VALUES:
 			                	SensorDataRequestMsg cmdSensorDataRequestMsg = (SensorDataRequestMsg)msg.obj;
 			                	m_oController.requestInputValues(cmdSensorDataRequestMsg.nPort);
 			                	break;
-			                case NXTMessageTypes.SET_OUTPUT_STATE:
+			                case NxtMessageTypes.SET_OUTPUT_STATE:
 			                	MotorSpeedMsg cmdMotorSpeedMsg = (MotorSpeedMsg)msg.obj;
 			                	m_oController.setMotorSpeed(cmdMotorSpeedMsg.nPort, cmdMotorSpeedMsg.nSpeed);
 			                	break;
-			                case NXTMessageTypes.MOTOR_STATE:
+			                case NxtMessageTypes.MOTOR_STATE:
 			                	MotorDataRequestMsg cmdMotorDataRequestMsg = (MotorDataRequestMsg)msg.obj;
 			                	m_oController.requestMotorState(cmdMotorDataRequestMsg.nPort);
 			                	break;
-			                case NXTMessageTypes.RESET_MOTOR_POSITION:
+			                case NxtMessageTypes.RESET_MOTOR_POSITION:
 			                	ResetMotorPositionMsg cmdResetMotorPosition = (ResetMotorPositionMsg)msg.obj;
 			                	m_oController.resetMotorPosition(cmdResetMotorPosition.nPort, cmdResetMotorPosition.bRelative);
 			                	break;
-			                case NXTMessageTypes.GET_BATTERY_LEVEL:
+			                case NxtMessageTypes.GET_BATTERY_LEVEL:
 			                	m_oController.requestBatteryLevel();
 			                	break;
-			                case NXTMessageTypes.GET_DISTANCE:
+			                case NxtMessageTypes.GET_DISTANCE:
 			                	SensorDataRequestMsg cmdDistanceRequestMsg = (SensorDataRequestMsg)msg.obj;
 			                	getDistanceSensorData(cmdDistanceRequestMsg.nPort);
 			                	break;
-			                case NXTMessageTypes.DISCONNECT:
+			                case NxtMessageTypes.DISCONNECT:
 			                	shutDown();
 			                    break;
-			                case NXTMessageTypes.KEEP_ALIVE:
+			                case NxtMessageTypes.KEEP_ALIVE:
 			                	m_oController.keepAlive();
 			                	break;
 			            }
@@ -231,8 +231,8 @@ public class NXT extends DifferentialRobot {
 		
 	};
 
-	public NXT() {
-		super(NXTTypes.AXLE_WIDTH, NXTTypes.MIN_VELOCITY, NXTTypes.MAX_VELOCITY, NXTTypes.MIN_RADIUS, NXTTypes.MAX_RADIUS);
+	public Nxt() {
+		super(NxtTypes.AXLE_WIDTH, NxtTypes.MIN_VELOCITY, NxtTypes.MAX_VELOCITY, NxtTypes.MIN_RADIUS, NxtTypes.MAX_RADIUS);
 		
 		m_oReceiver = new NXTReceiver();
 		m_oReceiver.start();
@@ -240,14 +240,14 @@ public class NXT extends DifferentialRobot {
 		m_oSender = new NXTSender();
 		m_oSender.start();
 		
-		m_oController = new NXTController();
+		m_oController = new NxtController();
 		m_oController.setHandler(m_oReceiver.getHandler());
 
 		m_oMotorRequests = new EnumMap<ENXTMotorID, MotorRequest>(ENXTMotorID.class);
 		m_oSensorRequests = new EnumMap<ENXTSensorID, SensorRequest>(ENXTSensorID.class);
 
 		m_oSensorRequestActive = new EnumMap<ENXTSensorID, Boolean>(ENXTSensorID.class);
-		m_oMotorRequestActive = new EnumMap<NXTTypes.ENXTMotorID, Boolean>(ENXTMotorID.class);
+		m_oMotorRequestActive = new EnumMap<NxtTypes.ENXTMotorID, Boolean>(ENXTMotorID.class);
 		
 		for (ENXTSensorID sensor : ENXTSensorID.values()) {
 			m_oSensorRequestActive.put(sensor, false);
@@ -300,7 +300,7 @@ public class NXT extends DifferentialRobot {
 	
 	@Override
 	public void disconnect() {
-		sendCmdMessage(NXTMessageTypes.DISCONNECT);
+		sendCmdMessage(NxtMessageTypes.DISCONNECT);
 		while (isConnected()) {
 			Utils.waitSomeTime(10);
 		}
@@ -334,7 +334,7 @@ public class NXT extends DifferentialRobot {
 	}
 
 	public void getFirmwareVersion() {
-		sendCmdMessage(NXTMessageTypes.GET_FIRMWARE_VERSION);
+		sendCmdMessage(NxtMessageTypes.GET_FIRMWARE_VERSION);
 	}
 	
 	private class SensorRequest implements Runnable {
@@ -388,14 +388,14 @@ public class NXT extends DifferentialRobot {
 	
 	public void requestSensorData(ENXTSensorID i_eSensorID, ENXTSensorType i_eSensorType) {
 		if (i_eSensorType == ENXTSensorType.sensType_Distance) {
-			sendCmdMessage(NXTMessageTypes.GET_DISTANCE, MsgTypes.assembleSensorDataRequestMsg(i_eSensorID));
+			sendCmdMessage(NxtMessageTypes.GET_DISTANCE, MsgTypes.assembleSensorDataRequestMsg(i_eSensorID));
 		} else {
-			sendCmdMessage(NXTMessageTypes.GET_INPUT_VALUES, MsgTypes.assembleSensorDataRequestMsg(i_eSensorID));
+			sendCmdMessage(NxtMessageTypes.GET_INPUT_VALUES, MsgTypes.assembleSensorDataRequestMsg(i_eSensorID));
 		}
 	}
 	
 	public void setSensorType(ENXTSensorID i_eSensorID, ENXTSensorType i_eSensorType) {
-		sendCmdMessage(NXTMessageTypes.SET_INPUT_MODE, MsgTypes.assembleSensorTypeMsg(i_eSensorID, i_eSensorType));
+		sendCmdMessage(NxtMessageTypes.SET_INPUT_MODE, MsgTypes.assembleSensorTypeMsg(i_eSensorID, i_eSensorType));
 		
 		if (m_oSensorRequests.get(i_eSensorID) != null) {
 			m_oSensorRequests.get(i_eSensorID).mSensorType = i_eSensorType;
@@ -404,7 +404,7 @@ public class NXT extends DifferentialRobot {
 	}
 	
 	public void keepAlive() {
-		sendCmdMessage(NXTMessageTypes.KEEP_ALIVE);
+		sendCmdMessage(NxtMessageTypes.KEEP_ALIVE);
 	}
 
 	private class MotorRequest implements Runnable {
@@ -453,15 +453,15 @@ public class NXT extends DifferentialRobot {
 	}
 	
 	public void requestMotorData(ENXTMotorID i_eMotorID) {
-		sendCmdMessage(NXTMessageTypes.MOTOR_STATE, MsgTypes.assembleMotorDataRequestMsg(i_eMotorID));
+		sendCmdMessage(NxtMessageTypes.MOTOR_STATE, MsgTypes.assembleMotorDataRequestMsg(i_eMotorID));
 	}
 	
 	public void resetMotorPosition(ENXTMotorID i_eMotorID, boolean i_bRelative) {
-		sendCmdMessage(NXTMessageTypes.RESET_MOTOR_POSITION, MsgTypes.assembleResetMotorPositionMsg(i_eMotorID, i_bRelative));
+		sendCmdMessage(NxtMessageTypes.RESET_MOTOR_POSITION, MsgTypes.assembleResetMotorPositionMsg(i_eMotorID, i_bRelative));
 	}
 
 	private void setMotorSpeed(ENXTMotorID i_eMotor, int i_nVelocity) {
-		sendCmdMessage(NXTMessageTypes.SET_OUTPUT_STATE, MsgTypes.assembleMotorSpeedMsg(i_eMotor, i_nVelocity * m_nInvertFactor));
+		sendCmdMessage(NxtMessageTypes.SET_OUTPUT_STATE, MsgTypes.assembleMotorSpeedMsg(i_eMotor, i_nVelocity * m_nInvertFactor));
 	}
 	
 	private void drive(int i_nLeftVelocity, int i_nRightVelocity) {
@@ -587,7 +587,7 @@ public class NXT extends DifferentialRobot {
 			
 			for (int i = 0; i < 3; i++) {
 				m_oController.LSGetStatus(port);
-				waitAnswer(NXTMessageTypes.LS_GET_STATUS, 200);
+				waitAnswer(NxtMessageTypes.LS_GET_STATUS, 200);
 				
 				byte[] reply = m_oController.getReturnMessage();
 				if (reply == null || reply[2] != LCPMessage.SUCCESS) {
@@ -598,10 +598,10 @@ public class NXT extends DifferentialRobot {
 			};
 			
 			m_oController.LSRead(port);
-			waitAnswer(NXTMessageTypes.LS_READ, 200);
+			waitAnswer(NxtMessageTypes.LS_READ, 200);
 			
 			byte[] distanceMessage = m_oController.getReturnMessage();
-			DistanceData distanceResult = NXTTypes.assembleDistanceData(getID(), port, distanceMessage);
+			DistanceData distanceResult = NxtTypes.assembleDistanceData(getID(), port, distanceMessage);
 			m_oSensorsSender.sendSensors(distanceResult.sensorData);
 
 			ENXTSensorID sens = ENXTSensorID.fromValue(port);
@@ -630,9 +630,9 @@ public class NXT extends DifferentialRobot {
 
 		if (m_oController != null) {
 	        // send stop messages to motors
-	    	m_oController.setMotorSpeed(NXTTypes.MOTOR_A, 0);
-	    	m_oController.setMotorSpeed(NXTTypes.MOTOR_B, 0);
-	    	m_oController.setMotorSpeed(NXTTypes.MOTOR_C, 0);
+	    	m_oController.setMotorSpeed(NxtTypes.MOTOR_A, 0);
+	    	m_oController.setMotorSpeed(NxtTypes.MOTOR_B, 0);
+	    	m_oController.setMotorSpeed(NxtTypes.MOTOR_C, 0);
 	    	
 	        Utils.waitSomeTime(500);
         	// destroy connection

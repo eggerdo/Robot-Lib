@@ -5,7 +5,7 @@ import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
 
 import robots.RobotType;
-import robots.rover.base.gui.RoverBaseRobot;
+import robots.rover.base.gui.RoverBaseUI;
 import robots.rover.rover2.ctrl.IRover2;
 import robots.rover.rover2.ctrl.Rover2Types;
 import android.app.Activity;
@@ -19,7 +19,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ToggleButton;
 
-public class Rover2Robot extends RoverBaseRobot {
+public class Rover2UI extends RoverBaseUI {
 
 	private static final int DIALOG_SETTINGS_ID = 1;
 
@@ -31,13 +31,13 @@ public class Rover2Robot extends RoverBaseRobot {
 	private static final int SENSOR_GRP = REMOTE_CTRL_GRP + 1;
 	private static final int VIDEO_GRP = SENSOR_GRP + 1	;
 	
-	private static Rover2Robot instance;
+	private static Rover2UI instance;
 
-	public Rover2Robot(BaseActivity i_oOwner) {
+	public Rover2UI(BaseActivity i_oOwner) {
 		super(i_oOwner);
 	}
 	
-	public Rover2Robot() {
+	public Rover2UI() {
 		super();
 	}
 	
@@ -116,7 +116,7 @@ public class Rover2Robot extends RoverBaseRobot {
 		Utils.setEnabledRecursive((ViewGroup)m_oActivity.findViewById(R.id.layCameraControl), i_bEnabled);
 	}
 
-	public static Rover2Robot getInstance() {
+	public static Rover2UI getInstance() {
 		// TODO Auto-generated method stub
 		return instance;
 	}

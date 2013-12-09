@@ -2,7 +2,7 @@ package robots.nxt.ctrl;
 
 import robots.gui.MessageTypes;
 
-public class NXTMessageTypes {
+public class NxtMessageTypes {
 
 	public static final int SENSOR_DATA_RECEIVED 	= MessageTypes.USER;
 	public static final int DISTANCE_DATA_RECEIVED 	= SENSOR_DATA_RECEIVED + 1;

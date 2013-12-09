@@ -29,7 +29,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 
-public class PirateDottyRobot extends BluetoothRobot implements ICameraControlListener {
+public class PirateDottyUI extends BluetoothRobot implements ICameraControlListener {
 
 	private static String TAG = "PirateDotty";
 	
@@ -57,11 +57,11 @@ public class PirateDottyRobot extends BluetoothRobot implements ICameraControlLi
 	
 	private boolean m_bCameraOn = true;
 	
-	public PirateDottyRobot(BaseActivity i_oOwner) {
+	public PirateDottyUI(BaseActivity i_oOwner) {
 		super(i_oOwner);
 	}
 	
-	public PirateDottyRobot() {
+	public PirateDottyUI() {
 		super();
 	}
 	
@@ -265,7 +265,7 @@ public class PirateDottyRobot extends BluetoothRobot implements ICameraControlLi
 	}
 
 	public static void connectToPirateDotty(final BaseActivity m_oOwner, PirateDotty i_oPirateDotty, BluetoothDevice i_oDevice, final IConnectListener i_oConnectListener) {
-		PirateDottyRobot m_oRobot = new PirateDottyRobot(m_oOwner) {
+		PirateDottyUI m_oRobot = new PirateDottyUI(m_oOwner) {
 			public void onConnect() {
 				i_oConnectListener.onConnect(true);
 			};

@@ -28,7 +28,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TableRow;
 
-public class SpyTankRobot extends WifiRobot {
+public class SpyTankUI extends WifiRobot {
 	
 	protected static final int DIALOG_CONNECTION_SETTINGS_ID = 1;
 	
@@ -45,11 +45,11 @@ public class SpyTankRobot extends WifiRobot {
 
 	private AlertDialog m_dlgSettingsDialog;
 
-	public SpyTankRobot() {
+	public SpyTankUI() {
 		
 	}
 	
-	public SpyTankRobot(BaseActivity owner) {
+	public SpyTankUI(BaseActivity owner) {
 		super(owner);
 	}
 	

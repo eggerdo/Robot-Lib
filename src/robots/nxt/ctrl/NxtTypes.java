@@ -9,7 +9,7 @@ import org.dobots.lib.comm.msg.SensorMessageArray;
 import org.dobots.utilities.Utils;
 import org.json.JSONException;
 
-public class NXTTypes {
+public class NxtTypes {
 	public static final int MOTOR_A = 0;
     public static final int MOTOR_B = 1;
     public static final int MOTOR_C = 2;
@@ -223,12 +223,12 @@ public class NXTTypes {
 	}
 
 	public static SensorData assembleSensorData(String id, byte[] sensorMessage) {
-		NXTTypes types = new NXTTypes();
+		NxtTypes types = new NxtTypes();
 		return types.new SensorData(id, sensorMessage);
 	}
 
 	public static SensorData assembleSensorData(SensorMessageArray sensorData) {
-		NXTTypes types = new NXTTypes();
+		NxtTypes types = new NxtTypes();
 		return types.new SensorData(sensorData);
 	}
 
@@ -284,12 +284,12 @@ public class NXTTypes {
 	}
 
 	public static DistanceData assembleDistanceData(String id, int port, byte[] sensorMessage) {
-		NXTTypes types = new NXTTypes();
+		NxtTypes types = new NxtTypes();
 		return types.new DistanceData(id, port, sensorMessage);
 	}
 
 	public static DistanceData assembleDistanceData(SensorMessageArray sensorData) {
-		NXTTypes types = new NXTTypes();
+		NxtTypes types = new NxtTypes();
 		return types.new DistanceData(sensorData);
 	}
 	
@@ -375,12 +375,12 @@ public class NXTTypes {
 	}
 
 	public static MotorData assembleMotorData(String id, byte[] sensorMessage) {
-		NXTTypes types = new NXTTypes();
+		NxtTypes types = new NxtTypes();
 		return types.new MotorData(id, sensorMessage);
 	}
 
 	public static MotorData assembleMotorData(SensorMessageArray sensorData) {
-		NXTTypes types = new NXTTypes();
+		NxtTypes types = new NxtTypes();
 		return types.new MotorData(sensorData);
 	}
 

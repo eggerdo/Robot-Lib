@@ -2,9 +2,9 @@ package robots.nxt;
 
 import java.util.Arrays;
 
-import robots.nxt.ctrl.NXTTypes.ENXTMotorID;
-import robots.nxt.ctrl.NXTTypes.ENXTSensorID;
-import robots.nxt.ctrl.NXTTypes.ENXTSensorType;
+import robots.nxt.ctrl.NxtTypes.ENXTMotorID;
+import robots.nxt.ctrl.NxtTypes.ENXTSensorID;
+import robots.nxt.ctrl.NxtTypes.ENXTSensorType;
 
 public class MsgTypes {
 	

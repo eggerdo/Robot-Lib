@@ -3,16 +3,16 @@ package robots.gui;
 import robots.RobotType;
 import robots.arduino.ctrl.ArduinoTypes;
 import robots.arduino.gui.ArduinoUI;
-import robots.nxt.ctrl.NXTTypes;
-import robots.parrot.gui.ParrotRobot;
+import robots.nxt.ctrl.NxtTypes;
+import robots.parrot.gui.ParrotUI;
 import robots.piratedotty.ctrl.PirateDottyTypes;
-import robots.piratedotty.gui.PirateDottyRobot;
+import robots.piratedotty.gui.PirateDottyUI;
 import robots.replicator.gui.ReplicatorUI;
 import robots.romo.ctrl.RomoTypes;
-import robots.romo.gui.RomoRobot;
-import robots.rover.ac13.gui.AC13RoverRobot;
-import robots.rover.rover2.gui.Rover2Robot;
-import robots.spytank.gui.SpyTankRobot;
+import robots.romo.gui.RomoUI;
+import robots.rover.ac13.gui.AC13RoverUI;
+import robots.rover.rover2.gui.Rover2UI;
+import robots.spytank.gui.SpyTankUI;
 
 //import org.dobots.robots.dotty.DottyTypes;
 //import org.dobots.robots.nxt.NXTTypes;
@@ -43,19 +43,19 @@ public class RobotViewFactory {
 //		case RBT_SPYKEE:
 //			return SpykeeRobot.class;
 		case RBT_AC13ROVER:
-			return AC13RoverRobot.class;
+			return AC13RoverUI.class;
 		case RBT_ROMO:
-			return RomoRobot.class;
+			return RomoUI.class;
 		case RBT_ROVER2:
-			return Rover2Robot.class;
+			return Rover2UI.class;
 		case RBT_SPYTANK:
-			return SpyTankRobot.class;
+			return SpyTankUI.class;
 		case RBT_PARROT:
-			return ParrotRobot.class;
+			return ParrotUI.class;
 		case RBT_REPLICATOR:
 			return ReplicatorUI.class;
 		case RBT_PIRATEDOTTY:
-			return PirateDottyRobot.class;
+			return PirateDottyUI.class;
 		case RBT_ARDUINO:
 			return ArduinoUI.class;
 		default:
@@ -69,7 +69,7 @@ public class RobotViewFactory {
 //		case RBT_ROOMBA:
 //			return RoombaTypes.MAC_FILTER;
 		case RBT_NXT:
-			return NXTTypes.MAC_FILTER;
+			return NxtTypes.MAC_FILTER;
 //		case RBT_DOTTY:
 //			return DottyTypes.MAC_FILTER;
 //		case RBT_PARROT:

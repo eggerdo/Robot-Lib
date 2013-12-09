@@ -4,7 +4,7 @@ import robots.RobotType;
 import robots.gui.SensorGatherer;
 import robots.gui.WifiRobot;
 
-public class NAMERobot extends WifiRobot {
+public class NAMEUI extends WifiRobot {
 
     @Override
     public void onRobotCtrlReady() {

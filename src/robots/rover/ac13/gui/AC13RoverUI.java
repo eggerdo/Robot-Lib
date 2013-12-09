@@ -6,17 +6,17 @@ import org.dobots.utilities.BaseActivity;
 import robots.RobotType;
 import robots.rover.ac13.ctrl.AC13RoverTypes;
 import robots.rover.ac13.ctrl.IAC13Rover;
-import robots.rover.base.gui.RoverBaseRobot;
+import robots.rover.base.gui.RoverBaseUI;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.EditText;
 
-public class AC13RoverRobot extends RoverBaseRobot {
+public class AC13RoverUI extends RoverBaseUI {
 
 	private static final String TAG = "AC13Rover";
 
-	public AC13RoverRobot(BaseActivity i_oOwner) {
+	public AC13RoverUI(BaseActivity i_oOwner) {
 		super(i_oOwner);
 
 //		RobotDriveCommandListener oListener = new RobotDriveCommandListener(getRover());
@@ -26,7 +26,7 @@ public class AC13RoverRobot extends RoverBaseRobot {
 //        m_oRemoteCtrl.setDriveControlListener(oListener);
 	}
 	
-	public AC13RoverRobot() {
+	public AC13RoverUI() {
 		super();
 	}
 	

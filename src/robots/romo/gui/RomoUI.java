@@ -21,7 +21,7 @@ import android.view.View.OnClickListener;
 import android.view.WindowManager.LayoutParams;
 import android.widget.ImageButton;
 
-public class RomoRobot extends RobotView implements ILogListener {
+public class RomoUI extends RobotView implements ILogListener {
 	
 	private static Activity CONTEXT;
 	

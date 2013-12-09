@@ -10,7 +10,7 @@ import robots.RobotType;
 import robots.gui.IConnectListener;
 import robots.gui.SensorGatherer;
 import robots.gui.WifiRobot;
-import robots.rover.ac13.gui.AC13RoverRobot;
+import robots.rover.ac13.gui.AC13RoverUI;
 import robots.rover.base.ctrl.IRoverBase;
 import robots.rover.base.ctrl.RoverBase;
 import robots.rover.base.ctrl.RoverBaseTypes.VideoResolution;
@@ -29,7 +29,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.ToggleButton;
 
-public abstract class RoverBaseRobot extends WifiRobot {
+public abstract class RoverBaseUI extends WifiRobot {
 
 	protected static final int DIALOG_VIDEO_SETTINGS_ID = 1;
 	protected static final int DIALOG_CONNECTION_SETTINGS_ID = DIALOG_VIDEO_SETTINGS_ID + 1;
@@ -59,11 +59,11 @@ public abstract class RoverBaseRobot extends WifiRobot {
 	
 	protected boolean m_bAutoConnect = true;
 	
-	public RoverBaseRobot(BaseActivity i_oOwner) {
+	public RoverBaseUI(BaseActivity i_oOwner) {
 		super(i_oOwner);
 	}
 
-	public RoverBaseRobot() {
+	public RoverBaseUI() {
 		super();
 	}
 	
@@ -367,7 +367,7 @@ public abstract class RoverBaseRobot extends WifiRobot {
     }
 
 	public static void connectToAC13Rover(final BaseActivity m_oOwner, RoverBase i_oRover, final IConnectListener i_oConnectListener) {
-		AC13RoverRobot m_oRobot = new AC13RoverRobot(m_oOwner) {
+		AC13RoverUI m_oRobot = new AC13RoverUI(m_oOwner) {
 			public void onConnect() {
 				i_oConnectListener.onConnect(true);
 			};

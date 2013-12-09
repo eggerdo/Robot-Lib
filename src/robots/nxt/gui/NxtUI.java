@@ -16,12 +16,12 @@ import robots.gui.RobotCalibration;
 import robots.gui.RobotDriveCommandListener;
 import robots.gui.RobotInventory;
 import robots.gui.SensorGatherer;
-import robots.nxt.ctrl.NXT;
-import robots.nxt.ctrl.NXTTypes;
-import robots.nxt.ctrl.NXTTypes.ENXTMotorID;
-import robots.nxt.ctrl.NXTTypes.ENXTMotorSensorType;
-import robots.nxt.ctrl.NXTTypes.ENXTSensorID;
-import robots.nxt.ctrl.NXTTypes.ENXTSensorType;
+import robots.nxt.ctrl.Nxt;
+import robots.nxt.ctrl.NxtTypes;
+import robots.nxt.ctrl.NxtTypes.ENXTMotorID;
+import robots.nxt.ctrl.NxtTypes.ENXTMotorSensorType;
+import robots.nxt.ctrl.NxtTypes.ENXTSensorID;
+import robots.nxt.ctrl.NxtTypes.ENXTSensorType;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.os.Bundle;
@@ -43,7 +43,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.Toast;
 
-public class NXTRobot extends BluetoothRobot {
+public class NxtUI extends BluetoothRobot {
 
 	private static String TAG = "NXT";
 	
@@ -53,9 +53,9 @@ public class NXTRobot extends BluetoothRobot {
 	
 	private static final int REMOTE_CTRL_GRP = GENERAL_GRP + 1;
 
-	private NXT m_oNxt;
+	private Nxt m_oNxt;
 
-	private NXTSensorGatherer m_oSensorGatherer;
+	private NxtSensorGatherer m_oSensorGatherer;
 
 	private RemoteControlHelper m_oRemoteCtrl;
 
@@ -86,11 +86,11 @@ public class NXTRobot extends BluetoothRobot {
 
 	private ZmqRemoteControlSender m_oZmqRemoteListener;
 	
-	public NXTRobot(BaseActivity i_oOwner) {
+	public NxtUI(BaseActivity i_oOwner) {
 		super(i_oOwner);
 	}
 	
-	public NXTRobot() {
+	public NxtUI() {
 		super();
 	}
 
@@ -102,10 +102,10 @@ public class NXTRobot extends BluetoothRobot {
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
 
-    	m_oNxt = (NXT) getRobot();
+    	m_oNxt = (Nxt) getRobot();
 		m_oNxt.setHandler(m_oUiHandler);
 		
-		m_oSensorGatherer = new NXTSensorGatherer(this, m_oNxt);
+		m_oSensorGatherer = new NxtSensorGatherer(this, m_oNxt);
 		m_dblSpeed = m_oNxt.getBaseSpeed();
 
     	m_oZmqRemoteListener = new ZmqRemoteControlSender(getRobot().getID());
@@ -127,7 +127,7 @@ public class NXTRobot extends BluetoothRobot {
     	
     }
     
-    public void setNXT(NXT i_oNxt) {
+    public void setNXT(Nxt i_oNxt) {
     	m_oNxt = i_oNxt;
     	m_oNxt.setHandler(m_oUiHandler);
     }
@@ -193,7 +193,7 @@ public class NXTRobot extends BluetoothRobot {
 			m_oNxt.disconnect();
 		}
 
-		BluetoothConnection connection = new BluetoothConnection(i_oDevice, NXTTypes.SERIAL_PORT_SERVICE_CLASS_UUID);
+		BluetoothConnection connection = new BluetoothConnection(i_oDevice, NxtTypes.SERIAL_PORT_SERVICE_CLASS_UUID);
 		connection.setReceiveHandler(m_oUiHandler);
 		m_oNxt.setConnection(connection);
 	}
@@ -203,8 +203,8 @@ public class NXTRobot extends BluetoothRobot {
 		m_oNxt.connect();
 	};
 	
-	public static void connectToNXT(final BaseActivity m_oOwner, NXT i_oNxt, BluetoothDevice i_oDevice, final IConnectListener i_oConnectListener) {
-		NXTRobot m_oRobot = new NXTRobot(m_oOwner) {
+	public static void connectToNXT(final BaseActivity m_oOwner, Nxt i_oNxt, BluetoothDevice i_oDevice, final IConnectListener i_oConnectListener) {
+		NxtUI m_oRobot = new NxtUI(m_oOwner) {
 			public void onConnect() {
 				i_oConnectListener.onConnect(true);
 			};
@@ -220,7 +220,7 @@ public class NXTRobot extends BluetoothRobot {
 		}
 
 		i_oNxt.setHandler(m_oRobot.getUIHandler());
-		BluetoothConnection connection = new BluetoothConnection(i_oDevice, NXTTypes.SERIAL_PORT_SERVICE_CLASS_UUID);
+		BluetoothConnection connection = new BluetoothConnection(i_oDevice, NxtTypes.SERIAL_PORT_SERVICE_CLASS_UUID);
 		connection.setReceiveHandler(m_oRobot.getUIHandler());
 		i_oNxt.setConnection(connection);
 		i_oNxt.connect();
@@ -231,8 +231,8 @@ public class NXTRobot extends BluetoothRobot {
 		super.onAccelerationChanged(x, y, z, tx);
 		
 		if (tx && m_bAccelerometer) {
-			int speed = getSpeedFromAcceleration(x, y, z, NXTTypes.MAX_VELOCITY, false);
-			int radius = getRadiusFromAcceleration(x, y, z, NXTTypes.MAX_RADIUS);
+			int speed = getSpeedFromAcceleration(x, y, z, NxtTypes.MAX_VELOCITY, false);
+			int radius = getRadiusFromAcceleration(x, y, z, NxtTypes.MAX_RADIUS);
 			
 			// if speed is negative the roomba should drive forward
 			// if it is positive it should drive backward
@@ -269,12 +269,12 @@ public class NXTRobot extends BluetoothRobot {
 				if (radius > RADIUS_SENSITIVITY) {
 					// if speed is small we remap the radius to 
 					// speed and let it rotate on the spot 
-					speed = (int) (radius / (double)NXTTypes.MAX_RADIUS * NXTTypes.MAX_VELOCITY);
+					speed = (int) (radius / (double)NxtTypes.MAX_RADIUS * NxtTypes.MAX_VELOCITY);
 					m_oNxt.rotateCounterClockwise(speed);
 				} else if (radius < -RADIUS_SENSITIVITY) {
 					// if speed is small we remap the radius to 
 					// speed and let it rotate on the spot 
-					speed = (int) (radius / (double)NXTTypes.MAX_RADIUS * NXTTypes.MAX_VELOCITY);
+					speed = (int) (radius / (double)NxtTypes.MAX_RADIUS * NxtTypes.MAX_VELOCITY);
 					m_oNxt.rotateClockwise(speed);
 				} else {
 					m_oNxt.moveStop();
@@ -693,7 +693,7 @@ public class NXTRobot extends BluetoothRobot {
 	}
 
 	public static String getMacFilter() {
-		return NXTTypes.MAC_FILTER;
+		return NxtTypes.MAC_FILTER;
 	}
 
 }

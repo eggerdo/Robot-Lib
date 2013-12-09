@@ -4,12 +4,12 @@ import org.dobots.utilities.BaseActivity;
 
 import robots.ctrl.IRobotDevice;
 import robots.gui.BluetoothConnectionHelper.BTEnableCallback;
-import robots.nxt.ctrl.NXT;
-import robots.nxt.gui.NXTRobot;
+import robots.nxt.ctrl.Nxt;
+import robots.nxt.gui.NxtUI;
 import robots.parrot.ctrl.Parrot;
-import robots.parrot.gui.ParrotRobot;
+import robots.parrot.gui.ParrotUI;
 import robots.rover.ac13.ctrl.AC13Rover;
-import robots.rover.ac13.gui.AC13RoverRobot;
+import robots.rover.ac13.gui.AC13RoverUI;
 import android.bluetooth.BluetoothDevice;
 import android.widget.Toast;
 
@@ -92,7 +92,7 @@ public class ConnectionHelper {
 			BluetoothDevice i_oDevice, final IConnectListener oListener) throws Exception {
 		switch (oRobot.getType()) {
 		case RBT_NXT:
-			NXTRobot.connectToNXT(context, (NXT)oRobot, i_oDevice, oListener);
+			NxtUI.connectToNXT(context, (Nxt)oRobot, i_oDevice, oListener);
 			break;
 //		case RBT_ROOMBA:
 //			RoombaRobot.connectToRoomba(context, (Roomba)oRobot, i_oDevice, oListener);
@@ -115,11 +115,11 @@ public class ConnectionHelper {
 			IConnectListener oListener) throws Exception {
 		switch (oRobot.getType()) {
 		case RBT_PARROT:
-			ParrotRobot.connectToARDrone(context, (Parrot)oRobot, oListener);
+			ParrotUI.connectToARDrone(context, (Parrot)oRobot, oListener);
 //		case RBT_SPYKEE:
 //			SpykeeRobot.connectToSpykee(context, (Spykee)oRobot, oListener);
 		case RBT_AC13ROVER:
-			AC13RoverRobot.connectToAC13Rover(context, (AC13Rover)oRobot, oListener);
+			AC13RoverUI.connectToAC13Rover(context, (AC13Rover)oRobot, oListener);
 //		case RBT_ROVER2:
 //			Rover2Robot.connectToRover2(context, (Rover2)oRobot, oListener);
 		default:
