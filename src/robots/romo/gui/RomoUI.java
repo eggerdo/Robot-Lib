@@ -2,26 +2,27 @@ package robots.romo.gui;
 
 import org.dobots.R;
 import org.dobots.utilities.CameraPreview;
-import org.dobots.utilities.log.ILogListener;
-import org.dobots.utilities.log.LogTypes;
 import org.dobots.zmq.ZmqRemoteControlHelper;
 import org.dobots.zmq.ZmqRemoteControlSender;
+import org.dobots.utilities.Utils;
 
 import robots.RobotType;
 import robots.ctrl.ICameraControlListener;
 import robots.gui.RobotInventory;
 import robots.gui.RobotView;
 import robots.gui.SensorGatherer;
+import robots.romo.ctrl.Romo;
 import android.app.Activity;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager.LayoutParams;
 import android.widget.ImageButton;
 
-public class RomoUI extends RobotView implements ILogListener {
+public class RomoUI extends RobotView {
 	
 	private static Activity CONTEXT;
 	
@@ -41,7 +42,6 @@ public class RomoUI extends RobotView implements ILogListener {
         
 //        Romo oRomo = (Romo) getRobot();
 //        oRomo.setDebug(true);
-//        oRomo.setLogListener(this);
 
 //    	m_oZmqRemoteSender = new ZmqRemoteControlSender(oRomo.getID());
 
@@ -148,23 +148,6 @@ public class RomoUI extends RobotView implements ILogListener {
 	protected SensorGatherer getSensorGatherer() {
 		// TODO Auto-generated method stub
 		return m_oSensorGatherer;
-	}
-
-	@Override
-	public void onTrace(LogTypes i_eType, String i_strTag, String i_strMessage) {
-		switch(i_eType) {
-		case tt_Debug:
-			Log.d(i_strTag, i_strMessage);
-		}
-	}
-
-	@Override
-	public void onTrace(LogTypes i_eType, String i_strTag, String i_strMessage,
-			Throwable i_oObj) {
-		switch(i_eType) {
-		case tt_Debug:
-			Log.d(i_strTag, i_strMessage);
-		}
 	}
 
 }

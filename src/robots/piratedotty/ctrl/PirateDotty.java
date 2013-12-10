@@ -36,12 +36,6 @@ public class PirateDotty extends DifferentialRobot {
 	}
 
 	@Override
-	public void setLogListener(ILogListener listener) {
-		super.setLogListener(listener);
-		m_oController.setLogListener(listener);
-	}
-		
-	@Override
 	public RobotType getType() {
 		// TODO Auto-generated method stub
 		return RobotType.RBT_PIRATEDOTTY;

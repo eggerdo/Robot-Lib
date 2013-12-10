@@ -59,9 +59,9 @@ public class ZmqConnectionHelper {
 //			}
 //		});
 
-        m_oVideoHandler = new ZmqMessageHandler(m_oZmqHandler.getContext());
+        m_oVideoHandler = new ZmqMessageHandler();
 
-        m_oCmdHandler = new ZmqMessageHandler(m_oZmqHandler.getContext());
+        m_oCmdHandler = new ZmqMessageHandler();
         
 		if (!m_oSettings.isValid()) {
 			m_oActivity.onZmqFailed();

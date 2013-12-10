@@ -75,7 +75,6 @@ public class PirateDottyUI extends BluetoothRobot implements ICameraControlListe
         
     	m_oPirateDotty = (PirateDotty) getRobot();
     	m_oPirateDotty.setHandler(m_oUiHandler);
-    	m_oPirateDotty.setLogListener(new AndroidLogger());
 
     	m_oZmqRemoteSender = new ZmqRemoteControlSender(m_oPirateDotty.getID());
 
