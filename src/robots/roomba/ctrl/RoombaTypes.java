@@ -4,7 +4,9 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.UUID;
 
+import org.dobots.lib.comm.msg.SensorMessageArray;
 import org.dobots.utilities.Utils;
+import org.json.JSONException;
 
 public class RoombaTypes {
 
@@ -117,9 +119,18 @@ public class RoombaTypes {
 		public String toString() {
 			return strName;
 		}
+		
+		public static ERoombaSensorPackages fromString(String name) {
+			for (ERoombaSensorPackages pkg : ERoombaSensorPackages.values()) {
+				if (pkg.toString().equals(name)) {
+					return pkg;
+				}
+			}
+			return sensPkg_None;
+		}
 	}
 	
-	public class BumpsWheeldrops {
+	public static class BumpsWheeldrops {
 		private static final int CASTER_WHEELDROP 	= 4;
 		private static final int LEFT_WHEELDROP 	= 3;
 		private static final int RIGHT_WHEELDROP 	= 2;
@@ -147,9 +158,26 @@ public class RoombaTypes {
 				   "Left_Bump=" + bLeft_Bump + ", " +
 				   "Right_Bump=" + bRight_Bump;
 		}
+
+		public void addToSensorData(SensorMessageArray sensorData) {
+			sensorData.addItem(bCaster_Wheeldrop);
+			sensorData.addItem(bLeft_Wheeldrop);
+			sensorData.addItem(bRight_Wheeldrop);
+			sensorData.addItem(bLeft_Bump);
+			sensorData.addItem(bRight_Bump);
+		}
+		
+		public int fromSensorData(SensorMessageArray sensorData, int offset) throws JSONException {
+			bCaster_Wheeldrop = sensorData.getBoolean(offset++);
+			bLeft_Wheeldrop = sensorData.getBoolean(offset++);
+			bRight_Wheeldrop = sensorData.getBoolean(offset++);
+			bLeft_Bump = sensorData.getBoolean(offset++);
+			bRight_Bump = sensorData.getBoolean(offset++);
+			return offset;
+		}
 	}
 	
-	public class MotorOvercurrents {
+	public static class MotorOvercurrents {
 		private static final int DRIVE_LEFT		= 4;
 		private static final int DRIVE_RIGHT	= 3;
 		private static final int MAIN_BRUSH		= 2;
@@ -177,9 +205,26 @@ public class RoombaTypes {
 				   "Vacuum=" + bVacuum + ", " +
 				   "bSideBrush=" + bSideBrush;
 		}
+
+		public void addToSensorData(SensorMessageArray sensorData) {
+			sensorData.addItem(bDriveLeft);
+			sensorData.addItem(bDriveRight);
+			sensorData.addItem(bMainBrush);
+			sensorData.addItem(bVacuum);
+			sensorData.addItem(bSideBrush);
+		}
+		
+		public int fromSensorData(SensorMessageArray sensorData, int offset) throws JSONException {
+			bDriveLeft = sensorData.getBoolean(offset++);
+			bDriveRight = sensorData.getBoolean(offset++);
+			bMainBrush = sensorData.getBoolean(offset++);
+			bVacuum = sensorData.getBoolean(offset++);
+			bSideBrush = sensorData.getBoolean(offset++);
+			return offset;
+		}
 	}
 	
-	public class ButtonsPressed {
+	public static class ButtonsPressed {
 		private static final int POWER	= 3;
 		private static final int SPOT	= 2;
 		private static final int CLEAN	= 1;
@@ -203,9 +248,24 @@ public class RoombaTypes {
 				   "Clean=" + bClean + ", " +
 				   "Max=" + bMax;
 		}
+
+		public void addToSensorData(SensorMessageArray sensorData) {
+			sensorData.addItem(bPower);
+			sensorData.addItem(bSpot);
+			sensorData.addItem(bClean);
+			sensorData.addItem(bMax);
+		}
+		
+		public int fromSensorData(SensorMessageArray sensorData, int offset) throws JSONException {
+			bPower = sensorData.getBoolean(offset++);
+			bSpot = sensorData.getBoolean(offset++);
+			bClean = sensorData.getBoolean(offset++);
+			bMax = sensorData.getBoolean(offset++);
+			return offset;
+		}
 	}
 	
-	public class LightBumper {
+	public static class LightBumper {
 		private static final int LT_BUMPER_RIGHT 		= 5;
 		private static final int LT_BUMPER_FRONT_RIGHT 	= 4;
 		private static final int LT_BUMPER_CENTER_RIGHT	= 3;
@@ -227,6 +287,25 @@ public class RoombaTypes {
 			bLtBumperCenterLeft		= Utils.IsBitSet(i_nVal, LT_BUMPER_CENTER_lEFT);
 			bLtBumperFrontLeft		= Utils.IsBitSet(i_nVal, LT_BUMPER_FRONT_LEFT);
 			bLtBumperLeft			= Utils.IsBitSet(i_nVal, LT_BUMPER_LEFT);
+		}
+
+		public void addToSensorData(SensorMessageArray sensorData) {
+			sensorData.addItem(bLtBumperRight);
+			sensorData.addItem(bLtBumperFrontRight);
+			sensorData.addItem(bLtBumperCenterRight);
+			sensorData.addItem(bLtBumperCenterLeft);
+			sensorData.addItem(bLtBumperFrontLeft);
+			sensorData.addItem(bLtBumperLeft);
+		}
+		
+		public int fromSensorData(SensorMessageArray sensorData, int offset) throws JSONException {
+			bLtBumperRight = sensorData.getBoolean(offset++);
+			bLtBumperFrontRight = sensorData.getBoolean(offset++);
+			bLtBumperCenterRight = sensorData.getBoolean(offset++);
+			bLtBumperCenterLeft = sensorData.getBoolean(offset++);
+			bLtBumperFrontLeft = sensorData.getBoolean(offset++);
+			bLtBumperLeft = sensorData.getBoolean(offset++);
+			return offset;
 		}
 	}
 	
@@ -255,6 +334,15 @@ public class RoombaTypes {
 		public String toString() {
 			return strName;
 		}
+
+		public static EChargingState fromString(String name) {
+			for (EChargingState state : EChargingState.values()) {
+				if (state.toString().equals(name)) {
+					return state;
+				}
+			}
+			return chg_Unknown;
+		}
 	}
 
 	public enum OIMode {
@@ -279,6 +367,15 @@ public class RoombaTypes {
 		
 		public String toString() {
 			return strName;
+		}
+
+		public static OIMode fromString(String name) {
+			for (OIMode mode : OIMode.values()) {
+				if (mode.toString().equals(name)) {
+					return mode;
+				}
+			}
+			return oi_unknown;
 		}
 	}
 	
@@ -310,6 +407,15 @@ public class RoombaTypes {
 		
 		public int toValue() {
 			return nValue;
+		}
+
+		public static ChargeMode fromString(String name) {
+			for (ChargeMode mode : ChargeMode.values()) {
+				if (mode.toString().equals(name)) {
+					return mode;
+				}
+			}
+			return chgmode_Unknown;
 		}
 	}
 	
@@ -373,13 +479,25 @@ public class RoombaTypes {
 			}
 			return irop_unknown;
 		}
+		
+		public static IROpCode fromString(String name) {
+			for (IROpCode code : IROpCode.values()) {
+				if (code.toString().equals(name)) {
+					return code;
+				}
+			}
+			return irop_unknown;
+		}
 	}
 	
 	public interface SensorPackage{
 		public String toString();
+		public SensorMessageArray getSensorData();
 	};
 	
-	public class SensorPackage1 implements SensorPackage {
+	public static class SensorPackage1 implements SensorPackage {
+		private SensorMessageArray oSensorData;
+		
 		public static final int IDX_BUMPWHEELDROPS		= 0;
 		public static final int IDX_WALL				= 1;
 		public static final int IDX_CLIFFLEFT			= 2;
@@ -402,7 +520,9 @@ public class RoombaTypes {
 		public byte byDirtDetectionLeft;
 		public byte byDirtDetectionRight;
 		
-		public SensorPackage1(byte[] i_rgbyValues) {
+		public SensorPackage1(String robotID, byte[] i_rgbyValues) {
+			oSensorData = new SensorMessageArray(robotID, ERoombaSensorPackages.sensPkg_1.toString());
+			
 			for (int i = 0; i < i_rgbyValues.length; i++) {
 				switch (i) {
 					case IDX_BUMPWHEELDROPS:
@@ -439,6 +559,39 @@ public class RoombaTypes {
 						throw new IndexOutOfBoundsException("Array has too many fields");
 				}
 			}
+			
+			oBumpsWheeldrops.addToSensorData(oSensorData);
+			oSensorData.addItem(bWall);
+			oSensorData.addItem(bCliffLeft);
+			oSensorData.addItem(bCliffFrontLeft);
+			oSensorData.addItem(bCliffFrontRight);
+			oSensorData.addItem(bCliffRight);
+			oSensorData.addItem(bVirtualWall);
+			oMotorOvercurrents.addToSensorData(oSensorData);
+			oSensorData.addItem(byDirtDetectionLeft);
+			oSensorData.addItem(byDirtDetectionRight);
+		}
+		
+		public SensorPackage1(SensorMessageArray sensorData) {
+			try {
+				int offset = 0;
+				
+				oBumpsWheeldrops = new BumpsWheeldrops(0);
+				offset = oBumpsWheeldrops.fromSensorData(sensorData, offset);
+				bWall = sensorData.getBoolean(offset++);
+				bCliffLeft = sensorData.getBoolean(offset++);
+				bCliffFrontLeft = sensorData.getBoolean(offset++);
+				bCliffFrontRight = sensorData.getBoolean(offset++);
+				bCliffRight = sensorData.getBoolean(offset++);
+				bVirtualWall = sensorData.getBoolean(offset++);
+				oMotorOvercurrents = new MotorOvercurrents(0);
+				offset = oMotorOvercurrents.fromSensorData(sensorData, offset);
+				byDirtDetectionLeft = (byte) sensorData.getInt(offset++);
+				byDirtDetectionRight = (byte) sensorData.getInt(offset++);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		public String toString() {
@@ -453,9 +606,16 @@ public class RoombaTypes {
 			       "DirtDetectionLeft=" + byDirtDetectionLeft + ", " +
 			       "DirtDetectionRight=" + byDirtDetectionRight;
 		}
+
+		@Override
+		public SensorMessageArray getSensorData() {
+			return oSensorData;
+		}
 	}
 	
-	public class SensorPackage2 implements SensorPackage {
+	public static class SensorPackage2 implements SensorPackage {
+		private SensorMessageArray oSensorData;
+		
 		private static final int IDX_REMOTEOPCODE		= 0;
 		private static final int IDX_BUTTONSPRESSED		= 1;
 		private static final int IDX_DISTANCE			= 2; // 2 bytes
@@ -466,7 +626,9 @@ public class RoombaTypes {
 		public short sDistance;
 		public short sAngle;
 		
-		public SensorPackage2(byte[] i_rgbyValues) {
+		public SensorPackage2(String robotID, byte[] i_rgbyValues) {
+			oSensorData = new SensorMessageArray(robotID, ERoombaSensorPackages.sensPkg_2.toString());
+			
 			for (int i = 0; i < i_rgbyValues.length; i++) {
 				switch (i) {
 					case IDX_REMOTEOPCODE:
@@ -488,6 +650,26 @@ public class RoombaTypes {
 						throw new IndexOutOfBoundsException("Array has too many fields");
 				}
 			}
+			
+			oSensorData.addItem(byRemoteOpCode);
+			oButtonsPressed.addToSensorData(oSensorData);
+			oSensorData.addItem(sDistance);
+			oSensorData.addItem(sAngle);
+		}
+		
+		public SensorPackage2(SensorMessageArray sensorData) {
+			try {
+				int offset = 0;
+				
+				byRemoteOpCode = (byte) sensorData.getInt(offset++);
+				oButtonsPressed = new ButtonsPressed(0);
+				offset = oButtonsPressed.fromSensorData(sensorData, offset);
+				sDistance = (short) sensorData.getInt(offset++);
+				sAngle = (short) sensorData.getInt(offset++);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		public String toString() {
@@ -496,9 +678,16 @@ public class RoombaTypes {
 				   "Distance=" + sDistance + ", " +
 				   "Angle=" + sAngle;
 		}
+
+		@Override
+		public SensorMessageArray getSensorData() {
+			return oSensorData;
+		}
 	}
 	
-	public class SensorPackage3 implements SensorPackage {
+	public static class SensorPackage3 implements SensorPackage {
+		private SensorMessageArray oSensorData;
+		
 		private static final int IDX_CHARGINGSTATE		= 0;
 		private static final int IDX_VOLTAGE			= 1; // 2 bytes
 		private static final int IDX_CURRENT			= 3; // 2 bytes
@@ -513,7 +702,9 @@ public class RoombaTypes {
 		public short sCharge;
 		public short sCapacity;
 		
-		public SensorPackage3(byte[] i_rgbyValues) {
+		public SensorPackage3(String robotID, byte[] i_rgbyValues) {
+			oSensorData = new SensorMessageArray(robotID, ERoombaSensorPackages.sensPkg_3.toString());
+			
 			for (int i = 0; i < i_rgbyValues.length; i++) {
 				switch (i) {
 					case IDX_CHARGINGSTATE:
@@ -546,6 +737,29 @@ public class RoombaTypes {
 						throw new IndexOutOfBoundsException("Array has too many fields");
 				}
 			}
+			
+			oSensorData.addItem(eChargingState);
+			oSensorData.addItem(sVoltage);
+			oSensorData.addItem(sCurrent);
+			oSensorData.addItem(byTemperature);
+			oSensorData.addItem(sCharge);
+			oSensorData.addItem(sCapacity);
+		}
+
+		public SensorPackage3(SensorMessageArray sensorData) {
+			try {
+				int offset = 0;
+				
+				eChargingState = EChargingState.fromString(sensorData.getString(offset++));
+				sVoltage = (short) sensorData.getInt(offset++);
+				sCurrent = (short) sensorData.getInt(offset++);
+				byTemperature = (byte) sensorData.getInt(offset++);
+				sCharge = (short) sensorData.getInt(offset++);
+				sCapacity = (short) sensorData.getInt(offset++);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		public String toString() {
@@ -555,6 +769,11 @@ public class RoombaTypes {
 				   "Temperature=" + byTemperature + ", " +
 				   "Charge=" + sCharge + ", " +
 				   "Capacity=" + sCapacity;
+		}
+
+		@Override
+		public SensorMessageArray getSensorData() {
+			return oSensorData;
 		}
 	}
 
@@ -639,7 +858,9 @@ public class RoombaTypes {
 		}
 	}
 	
-	public class SensorPackageAll implements SensorPackage {
+	public static class SensorPackageAll implements SensorPackage {
+		private SensorMessageArray oSensorData;
+		
 		public BumpsWheeldrops bumps_wheeldrops;
 		public boolean wall;
 		public boolean cliff_left;
@@ -694,7 +915,9 @@ public class RoombaTypes {
 		public byte stasis;
 		
 		
-		public SensorPackageAll(byte[] i_rgbyValues) {
+		public SensorPackageAll(String robotID, byte[] i_rgbyValues) {
+			oSensorData = new SensorMessageArray(robotID, ERoombaSensorPackages.sensPkg_All.toString());
+			
 			ByteBuffer buffer = ByteBuffer.wrap(i_rgbyValues);
 			buffer.order(ByteOrder.BIG_ENDIAN);
 			
@@ -750,29 +973,168 @@ public class RoombaTypes {
 			main_brush_current = buffer.getShort();
 			side_brush_current = buffer.getShort();
 			stasis = buffer.get();
+			
+
+			bumps_wheeldrops.addToSensorData(oSensorData);
+			oSensorData.addItem(wall);
+			oSensorData.addItem(cliff_left);
+			oSensorData.addItem(cliff_front_left);
+			oSensorData.addItem(cliff_front_right);
+			oSensorData.addItem(cliff_right);
+			oSensorData.addItem(virtual_wall);
+			motor_overcurrents.addToSensorData(oSensorData);
+			oSensorData.addItem(dirt_detector_left);
+			oSensorData.addItem(dirt_detector_right);
+			oSensorData.addItem(remote_opcode);
+			buttons.addToSensorData(oSensorData);
+			oSensorData.addItem(distance);
+			oSensorData.addItem(angle);
+			oSensorData.addItem(charging_state);
+			oSensorData.addItem(voltage);
+			oSensorData.addItem(current);
+			oSensorData.addItem(temprerature);
+			oSensorData.addItem(charge);
+			oSensorData.addItem(capacity);
+			oSensorData.addItem(wall_signal);
+			oSensorData.addItem(cliff_left_signal);
+			oSensorData.addItem(cliff_front_left_signal);
+			oSensorData.addItem(cliff_front_right_signal);
+			oSensorData.addItem(cliff_right_signal);
+			oSensorData.addItem(user_digital_inputs);
+			oSensorData.addItem(user_analog_input);
+			oSensorData.addItem(charging_sources_available);
+			oSensorData.addItem(oi_mode);
+			oSensorData.addItem(song_number);
+			oSensorData.addItem(song_playing);
+			oSensorData.addItem(number_of_stream_packets);
+			oSensorData.addItem(requested_velocity);
+			oSensorData.addItem(requested_radius);
+			oSensorData.addItem(requested_right_velocity);
+			oSensorData.addItem(requested_left_velocity);
+			oSensorData.addItem(encoder_counts_left);
+			oSensorData.addItem(encoder_counts_right);
+			light_bumper.addToSensorData(oSensorData);
+			oSensorData.addItem(light_bump_left_signal);
+			oSensorData.addItem(light_bump_front_left_signal);
+			oSensorData.addItem(light_bump_center_left_signal);
+			oSensorData.addItem(light_bump_center_right_signal);
+			oSensorData.addItem(light_bump_front_right_signal);
+			oSensorData.addItem(light_bump_right_signal);
+			oSensorData.addItem(ir_opcode_left);
+			oSensorData.addItem(ir_opcode_right);
+			oSensorData.addItem(left_motor_current);
+			oSensorData.addItem(right_motor_current);
+			oSensorData.addItem(main_brush_current);
+			oSensorData.addItem(side_brush_current);
+			oSensorData.addItem(stasis);
+		}
+		
+		public SensorPackageAll(SensorMessageArray sensorData) {
+			try {
+				int offset = 0;
+				bumps_wheeldrops = new BumpsWheeldrops(0);
+				offset = bumps_wheeldrops.fromSensorData(sensorData, offset);
+				wall = sensorData.getBoolean(offset++);
+				cliff_left = sensorData.getBoolean(offset++);
+				cliff_front_left = sensorData.getBoolean(offset++);
+				cliff_front_right = sensorData.getBoolean(offset++);
+				cliff_right = sensorData.getBoolean(offset++);
+				virtual_wall = sensorData.getBoolean(offset++);
+				motor_overcurrents = new MotorOvercurrents(0);
+				offset = motor_overcurrents.fromSensorData(sensorData, offset);
+				dirt_detector_left = (short) sensorData.getInt(offset++);
+				dirt_detector_right = (short) sensorData.getInt(offset++);
+				remote_opcode = IROpCode.fromString(sensorData.getString(offset++));
+				buttons = new ButtonsPressed(0);
+				offset = buttons.fromSensorData(sensorData, offset);
+				distance = (short) sensorData.getInt(offset++);
+				angle = (short) sensorData.getInt(offset++);
+				charging_state = EChargingState.fromString(sensorData.getString(offset++));
+				voltage = sensorData.getInt(offset++);
+				current = (short) sensorData.getInt(offset++);
+				temprerature = (byte) sensorData.getInt(offset++);
+				charge = sensorData.getInt(offset++);
+				capacity = sensorData.getInt(offset++);
+				wall_signal = sensorData.getInt(offset++);
+				cliff_left_signal = sensorData.getInt(offset++);
+				cliff_front_left_signal = sensorData.getInt(offset++);
+				cliff_front_right_signal = sensorData.getInt(offset++);
+				cliff_right_signal = sensorData.getInt(offset++);
+				user_digital_inputs = (short) sensorData.getInt(offset++);
+				user_analog_input = sensorData.getInt(offset++);
+				charging_sources_available = ChargeMode.fromString(sensorData.getString(offset++));
+				oi_mode = OIMode.fromString(sensorData.getString(offset++));
+				song_number = (short) sensorData.getInt(offset++);
+				song_playing = sensorData.getBoolean(offset++);
+				number_of_stream_packets = (short) sensorData.getInt(offset++);
+				requested_velocity = (short) sensorData.getInt(offset++);
+				requested_radius = (short) sensorData.getInt(offset++);
+				requested_right_velocity = (short) sensorData.getInt(offset++);
+				requested_left_velocity = (short) sensorData.getInt(offset++);
+				encoder_counts_left = sensorData.getInt(offset++);
+				encoder_counts_right = sensorData.getInt(offset++);
+				light_bumper = new LightBumper(0);
+				offset = light_bumper.fromSensorData(sensorData, offset);
+				light_bump_left_signal = sensorData.getInt(offset++);
+				light_bump_front_left_signal = sensorData.getInt(offset++);
+				light_bump_center_left_signal = sensorData.getInt(offset++);
+				light_bump_center_right_signal = sensorData.getInt(offset++);
+				light_bump_front_right_signal = sensorData.getInt(offset++);
+				light_bump_right_signal = sensorData.getInt(offset++);
+				ir_opcode_left = IROpCode.fromString(sensorData.getString(offset++));
+				ir_opcode_right = IROpCode.fromString(sensorData.getString(offset++));
+				left_motor_current = (short) sensorData.getInt(offset++);
+				right_motor_current = (short) sensorData.getInt(offset++);
+				main_brush_current = (short) sensorData.getInt(offset++);
+				side_brush_current = (short) sensorData.getInt(offset++);
+				stasis = (byte) sensorData.getInt(offset++);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 		public String toString() {
 			return "";
 		}
+
+		@Override
+		public SensorMessageArray getSensorData() {
+			return oSensorData;
+		}
 	}
 	
-	public static SensorPackage assembleSensorPackage(ERoombaSensorPackages i_ePackage, byte[] i_bySensorData) {
-		RoombaTypes oRoombaTypes = new RoombaTypes();
+	public static SensorPackage assembleSensorPackage(String robotID, ERoombaSensorPackages i_ePackage, byte[] i_bySensorData) {
 		switch (i_ePackage) {
 			case sensPkg_All:
-				return oRoombaTypes.new SensorPackageAll(i_bySensorData);
+				return new SensorPackageAll(robotID, i_bySensorData);
 			case sensPkg_1:
-				return oRoombaTypes.new SensorPackage1(i_bySensorData);
+				return new SensorPackage1(robotID, i_bySensorData);
 			case sensPkg_2:
-				return oRoombaTypes.new SensorPackage2(i_bySensorData);
+				return new SensorPackage2(robotID, i_bySensorData);
 			case sensPkg_3:
-				return oRoombaTypes.new SensorPackage3(i_bySensorData);
+				return new SensorPackage3(robotID, i_bySensorData);
 			default:
 				return null;
 		}
 	}
 
+	public static SensorPackage assembleSensorPackage(SensorMessageArray sensorData) {
+		ERoombaSensorPackages ePackage = ERoombaSensorPackages.fromString(sensorData.getSensorID()); 
+		switch (ePackage) {
+			case sensPkg_All:
+				return new SensorPackageAll(sensorData);
+			case sensPkg_1:
+				return new SensorPackage1(sensorData);
+			case sensPkg_2:
+				return new SensorPackage2(sensorData);
+			case sensPkg_3:
+				return new SensorPackage3(sensorData);
+			default:
+				return null;
+		}
+	}
+	
 	/////////////////////////////////////////////////////////////////////////
 	/// Private Functions
 	/////////////////////////////////////////////////////////////////////////

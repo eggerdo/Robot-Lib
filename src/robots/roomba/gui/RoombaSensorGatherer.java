@@ -5,11 +5,17 @@ import java.util.EnumMap;
 import java.util.List;
 
 import org.dobots.R;
+import org.dobots.communication.sensors.ZmqSensorsReceiver;
+import org.dobots.communication.sensors.ZmqSensorsReceiver.ISensorDataListener;
+import org.dobots.communication.zmq.ZmqHandler;
+import org.dobots.lib.comm.msg.SensorMessageArray;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
+import org.zeromq.ZMQ.Socket;
 
 import robots.gui.SensorGatherer;
 import robots.roomba.ctrl.Roomba;
+import robots.roomba.ctrl.RoombaTypes;
 import robots.roomba.ctrl.RoombaTypes.ERoombaSensorPackages;
 import robots.roomba.ctrl.RoombaTypes.SensorPackage;
 import robots.roomba.ctrl.RoombaTypes.SensorPackage1;
@@ -21,7 +27,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
-import android.util.Log;
+import android.os.Message;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -38,13 +44,11 @@ import android.widget.ListView;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
-public class RoombaSensorGatherer extends SensorGatherer {
+public class RoombaSensorGatherer extends SensorGatherer implements ISensorDataListener {
 
 	private ERoombaSensorPackages m_eSensor;
 	private Roomba m_oRoomba;
 	
-	protected Runnable m_oGUIUpdater;
-
 	private SensorPackage m_oSensorData;
 	
 	private TableLayout m_tblSensorPackage1;
@@ -60,8 +64,9 @@ public class RoombaSensorGatherer extends SensorGatherer {
 	
 	private Button m_btnSensorItem;
 
-	private boolean m_bShowRemoveElement = false;
+	private ZmqSensorsReceiver m_oSensorsReceiver;
 	
+	private boolean m_bShowRemoveElement = false;
 	
 	private TextView txtCasterWD;
 	private TextView txtLeftWD;
@@ -98,14 +103,16 @@ public class RoombaSensorGatherer extends SensorGatherer {
 		super(i_oActivity, "RoombaSensorGatherer");
 		m_oRoomba = i_oRoomba;
 		
-		m_oGUIUpdater = new UpdateSensorDataTask();
-		
 		m_oSensorList = new ArrayList<SensorEntry>();
 		m_oSensorSelected = new EnumMap<SensorType, SensorEntry>(SensorType.class);
+
+		Socket sensorsRecvSocket = ZmqHandler.getInstance().obtainSensorsRecvSocket();
+		sensorsRecvSocket.subscribe(m_oRoomba.getID().getBytes());
+		m_oSensorsReceiver = new ZmqSensorsReceiver(ZmqHandler.getInstance().getContext().getContext(), sensorsRecvSocket, "RoombaSensorsReceiver");
+		m_oSensorsReceiver.setSensorDataListener(this);
+		m_oSensorsReceiver.start();
 		
 		setProperties();
-
-		start();
 	}
 	
 	private void setProperties() {
@@ -138,7 +145,6 @@ public class RoombaSensorGatherer extends SensorGatherer {
         setLayoutSensorData1();
         setLayoutSensorData2();
         setLayoutSensorData3();
-        setLayoutSensorDataAll();
 	}
 	
 	private void setLayoutSensorData1() {
@@ -185,10 +191,6 @@ public class RoombaSensorGatherer extends SensorGatherer {
 		
 	}
 	
-	private void setLayoutSensorDataAll() {
-		
-	}
-
 	private void showSensorItemSelectionDialog() {
 		AlertDialog dialog = Utils.CreateAdapterDialog(m_oActivity, "Choose a sensor", oSensorTypeAdapter,
 				new DialogInterface.OnClickListener() {
@@ -232,19 +234,14 @@ public class RoombaSensorGatherer extends SensorGatherer {
 		updateListView();
 	}
 
-	@Override
-	public void execute() {
-		if (m_bEnabled && m_oRoomba.isPowerOn() && m_oRoomba.isConnected()) {
-			m_oSensorData = m_oRoomba.getSensors(m_eSensor);
-			m_oUiHandler.postDelayed(m_oGUIUpdater, 10);
-		} else {
-			m_oSensorData = null;
-		}
-//		Utils.waitSomeTime(500);
-	}
-
 	public void setSensorPackage(ERoombaSensorPackages i_eSensor) {
 		m_eSensor = i_eSensor;
+		
+		if (m_eSensor == ERoombaSensorPackages.sensPkg_None) {
+			m_oRoomba.stopSensorStreaming();
+		} else {
+			m_oRoomba.startSensorStreaming(m_eSensor);
+		}
 	}
 
 	public void showSensorPackage(ERoombaSensorPackages eSensorPkg) {
@@ -255,10 +252,7 @@ public class RoombaSensorGatherer extends SensorGatherer {
 		
 		Utils.showLayout(m_laySensorDataAll, false);
 		
-		if (eSensorPkg == ERoombaSensorPackages.sensPkg_None) {
-			m_oUiHandler.removeCallbacks(m_oGUIUpdater);
-			m_bEnabled = false;
-		} else if (eSensorPkg != m_eSensor) {
+		if (eSensorPkg != m_eSensor) {
 			switch (eSensorPkg) {
 			case sensPkg_1:
 				m_tblSensorPackage1.setLayoutParams(new TableLayout.LayoutParams());
@@ -274,12 +268,13 @@ public class RoombaSensorGatherer extends SensorGatherer {
 				updateListView();
 				Utils.showLayout(m_laySensorDataAll, true);
 				break;
+			default:
+				break;
 			}
-	
-			setSensorPackage(eSensorPkg);
-			m_oUiHandler.postDelayed(m_oGUIUpdater, 100);
-			m_bEnabled = true;
+			
 		}
+
+		setSensorPackage(eSensorPkg);
 	}
 
 	private class UpdateSensorDataTask implements Runnable {
@@ -657,9 +652,7 @@ public class RoombaSensorGatherer extends SensorGatherer {
 	}
 	
 	public void initialize() {
-		setSensorPackage(ERoombaSensorPackages.sensPkg_None);
 		showSensorPackage(ERoombaSensorPackages.sensPkg_None);
-		m_bEnabled = false;
 		clearSensorSelection();
 	}
 
@@ -791,8 +784,30 @@ public class RoombaSensorGatherer extends SensorGatherer {
 
 	@Override
 	public void shutDown() {
-		// TODO Auto-generated method stub
-		
+		m_oSensorsReceiver.close();
+	}
+
+	public void handleSensorMessage(Message msg) {
+		m_oSensorData = (SensorPackage) msg.obj;
+		m_oUiHandler.post(new UpdateSensorDataTask());
+	}
+
+	@Override
+	public void onSensorData(final SensorMessageArray data) {
+		// to update the UI we need to execute the function
+		// in the main looper.
+//		if (Looper.myLooper() != Looper.getMainLooper()) {
+//			Utils.runAsyncUiTask(new Runnable() {
+//				
+//				@Override
+//				public void run() {
+//					onSensorData(data);
+//				}
+//			});
+//		} else {
+			m_oSensorData = RoombaTypes.assembleSensorPackage(data);
+			m_oUiHandler.post(new UpdateSensorDataTask());
+//		}
 	}
 
 }

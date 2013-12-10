@@ -3,6 +3,8 @@ package robots.roomba.ctrl;
 import java.util.concurrent.TimeoutException;
 
 import org.dobots.communication.control.ZmqRemoteControlHelper;
+import org.dobots.communication.sensors.ZmqSensorsSender;
+import org.dobots.utilities.ThreadHandler;
 import org.dobots.utilities.Utils;
 
 import robots.RobotType;
@@ -31,7 +33,11 @@ public class Roomba extends BaseRobot {
 
 	private ZmqRemoteControlHelper m_oRemoteHelper;
 
+	private ZmqSensorsSender m_oSensorsSender;
+	
 	private Handler m_oUiHandler;
+
+	private ThreadHandler m_oSensorHandler = new ThreadHandler("RoombaSensorHandler");
 	
 	public Roomba() {
 		m_oRoombaCtrl = new RoombaController();
@@ -41,7 +47,10 @@ public class Roomba extends BaseRobot {
 		m_oRemoteListener = new RobotDriveCommandListener(this);
 		m_oRemoteHelper = new ZmqRemoteControlHelper();
 		m_oRemoteHelper.setDriveControlListener(m_oRemoteListener);
+		m_oRemoteHelper.setControlListener(this);
 		m_oRemoteHelper.startReceiver(getID());
+
+		m_oSensorsSender = new ZmqSensorsSender();
 	}
 	
 	public void destroy() {
@@ -51,6 +60,7 @@ public class Roomba extends BaseRobot {
 		destroyConnection();
 		m_oRemoteHelper.close();
 		m_oRoombaCtrl = null;
+		m_oSensorHandler.destroy();
 	}
 	
 	public RobotType getType() {
@@ -472,7 +482,7 @@ public class Roomba extends BaseRobot {
 		try {
 			byResult = m_oRoombaCtrl.sensors(nPackage, nResultLength);
 			if (byResult != null) {
-				return RoombaTypes.assembleSensorPackage(i_ePackage, byResult);
+				return RoombaTypes.assembleSensorPackage(getID(), i_ePackage, byResult);
 			} else
 				return null;
 		} catch (TimeoutException e) {
@@ -480,6 +490,49 @@ public class Roomba extends BaseRobot {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	public void startSensorStreaming(ERoombaSensorPackages eSensorPkg) {
+		SensorRequest req = new SensorRequest(eSensorPkg, 250);
+		m_oSensorHandler.getHandler().post(req);
+	}
+
+	public void stopSensorStreaming() {
+		m_oSensorHandler.getHandler().removeCallbacksAndMessages(null);
+	}
+	
+	private class SensorRequest implements Runnable {
+
+		ERoombaSensorPackages mSensorPkg; 
+		int mInterval;
+		
+		public SensorRequest(ERoombaSensorPackages sensorPkg, int interval) {
+			mSensorPkg = sensorPkg;
+			mInterval = interval;
+		}
+		
+		@Override
+		public void run() {
+			if (!isConnected() || !isPowerOn()) {
+				return;
+			}
+			
+			if (mSensorPkg != ERoombaSensorPackages.sensPkg_None) {
+				SensorPackage sensorPackage = getSensors(mSensorPkg);
+				if (sensorPackage != null) {
+					m_oSensorsSender.sendSensors(sensorPackage.getSensorData());
+				}
+//				Message msg = Message.obtain();
+//				msg.what = 1234;
+//				msg.obj = sensorPackage;
+//				m_oUiHandler.sendMessage(msg);
+			}
+			
+			if (mInterval > 0) {
+				m_oSensorHandler.getHandler().postDelayed(this, mInterval);
+			}
+		}
+		
 	}
 	
 	public void seekDocking() {

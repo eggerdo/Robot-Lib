@@ -229,7 +229,13 @@ public class RoombaRobot extends BluetoothRobot {
 
 	@Override
 	protected void handleUIMessage(Message msg) {
-		super.handleUIMessage(msg);
+		switch (msg.what) {
+		case 1234:
+			m_oSensorGatherer.handleSensorMessage(msg);
+		default:
+			super.handleUIMessage(msg);
+			break;
+		}
 	}
 
 	public static void connectToRoomba(final BaseActivity m_oOwner, Roomba i_oRoomba, BluetoothDevice i_oDevice, final IConnectListener i_oConnectListener) {
@@ -364,6 +370,7 @@ public class RoombaRobot extends BluetoothRobot {
 			public void onClick(View v) {
 				if (m_oRoomba.isPowerOn()) {
 					m_oRoomba.powerOff();
+					resetLayout();
 				} else {
 					m_oRoomba.powerOn();
 				}
