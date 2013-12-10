@@ -1,8 +1,10 @@
 package robots.ctrl;
 
+import org.dobots.utilities.DoBotsThread;
+
 import robots.gui.BluetoothConnection;
 
-public abstract class ProtocolHandler extends Thread {
+public abstract class ProtocolHandler extends DoBotsThread {
 
 	public interface ICommHandler<T> {
 		public void onMessage(T message);
@@ -12,22 +14,23 @@ public abstract class ProtocolHandler extends Thread {
 	
 	protected BluetoothConnection mConnection = null;
 	
-	private boolean mStopped = false;
+//	private boolean mStopped = false;
 	
 	public ProtocolHandler(BluetoothConnection connection, ICommHandler handler) {
+		super("ProtocolHandler");
 		mConnection = connection;
 		mMessageHandler = handler;
 	}
 	
-	public void run() {
-		while (!mStopped) {
-			if (mConnection.isConnected()) {
-				execute();
-			}
-		}
-	}
+//	public void run() {
+//		while (!mStopped) {
+//			if (mConnection.isConnected()) {
+//				execute();
+//			}
+//		}
+//	}
 	
-	public abstract void execute();
+//	public abstract void execute();
 	
 //	public void run() {
 //		while (mConnection.isConnected() && !mStopped) {
@@ -48,8 +51,8 @@ public abstract class ProtocolHandler extends Thread {
 //		return null;
 //	}
 	
-	public void close() {
-		mStopped = true;
-	}
+//	public void close() {
+//		mStopped = true;
+//	}
 	
 };

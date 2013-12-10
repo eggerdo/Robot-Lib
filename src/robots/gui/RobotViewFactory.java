@@ -8,6 +8,8 @@ import robots.piratedotty.gui.PirateDottyRobot;
 import robots.replicator.gui.ReplicatorUI;
 import robots.romo.ctrl.RomoTypes;
 import robots.romo.gui.RomoRobot;
+import robots.roomba.ctrl.RoombaTypes;
+import robots.roomba.gui.RoombaRobot;
 import robots.rover.ac13.gui.AC13RoverRobot;
 import robots.rover.rover2.gui.Rover2Robot;
 import robots.spytank.gui.SpyTankRobot;
@@ -30,8 +32,8 @@ public class RobotViewFactory {
 	
 	public static Class getRobotViewClass(RobotType i_eRobot) {
 		switch (i_eRobot) {
-//		case RBT_ROOMBA:
-//			return RoombaRobot.class;
+		case RBT_ROOMBA:
+			return RoombaRobot.class;
 //		case RBT_NXT:
 //			return NXTRobot.class;
 //		case RBT_DOTTY:
@@ -62,8 +64,8 @@ public class RobotViewFactory {
 	
 	public static String getRobotAddressFilter(RobotType i_eRobot) {
 		switch (i_eRobot) {
-//		case RBT_ROOMBA:
-//			return RoombaTypes.MAC_FILTER;
+		case RBT_ROOMBA:
+			return RoombaTypes.MAC_FILTER;
 		case RBT_NXT:
 			return NXTTypes.MAC_FILTER;
 //		case RBT_DOTTY:

@@ -12,7 +12,6 @@ public abstract class SensorGatherer extends Thread {
 	private volatile boolean m_bPaused = true;
 	
 	protected Handler m_oUiHandler;
-	protected Runnable m_oGUIUpdater;
 	protected BaseActivity m_oActivity;
 	
 	protected boolean m_bEnabled = false;

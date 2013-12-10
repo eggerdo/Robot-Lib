@@ -6,6 +6,7 @@ import robots.parrot.ctrl.Parrot;
 import robots.piratedotty.ctrl.PirateDotty;
 import robots.replicator.ctrl.Replicator;
 import robots.romo.ctrl.Romo;
+import robots.roomba.ctrl.Roomba;
 import robots.rover.ac13.ctrl.AC13Rover;
 import robots.rover.rover2.ctrl.Rover2;
 import robots.spytank.ctrl.SpyTank;
@@ -36,6 +37,9 @@ public class RobotDeviceFactory {
 				break;
 			case RBT_PIRATEDOTTY:
 				oRobot = new PirateDotty();
+				break;
+			case RBT_ROOMBA:
+				oRobot = new Roomba();
 				break;
 			default: 		
 				throw new Exception();
