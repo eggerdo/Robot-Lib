@@ -1,10 +1,10 @@
 package robots.roomba.gui;
 
 import org.dobots.R;
-import org.dobots.communication.control.ZmqRemoteControlHelper;
-import org.dobots.communication.control.ZmqRemoteControlSender;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
+import org.dobots.zmq.ZmqRemoteControlHelper;
+import org.dobots.zmq.ZmqRemoteControlSender;
 
 import robots.RobotType;
 import robots.ctrl.RemoteControlHelper;
@@ -15,7 +15,6 @@ import robots.gui.MessageTypes;
 import robots.gui.RobotCalibration;
 import robots.gui.RobotInventory;
 import robots.gui.SensorGatherer;
-import robots.nxt.gui.NXTRobot;
 import robots.roomba.ctrl.Roomba;
 import robots.roomba.ctrl.RoombaTypes;
 import robots.roomba.ctrl.RoombaTypes.ERoombaSensorPackages;
@@ -91,7 +90,7 @@ public class RoombaRobot extends BluetoothRobot {
 		m_oRoomba.setHandler(m_oUiHandler);
 		
 		m_oSensorGatherer = new RoombaSensorGatherer(m_oActivity, m_oRoomba);
-		m_dblSpeed = m_oRoomba.getBaseSped();
+		m_dblSpeed = m_oRoomba.getBaseSpeed();
 
     	m_oZmqRemoteListener = new ZmqRemoteControlSender(getRobot().getID()) {
 			
@@ -120,6 +119,12 @@ public class RoombaRobot extends BluetoothRobot {
 			connectToRobot();
 		}
     }
+
+	@Override
+	public void onRobotCtrlReady() {
+		// TODO Auto-generated method stub
+		
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -189,7 +194,7 @@ public class RoombaRobot extends BluetoothRobot {
 	}
 
 	@Override
-	public void connect(BluetoothDevice i_oDevice) {
+	public void setConnection(BluetoothDevice i_oDevice) {
 		m_strAddress = i_oDevice.getAddress();
 		showConnectingDialog();
 		
@@ -198,9 +203,13 @@ public class RoombaRobot extends BluetoothRobot {
 		}
 		BluetoothConnection oBluetoothConnection = new BluetoothConnection(i_oDevice, RoombaTypes.ROOMBA_UUID);
 		m_oRoomba.setConnection(oBluetoothConnection);
+	}
+
+	@Override
+	public void connect() {
 		m_oRoomba.connect();
 	}
-	
+
 	public void updatePowerButton(boolean enabled) {
 		m_btnPower.setEnabled(enabled);
 		if (enabled) {
@@ -239,7 +248,7 @@ public class RoombaRobot extends BluetoothRobot {
 	}
 
 	public static void connectToRoomba(final BaseActivity m_oOwner, Roomba i_oRoomba, BluetoothDevice i_oDevice, final IConnectListener i_oConnectListener) {
-		NXTRobot m_oRobot = new NXTRobot(m_oOwner) {
+		RoombaRobot m_oRobot = new RoombaRobot(m_oOwner) {
 			public void onConnect() {
 				i_oConnectListener.onConnect(true);
 			};

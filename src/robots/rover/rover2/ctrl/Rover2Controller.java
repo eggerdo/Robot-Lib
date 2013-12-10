@@ -52,8 +52,6 @@ public class Rover2Controller extends RoverBaseController {
 
 	public Rover2Controller() {
 
-		INSTANCE = this;
-
 //		m_strTargetHost = Rover2Types.ADDRESS;
 //		m_nTargetPort = Rover2Types.PORT;
 		targetId = Rover2Types.ID;

@@ -2,10 +2,10 @@ package robots.roomba.ctrl;
 
 import java.util.concurrent.TimeoutException;
 
-import org.dobots.communication.control.ZmqRemoteControlHelper;
-import org.dobots.communication.sensors.ZmqSensorsSender;
 import org.dobots.utilities.ThreadHandler;
 import org.dobots.utilities.Utils;
+import org.dobots.zmq.ZmqRemoteControlHelper;
+import org.dobots.zmq.sensors.ZmqSensorsSender;
 
 import robots.RobotType;
 import robots.ctrl.BaseRobot;
@@ -549,32 +549,6 @@ public class Roomba extends BaseRobot {
 		m_eMode = ERoombaModes.mod_Passive;
 	}
 
-	Handler executor = new Handler();
-	@Override
-	public void executeCircle(final double i_dblTime, final double i_dblSpeed) {
-		executor.post(new Runnable() {
-			
-			@Override
-			public void run() {
-				rotateClockwise(i_dblSpeed);
-			}
-		});
-		executor.post(new Runnable() {
-			
-			@Override
-			public void run() {
-				Utils.waitSomeTime((int)i_dblTime);
-			}
-		});
-		executor.post(new Runnable() {
-			
-			@Override
-			public void run() {
-				moveStop();
-			}
-		});
-	}
-
 	@Override
 	public void moveForward() {
 		moveForward(m_dblBaseSpeed);
@@ -601,7 +575,7 @@ public class Roomba extends BaseRobot {
 	}
 
 	@Override
-	public double getBaseSped() {
+	public double getBaseSpeed() {
 		return m_dblBaseSpeed;
 	}
 
