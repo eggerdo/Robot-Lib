@@ -32,7 +32,7 @@ public class Rover2Controller extends RoverBaseController {
 	private DataInputStream m_oMediaIn;
 	private DataOutputStream m_oMediaOut;
 
-	private static Rover2Controller INSTANCE;
+//	private Rover2Controller INSTANCE;
 
 	private boolean m_bRun = true;
 
@@ -48,9 +48,9 @@ public class Rover2Controller extends RoverBaseController {
 	private TimerTask m_oBatteryTask;
 	private double m_dblBatteryPower;
 
-	public Rover2Controller() {
+	private boolean m_bConnecting;
 
-		INSTANCE = this;
+	public Rover2Controller() {
 
 //		m_strTargetHost = Rover2Types.ADDRESS;
 //		m_nTargetPort = Rover2Types.PORT;
@@ -70,7 +70,7 @@ public class Rover2Controller extends RoverBaseController {
 		m_oBatteryTask = new TimerTask() {
 			public void run() {
 				try {
-					if (m_bConnected) {
+					if (m_bConnected && !m_bConnecting) {
 						byte[] request = CommandEncoder.cmdBatteryPowerReq();
 						send(request);
 						return;
@@ -81,11 +81,15 @@ public class Rover2Controller extends RoverBaseController {
 			}
 		};
 	}
+	
+	public void close() {
+		m_oBatteryTimer.cancel();
+	}
 
 	@Override
 	public void keepAlive() {
 		try {
-			if (m_bConnected) {
+			if (m_bConnected && !m_bConnecting) {
 				byte[] request = CommandEncoder.cmdKeepAlive();
 				send(request);
 				return;
@@ -187,9 +191,9 @@ public class Rover2Controller extends RoverBaseController {
 						if (nCount > 0) {
 							byte[] buffer = new byte[nCount];
 							arrayBuffer.append(buffer, 0, m_oDataIn.read(buffer, 0, nCount));
-							arrayBuffer = CommandEncoder.parseCommand(INSTANCE, arrayBuffer);
+							arrayBuffer = CommandEncoder.parseCommand(Rover2Controller.this, arrayBuffer);
 						}
-					} catch (IOException e) {
+					} catch (Exception e) {
 						e.printStackTrace();
 
 						if (!m_bConnected)
@@ -242,7 +246,7 @@ public class Rover2Controller extends RoverBaseController {
 							// Log.d("limit", "read:" + nCount + "\tavailable:"
 							// + mediaIn.available());
 							arrayBuffer.append(buffer, 0, nCount);
-							arrayBuffer = CommandEncoder.parseMediaCommand(INSTANCE, arrayBuffer);
+							arrayBuffer = CommandEncoder.parseMediaCommand(Rover2Controller.this, arrayBuffer);
 						}
 						Utils.waitSomeTime(5);
 					} catch (IOException e) {
@@ -339,9 +343,10 @@ public class Rover2Controller extends RoverBaseController {
 
 	public boolean isConnected() {
 		try {
-			if (m_oCommandSocket != null) {
-				return m_oCommandSocket.isConnected();
-			}
+//			if (m_oCommandSocket != null) {
+//				return m_oCommandSocket.isConnected();
+//			}
+			return m_bConnected;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -372,11 +377,14 @@ public class Rover2Controller extends RoverBaseController {
 	public boolean connect() {
 		try {
 			m_bConnected = true;
+			m_bConnecting = true;
 			connectCommand();
+			m_bConnecting = false;
 			return true;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		m_bConnecting = false;
 		m_bConnected = false;
 		return false;
 	}
@@ -393,10 +401,12 @@ public class Rover2Controller extends RoverBaseController {
 				
 				if (m_oCommandSocket != null) {
 					m_oCommandSocket.close();
+					m_oCommandSocket = null;
 				}
 				
 				if (m_oMediaSocket != null) {
 					m_oMediaSocket.close();
+					m_oMediaSocket = null;
 				}
 
 				m_oDataOut = null;

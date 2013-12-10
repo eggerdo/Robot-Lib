@@ -3,11 +3,11 @@ package robots.piratedotty.gui;
 import java.io.IOException;
 
 import org.dobots.R;
-import org.dobots.communication.control.ZmqRemoteControlHelper;
-import org.dobots.communication.control.ZmqRemoteControlSender;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.CameraPreview;
 import org.dobots.utilities.Utils;
+import org.dobots.zmq.ZmqRemoteControlHelper;
+import org.dobots.zmq.ZmqRemoteControlSender;
 
 import robots.RobotType;
 import robots.ctrl.ICameraControlListener;
@@ -21,7 +21,6 @@ import robots.piratedotty.ctrl.PirateDottyTypes;
 import android.bluetooth.BluetoothDevice;
 import android.hardware.Camera;
 import android.os.Bundle;
-import android.os.Looper;
 import android.os.Message;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,7 +28,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 
-public class PirateDottyRobot extends BluetoothRobot implements ICameraControlListener {
+public class PirateDottyUI extends BluetoothRobot implements ICameraControlListener {
 
 	private static String TAG = "PirateDotty";
 	
@@ -57,11 +56,11 @@ public class PirateDottyRobot extends BluetoothRobot implements ICameraControlLi
 	
 	private boolean m_bCameraOn = true;
 	
-	public PirateDottyRobot(BaseActivity i_oOwner) {
+	public PirateDottyUI(BaseActivity i_oOwner) {
 		super(i_oOwner);
 	}
 	
-	public PirateDottyRobot() {
+	public PirateDottyUI() {
 		super();
 	}
 	
@@ -98,7 +97,12 @@ public class PirateDottyRobot extends BluetoothRobot implements ICameraControlLi
 			connectToRobot();
 		}
     }
-	
+
+    @Override
+    public void onRobotCtrlReady() {
+    	
+    }
+    
 	@Override
 	public void onDestroy() {
 		m_oCamera.stopCamera();
@@ -191,9 +195,9 @@ public class PirateDottyRobot extends BluetoothRobot implements ICameraControlLi
 			break;
 		case CAMERA_ID:
 			if (m_bCameraOn) {
-				switchCameraOff();
+				startVideo();
 			} else {
-				switchCameraOn();
+				stopVideo();
 			}
 			m_bCameraOn = !m_bCameraOn;
 			break;
@@ -238,7 +242,7 @@ public class PirateDottyRobot extends BluetoothRobot implements ICameraControlLi
 	}
 	
 	@Override
-	public void connect(BluetoothDevice i_oDevice) {
+	public void setConnection(BluetoothDevice i_oDevice) {
 		m_strAddress = i_oDevice.getAddress();
 		showConnectingDialog();
 		
@@ -251,11 +255,15 @@ public class PirateDottyRobot extends BluetoothRobot implements ICameraControlLi
 		BluetoothConnection connection = new BluetoothConnection(i_oDevice, PirateDottyTypes.PIRATEDOTTY_UUID);
 		connection.setReceiveHandler(m_oUiHandler);
 		m_oPirateDotty.setConnection(connection);
+	}
+	
+	@Override
+	public void connect() {
 		m_oPirateDotty.connect();
 	}
 
 	public static void connectToPirateDotty(final BaseActivity m_oOwner, PirateDotty i_oPirateDotty, BluetoothDevice i_oDevice, final IConnectListener i_oConnectListener) {
-		PirateDottyRobot m_oRobot = new PirateDottyRobot(m_oOwner) {
+		PirateDottyUI m_oRobot = new PirateDottyUI(m_oOwner) {
 			public void onConnect() {
 				i_oConnectListener.onConnect(true);
 			};
@@ -282,25 +290,21 @@ public class PirateDottyRobot extends BluetoothRobot implements ICameraControlLi
 		// toggle camera only works if it is executed by the UI thread
 		// so we check if the calling thread is the main thread, otherwise
 		// we call the function again inside the main thread.
-		if (Looper.myLooper() != Looper.getMainLooper()) {
-			Utils.runAsyncUiTask(new Runnable() {
-				@Override
-				public void run() {
-					toggleCamera();
-				}
-			});
-		} else {
-			m_oCamera.toggleCamera();
-		}
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				m_oCamera.toggleCamera();
+			}
+		});
 	}
 
 	@Override
-	public void switchCameraOn() {
+	public void startVideo() {
 		m_oCamera.startCamera();
 	}
 
 	@Override
-	public void switchCameraOff() {
+	public void stopVideo() {
 		m_oCamera.stopCamera();
 	}
 	
