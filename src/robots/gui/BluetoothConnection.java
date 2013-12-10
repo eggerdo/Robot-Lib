@@ -218,6 +218,7 @@ public class BluetoothConnection {
 	                m_oSocket.connect();
 	            }
 	            catch (Exception e1){
+	            	e.printStackTrace();
 	                if (m_oUiHandler == null)
 	                    throw new IOException();
 	                else
@@ -233,6 +234,7 @@ public class BluetoothConnection {
 	    	
 	        connected = true;
 	    } catch (IOException e) {
+	    	e.printStackTrace();
 	        if (m_oUiHandler == null)
 	            throw e;
 	        else {

@@ -10,7 +10,6 @@ import android.widget.TextView;
 public abstract class SensorGatherer extends DoBotsThread {
 
 	protected Handler m_oUiHandler;
-	protected Runnable m_oGUIUpdater;
 	protected BaseActivity m_oActivity;
 	
 	protected boolean m_bEnabled = false;
