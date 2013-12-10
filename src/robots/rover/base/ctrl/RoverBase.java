@@ -17,7 +17,6 @@ import robots.gui.MessageTypes;
 import robots.gui.RobotDriveCommandListener;
 import robots.rover.base.ctrl.RoverBaseTypes.RoverParameters;
 import robots.rover.base.ctrl.RoverBaseTypes.VideoResolution;
-import android.os.Handler;
 
 public abstract class RoverBase extends DifferentialRobot implements IMoveRepeaterListener {
 	
@@ -84,6 +83,7 @@ public abstract class RoverBase extends DifferentialRobot implements IMoveRepeat
 
 	@Override
 	public void destroy() {
+		m_oRemoteHelper.close();
 		m_oKeepAliveTimer.cancel();
 		disconnect();
 	}

@@ -1,13 +1,11 @@
 package robots.piratedotty.ctrl;
 
 import org.dobots.communication.control.ZmqRemoteControlHelper;
-import org.dobots.utilities.log.ILogListener;
 
 import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
 import robots.gui.BluetoothConnection;
 import robots.gui.RobotDriveCommandListener;
-import robots.piratedotty.gui.PirateDottyBluetooth;
 
 public class PirateDotty extends DifferentialRobot {
 
@@ -36,12 +34,6 @@ public class PirateDotty extends DifferentialRobot {
 		m_oRemoteHelper.startReceiver("PirateDotty");
 	}
 
-	@Override
-	public void setLogListener(ILogListener listener) {
-		super.setLogListener(listener);
-		m_oController.setLogListener(listener);
-	}
-		
 	@Override
 	public RobotType getType() {
 		// TODO Auto-generated method stub

@@ -14,8 +14,6 @@ public abstract class SensorGatherer extends Thread {
 	protected Handler m_oUiHandler;
 	protected BaseActivity m_oActivity;
 	
-	protected boolean m_bEnabled = false;
-	
 //	public SensorGatherer() {
 //		// why?
 //	}

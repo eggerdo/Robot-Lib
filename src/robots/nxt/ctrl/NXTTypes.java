@@ -5,7 +5,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.UUID;
 
-import org.dobots.communication.msg.SensorMessageData;
+import org.dobots.lib.comm.msg.SensorMessageArray;
 import org.dobots.utilities.Utils;
 import org.json.JSONException;
 
@@ -145,7 +145,7 @@ public class NXTTypes {
 	}
 	
 	public class SensorData {
-		public SensorMessageData sensorData;
+		public SensorMessageArray sensorData;
 		
 		public int nTelegramType;
 		public int nCommand;
@@ -161,7 +161,7 @@ public class NXTTypes {
 		public int nCalibratedValue;
 		
 		public SensorData(String robotID, byte[] buffer) {
-			sensorData = new SensorMessageData(robotID, "sensor_data");
+			sensorData = new SensorMessageArray(robotID, "sensor_data");
 			
 			ByteArrayInputStream byte_in = new ByteArrayInputStream(buffer);
 			DataInputStream data_in = new DataInputStream(byte_in);
@@ -199,7 +199,7 @@ public class NXTTypes {
 			}
 		}
 		
-		public SensorData(SensorMessageData sensorData) {
+		public SensorData(SensorMessageArray sensorData) {
 			
 			try {
 				nTelegramType 		= sensorData.getInt(0);
@@ -227,13 +227,13 @@ public class NXTTypes {
 		return types.new SensorData(id, sensorMessage);
 	}
 
-	public static SensorData assembleSensorData(SensorMessageData sensorData) {
+	public static SensorData assembleSensorData(SensorMessageArray sensorData) {
 		NXTTypes types = new NXTTypes();
 		return types.new SensorData(sensorData);
 	}
 
 	public class DistanceData {
-		public SensorMessageData sensorData;
+		public SensorMessageArray sensorData;
 		
 		public int nTelegramType;
 		public int nCommand;
@@ -242,7 +242,7 @@ public class NXTTypes {
 		public int nDistance;
 		
 		public DistanceData(String robotID, int port, byte[] buffer) {
-			sensorData = new SensorMessageData(robotID, "distance_data");
+			sensorData = new SensorMessageArray(robotID, "distance_data");
 			
 			ByteArrayInputStream byte_in = new ByteArrayInputStream(buffer);
 			DataInputStream data_in = new DataInputStream(byte_in);
@@ -267,7 +267,7 @@ public class NXTTypes {
 			}
 		}
 		
-		public DistanceData(SensorMessageData sensorData) {
+		public DistanceData(SensorMessageArray sensorData) {
 			
 			try {
 				nTelegramType 		= sensorData.getInt(0);
@@ -288,13 +288,13 @@ public class NXTTypes {
 		return types.new DistanceData(id, port, sensorMessage);
 	}
 
-	public static DistanceData assembleDistanceData(SensorMessageData sensorData) {
+	public static DistanceData assembleDistanceData(SensorMessageArray sensorData) {
 		NXTTypes types = new NXTTypes();
 		return types.new DistanceData(sensorData);
 	}
 	
 	public class MotorData {
-		SensorMessageData sensorData;
+		SensorMessageArray sensorData;
 		
 		public int nTelegramType;
 		public int nCommand;
@@ -311,7 +311,7 @@ public class NXTTypes {
 		public int nRotationCount;
 		
 		public MotorData(String robotID, byte[] buffer) {
-			sensorData = new SensorMessageData(robotID, "motor_data");
+			sensorData = new SensorMessageArray(robotID, "motor_data");
 			
 			ByteArrayInputStream byte_in = new ByteArrayInputStream(buffer);
 			DataInputStream data_in = new DataInputStream(byte_in);
@@ -351,7 +351,7 @@ public class NXTTypes {
 			}
 		}
 		
-		public MotorData(SensorMessageData sensorData) {
+		public MotorData(SensorMessageArray sensorData) {
 			
 			try {
 				nTelegramType		= sensorData.getInt(0);
@@ -379,7 +379,7 @@ public class NXTTypes {
 		return types.new MotorData(id, sensorMessage);
 	}
 
-	public static MotorData assembleMotorData(SensorMessageData sensorData) {
+	public static MotorData assembleMotorData(SensorMessageArray sensorData) {
 		NXTTypes types = new NXTTypes();
 		return types.new MotorData(sensorData);
 	}

@@ -1,12 +1,17 @@
 package org.dobots.communication.control;
 
-import org.dobots.communication.msg.RoboCommands;
-import org.dobots.communication.msg.RoboCommands.BaseCommand;
-import org.dobots.communication.msg.RoboCommands.CameraCommand;
-import org.dobots.communication.msg.RoboCommands.DriveCommand;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import org.dobots.communication.msg.RobotMessage;
 import org.dobots.communication.zmq.ZmqHandler;
 import org.dobots.communication.zmq.ZmqReceiveThread;
+import org.dobots.lib.comm.Move;
+import org.dobots.lib.comm.msg.RoboCommands;
+import org.dobots.lib.comm.msg.RoboCommands.BaseCommand;
+import org.dobots.lib.comm.msg.RoboCommands.CameraCommand;
+import org.dobots.lib.comm.msg.RoboCommands.ControlCommand;
+import org.dobots.lib.comm.msg.RoboCommands.DriveCommand;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
 import org.zeromq.ZContext;
@@ -16,9 +21,7 @@ import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMsg;
 
 import robots.ctrl.ICameraControlListener;
-import robots.ctrl.IDriveControlListener;
 import robots.ctrl.RemoteControlHelper;
-import android.app.Activity;
 import android.util.Log;
 
 public class ZmqRemoteControlHelper extends RemoteControlHelper {
@@ -32,6 +35,8 @@ public class ZmqRemoteControlHelper extends RemoteControlHelper {
 	private CommandReceiveThread m_oReceiver;
 
 	private ICameraControlListener m_oCameraListener;
+
+	private Object m_oControlListener;
 
 	/**
 	 * Starts a Helper object which handles remote control over zmq. If the parameter Activity
@@ -79,6 +84,10 @@ public class ZmqRemoteControlHelper extends RemoteControlHelper {
 	 */
 	public void setCameraControlListener(ICameraControlListener i_oCameraListener) {
 		m_oCameraListener = i_oCameraListener;
+	}
+
+	public void setControlListener(Object listener) {
+		m_oControlListener = listener;
 	}
 	
 	public void toggleCamera() {
@@ -187,6 +196,31 @@ public class ZmqRemoteControlHelper extends RemoteControlHelper {
 						case STOP:
 							cameraStop();
 						}
+					}
+				} else if (oCmd instanceof ControlCommand) {
+	
+					try {
+	//					m_oControlListener.onCommand((ControlCommand)oCmd);
+						ControlCommand controlCommand = (ControlCommand)oCmd;
+						if (m_oControlListener != null) {
+							Method[] methods = m_oControlListener.getClass().getMethods();
+							for (Method method : methods) {
+								if (method.getName().equals(controlCommand.mCommand)) {
+									Object[] args = controlCommand.getParameters();
+									method.invoke(m_oControlListener, args);
+									return;
+								}
+							}
+						}
+					} catch (IllegalArgumentException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalAccessException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (InvocationTargetException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 				}
 			}

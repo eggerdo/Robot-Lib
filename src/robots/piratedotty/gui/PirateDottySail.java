@@ -10,7 +10,6 @@ import android.graphics.Canvas;
 import android.graphics.Movie;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.view.SurfaceHolder;
 import android.view.View;
 
 public class PirateDottySail extends View {

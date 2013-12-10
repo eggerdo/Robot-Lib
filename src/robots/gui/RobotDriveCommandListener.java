@@ -1,9 +1,10 @@
 package robots.gui;
 
 
+import org.dobots.lib.comm.Move;
+
 import robots.ctrl.IDriveControlListener;
 import robots.ctrl.IRobotDevice;
-import robots.ctrl.RemoteControlHelper.Move;
 import android.util.Log;
 
 public class RobotDriveCommandListener implements IDriveControlListener {

@@ -16,18 +16,19 @@
 */
 package org.dobots.communication.control;
 
-import org.dobots.communication.msg.RoboCommands;
-import org.dobots.communication.msg.RoboCommands.BaseCommand;
-import org.dobots.communication.msg.RoboCommands.CameraCommand;
-import org.dobots.communication.msg.RoboCommands.CameraCommandType;
-import org.dobots.communication.msg.RoboCommands.DriveCommand;
 import org.dobots.communication.zmq.ZmqHandler;
 import org.dobots.communication.zmq.ZmqUtils;
+import org.dobots.lib.comm.Move;
+import org.dobots.lib.comm.msg.RoboCommands;
+import org.dobots.lib.comm.msg.RoboCommands.BaseCommand;
+import org.dobots.lib.comm.msg.RoboCommands.CameraCommand;
+import org.dobots.lib.comm.msg.RoboCommands.CameraCommandType;
+import org.dobots.lib.comm.msg.RoboCommands.ControlCommand;
+import org.dobots.lib.comm.msg.RoboCommands.DriveCommand;
 import org.zeromq.ZMQ;
 
 import robots.ctrl.ICameraControlListener;
 import robots.ctrl.IDriveControlListener;
-import robots.ctrl.RemoteControlHelper.Move;
 
 public class ZmqRemoteControlSender implements IDriveControlListener, ICameraControlListener {
 
@@ -103,7 +104,8 @@ public class ZmqRemoteControlSender implements IDriveControlListener, ICameraCon
 
 	@Override
 	public void enableControl(boolean i_bEnable) {
-		// TODO Auto-generated method stub
+		ControlCommand oCmd = RoboCommands.createControlCommand(m_strRobot, "enableControl", i_bEnable);
+		sendCommand(oCmd);
 	}
 	
 	public void toggleInvertDrive() {

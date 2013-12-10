@@ -3,18 +3,16 @@ package robots.piratedotty.gui;
 import org.dobots.communication.msg.VideoMessage;
 import org.dobots.communication.zmq.ZmqHandler;
 import org.dobots.utilities.BaseActivity;
-import org.dobots.utilities.Utils;
 import org.dobots.utilities.CameraPreview.CameraPreviewCallback;
+import org.dobots.utilities.Utils;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMsg;
 
 import robots.gui.SensorGatherer;
-import robots.piratedotty.ctrl.PirateDotty;
 import robots.piratedotty.ctrl.PirateDottyTypes;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
-import android.widget.TextView;
 
 public class PirateDottySensorGatherer extends SensorGatherer implements CameraPreviewCallback {
 

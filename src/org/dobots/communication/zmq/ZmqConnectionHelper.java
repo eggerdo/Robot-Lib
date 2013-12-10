@@ -1,7 +1,6 @@
 package org.dobots.communication.zmq;
 
 import org.dobots.communication.zmq.ZmqMessageHandler.ZmqMessageListener;
-import org.dobots.communication.zmq.ZmqSettings.SettingsChangeListener;
 import org.dobots.communication.zmq.ZmqSettings.ZmqSettingsInvalidException;
 import org.dobots.utilities.Utils;
 import org.zeromq.ZMQ;

@@ -66,6 +66,12 @@ public class NXTController implements ICommHandler<byte[]> {
 				return;
 			}
 		}
+
+		@Override
+		public void shutDown() {
+			// TODO Auto-generated method stub
+			
+		}
     }
     
     private ProtocolHandler mProtocolHandler = new NXTProtocolHandler(m_oConnection, this);
@@ -88,7 +94,7 @@ public class NXTController implements ICommHandler<byte[]> {
 
 	public void destroyConnection() {
 		if (mProtocolHandler != null) {
-			mProtocolHandler.close();
+			mProtocolHandler.destroy();
 			mProtocolHandler = null;
 		}
 		

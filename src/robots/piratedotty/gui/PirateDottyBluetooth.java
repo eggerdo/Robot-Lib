@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import robots.gui.BluetoothConnection;
 import robots.gui.MessageTypes;
-import robots.piratedotty.ctrl.PirateDottyTypes;
 import android.bluetooth.BluetoothDevice;
 
 public class PirateDottyBluetooth extends BluetoothConnection {

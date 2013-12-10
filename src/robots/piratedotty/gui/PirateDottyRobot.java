@@ -8,7 +8,6 @@ import org.dobots.communication.control.ZmqRemoteControlSender;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.CameraPreview;
 import org.dobots.utilities.Utils;
-import org.dobots.utilities.log.AndroidLogger;
 
 import robots.RobotType;
 import robots.ctrl.ICameraControlListener;
@@ -76,7 +75,6 @@ public class PirateDottyRobot extends BluetoothRobot implements ICameraControlLi
         
     	m_oPirateDotty = (PirateDotty) getRobot();
     	m_oPirateDotty.setHandler(m_oUiHandler);
-    	m_oPirateDotty.setLogListener(new AndroidLogger());
 
     	m_oZmqRemoteSender = new ZmqRemoteControlSender(m_oPirateDotty.getID());
 

@@ -5,8 +5,6 @@ import org.dobots.communication.control.ZmqRemoteControlHelper;
 import org.dobots.communication.control.ZmqRemoteControlSender;
 import org.dobots.utilities.CameraPreview;
 import org.dobots.utilities.Utils;
-import org.dobots.utilities.log.ILogListener;
-import org.dobots.utilities.log.LogTypes;
 
 import robots.RobotType;
 import robots.ctrl.ICameraControlListener;
@@ -18,13 +16,12 @@ import android.app.Activity;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Looper;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager.LayoutParams;
 import android.widget.ImageButton;
 
-public class RomoRobot extends RobotView implements ICameraControlListener, ILogListener {
+public class RomoRobot extends RobotView implements ICameraControlListener {
 	
 	private static Activity CONTEXT;
 	
@@ -47,7 +44,6 @@ public class RomoRobot extends RobotView implements ICameraControlListener, ILog
         
         Romo oRomo = (Romo) getRobot();
         oRomo.setDebug(true);
-        oRomo.setLogListener(this);
 
     	m_oZmqRemoteSender = new ZmqRemoteControlSender(oRomo.getID());
 
@@ -179,23 +175,6 @@ public class RomoRobot extends RobotView implements ICameraControlListener, ILog
 	@Override
 	public void switchCameraOff() {
 		m_oCamera.stopCamera();
-	}
-
-	@Override
-	public void onTrace(LogTypes i_eType, String i_strTag, String i_strMessage) {
-		switch(i_eType) {
-		case tt_Debug:
-			Log.d(i_strTag, i_strMessage);
-		}
-	}
-
-	@Override
-	public void onTrace(LogTypes i_eType, String i_strTag, String i_strMessage,
-			Throwable i_oObj) {
-		switch(i_eType) {
-		case tt_Debug:
-			Log.d(i_strTag, i_strMessage);
-		}
 	}
 
 	@Override

@@ -1,19 +1,16 @@
 package org.dobots.communication.sensors;
 
 import org.dobots.communication.msg.RobotMessage;
-import org.dobots.communication.msg.SensorMessageData;
 import org.dobots.communication.zmq.ZmqReceiveThread;
+import org.dobots.lib.comm.msg.SensorMessageArray;
 import org.dobots.utilities.Utils;
 import org.zeromq.ZMQ;
-import org.zeromq.ZMQ.Context;
 import org.zeromq.ZMsg;
-
-import android.util.Log;
 
 public class ZmqSensorsReceiver extends ZmqReceiveThread {
 	
 	public interface ISensorDataListener {
-		public void onSensorData(SensorMessageData data);
+		public void onSensorData(SensorMessageArray data);
 	}
 	
 	ZMQ.Socket m_oSensorsRecvSocket;
@@ -36,7 +33,7 @@ public class ZmqSensorsReceiver extends ZmqReceiveThread {
 			RobotMessage oSensorMsg = RobotMessage.fromZMsg(oZMsg);
 			
 			String strJson = Utils.byteArrayToString(oSensorMsg.data);
-			final SensorMessageData sensorData = SensorMessageData.decodeJSON(oSensorMsg.robotName, strJson);
+			final SensorMessageArray sensorData = SensorMessageArray.decodeJSON(oSensorMsg.robotName, strJson);
 
 			if (m_oSensorDataListener != null) {
 				m_oSensorDataListener.onSensorData(sensorData);

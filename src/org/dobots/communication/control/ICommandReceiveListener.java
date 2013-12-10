@@ -1,6 +1,7 @@
 package org.dobots.communication.control;
 
-import org.dobots.communication.msg.RoboCommands.BaseCommand;
+import org.dobots.lib.comm.msg.RoboCommands.BaseCommand;
+
 
 public interface ICommandReceiveListener {
 	

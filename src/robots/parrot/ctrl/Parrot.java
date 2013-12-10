@@ -13,7 +13,6 @@ import robots.ctrl.MoveRepeater;
 import robots.ctrl.MoveRepeater.MoveCommand;
 import robots.gui.IConnectListener;
 import robots.gui.MessageTypes;
-import android.os.Handler;
 import android.os.SystemClock;
 
 import com.codeminders.ardrone.ARDrone;

@@ -5,10 +5,8 @@ import org.dobots.utilities.BaseActivity;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMQ.Poller;
-import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMsg;
 
-import android.app.Activity;
 import android.content.Context;
 
 public class ZmqHandler {

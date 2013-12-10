@@ -19,6 +19,7 @@
 package robots.ctrl;
 
 import org.dobots.R;
+import org.dobots.lib.comm.Move;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.IMenuListener;
 import org.dobots.utilities.LockableScrollView;
@@ -28,7 +29,6 @@ import org.dobots.utilities.joystick.Joystick;
 
 import android.app.Activity;
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -50,10 +50,6 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 	final static int STRAIGHT_THRESHOLD = 2;
 	final static int DIRECTION_THRESHOLD_1 = 10;
 	final static int DIRECTION_THRESHOLD_2 = 30;
-	
-	public enum Move {
-		NONE, STRAIGHT_FORWARD, FORWARD, STRAIGHT_BACKWARD, BACKWARD, ROTATE_LEFT, ROTATE_RIGHT, LEFT, RIGHT
-	}
 	
 	// negative angle -> right radius
 	// positive angle -> left radius
