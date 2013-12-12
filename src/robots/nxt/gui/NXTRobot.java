@@ -305,7 +305,7 @@ public class NXTRobot extends BluetoothRobot {
 	
 	@Override
 	protected void setProperties(RobotType i_eRobot) {
-        m_oActivity.setContentView(R.layout.nxt_main);
+        m_oActivity.setContentView(R.layout.robot_nxt_main);
 
         // adapter is the same, for each sensor we can choose the same types
 		final ArrayAdapter<ENXTSensorType> oSensorTypeAdapter = new ArrayAdapter<ENXTSensorType>(m_oActivity, 
@@ -539,7 +539,7 @@ public class NXTRobot extends BluetoothRobot {
 		m_oSensorGatherer.setDebug(i_bDebug);
 		
 		// create a temporary layout from the nxt layout
-		View oTempView = LayoutInflater.from(m_oActivity).inflate(R.layout.nxt_main, null);
+		View oTempView = LayoutInflater.from(m_oActivity).inflate(R.layout.robot_nxt_main, null);
 		
 		for (ENXTSensorID eSensorID : ENXTSensorID.values()) {
 

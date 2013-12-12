@@ -44,7 +44,7 @@ public class AC13RoverRobot extends RoverBaseRobot {
 
 	@Override
 	protected void setProperties(RobotType i_eRobot) {
-    	m_oActivity.setContentView(R.layout.ac13rover_main);
+    	m_oActivity.setContentView(R.layout.robot_ac13rover_main);
     	super.setProperties(i_eRobot);
 	}
 

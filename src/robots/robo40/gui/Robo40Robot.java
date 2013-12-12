@@ -108,7 +108,7 @@ public class Robo40Robot extends BluetoothRobot {
 	
     @Override
 	protected void setProperties(RobotType i_eRobot) {
-        m_oActivity.setContentView(R.layout.robo40_main);
+        m_oActivity.setContentView(R.layout.robot_robo40_main);
         
         m_edtMotor1 = (TextView) findViewById(R.id.edtRobo40Motor1);
         m_edtMotor1.setText("0");

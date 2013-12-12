@@ -146,7 +146,7 @@ public class SpykeeRobot extends WifiRobot {
 
 	@Override
 	protected void setProperties(RobotType i_eRobot) {
-    	m_oActivity.setContentView(R.layout.spykee_main);
+    	m_oActivity.setContentView(R.layout.robot_spykee_main);
 
     	m_layControls = (LinearLayout) m_oActivity.findViewById(R.id.layControls);
     	
@@ -406,7 +406,7 @@ public class SpykeeRobot extends WifiRobot {
     	AlertDialog.Builder builder = new AlertDialog.Builder(this);
     	switch (id) {
     	case DIALOG_SETTINGS_ID:
-        	layout = inflater.inflate(R.layout.spykee_settings, null);
+        	layout = inflater.inflate(R.layout.robot_spykee_settings, null);
         	builder.setTitle("Spykee Connection Settings");
         	builder.setView(layout);
         	builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {

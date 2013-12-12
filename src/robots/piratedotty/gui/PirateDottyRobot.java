@@ -126,7 +126,7 @@ public class PirateDottyRobot extends BluetoothRobot implements ICameraControlLi
 	
     @Override
 	protected void setProperties(RobotType i_eRobot) {
-        m_oActivity.setContentView(R.layout.piratedotty_main);
+        m_oActivity.setContentView(R.layout.robot_piratedotty_main);
 
 		m_oCamera = (CameraPreview) findViewById(R.id.svCamera);
 		m_oCamera.setScale(false);

@@ -98,7 +98,7 @@ public class SpyTankRobot extends WifiRobot {
 
 	@Override
 	protected void setProperties(RobotType i_eRobot) {
-		m_oActivity.setContentView(R.layout.spytank_main);
+		m_oActivity.setContentView(R.layout.robot_spytank_main);
 
     	Button btnCameraUp = (Button) findViewById(R.id.btnCameraUp);
     	btnCameraUp.setOnTouchListener(new View.OnTouchListener() {

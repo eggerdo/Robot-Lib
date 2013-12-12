@@ -215,7 +215,7 @@ public class ParrotRobot extends WifiRobot implements IDriveControlListener {
 
 	@Override
 	protected void setProperties(RobotType i_eRobot) {
-        m_oActivity.setContentView(R.layout.parrot_main);
+        m_oActivity.setContentView(R.layout.robot_parrot_main);
 
         m_edtAltitude = (EditText) findViewById(R.id.edtAltitude);
         

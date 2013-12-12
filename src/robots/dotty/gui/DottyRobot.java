@@ -125,7 +125,7 @@ public class DottyRobot extends BluetoothRobot {
 	
     @Override
 	protected void setProperties(RobotType i_eRobot) {
-        m_oActivity.setContentView(R.layout.dotty_main);
+        m_oActivity.setContentView(R.layout.robot_dotty_main);
 
         m_cbDistance = (CheckBox) m_oActivity.findViewById(R.id.cbDotty_Distance);
         m_cbLight = (CheckBox) m_oActivity.findViewById(R.id.cbDotty_Light);

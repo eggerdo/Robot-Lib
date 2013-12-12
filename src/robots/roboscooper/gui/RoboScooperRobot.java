@@ -118,7 +118,7 @@ public class RoboScooperRobot extends BluetoothRobot {
 
 	@Override
 	protected void setProperties(RobotType i_eRobot) {
-        m_oActivity.setContentView(R.layout.roboscooper_main);
+        m_oActivity.setContentView(R.layout.robot_roboscooper_main);
 
         m_layControls = (LinearLayout) findViewById(R.id.layControls);
         m_layPlayModes = (LinearLayout) findViewById(R.id.layPlayModes);

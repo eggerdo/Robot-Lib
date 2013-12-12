@@ -60,7 +60,7 @@ public class RobotCalibration extends BaseActivity {
 	}
 	
 	private void setProperties() {
-		setContentView(R.layout.robot_calibration);
+		setContentView(R.layout.calibration);
 
         setTitle("Robot Calibration");
         

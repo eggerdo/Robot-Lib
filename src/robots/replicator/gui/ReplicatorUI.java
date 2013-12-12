@@ -96,7 +96,7 @@ public class ReplicatorUI extends WifiRobot {
 
 	@Override
 	protected void setProperties(RobotType i_eRobot) {
-		m_oActivity.setContentView(R.layout.replicator_main);
+		m_oActivity.setContentView(R.layout.robot_replicator_main);
 	}
 
 	@Override

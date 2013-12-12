@@ -269,7 +269,7 @@ public class RoombaRobot extends BluetoothRobot {
 
 	@Override
 	protected void setProperties(RobotType i_eRobot) {
-        m_oActivity.setContentView(R.layout.roomba_main);
+        m_oActivity.setContentView(R.layout.robot_roomba_main);
         
         m_spSensors = (Spinner) m_oActivity.findViewById(R.id.spSensors);
 		final ArrayAdapter<ERoombaSensorPackages> adapter = new ArrayAdapter<ERoombaSensorPackages>(m_oActivity, 
