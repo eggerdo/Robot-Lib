@@ -1,4 +1,4 @@
-package robots.ctrl;
+package robots.ctrl.control;
 
 public interface ICameraControlListener {
 	

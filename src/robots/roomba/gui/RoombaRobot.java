@@ -7,14 +7,15 @@ import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
 
 import robots.RobotType;
-import robots.ctrl.RemoteControlHelper;
-import robots.gui.BluetoothConnection;
+import robots.ctrl.control.RemoteControlHelper;
 import robots.gui.BluetoothRobot;
-import robots.gui.IConnectListener;
 import robots.gui.MessageTypes;
-import robots.gui.RobotCalibration;
 import robots.gui.RobotInventory;
 import robots.gui.SensorGatherer;
+import robots.gui.calibration.RobotCalibration;
+import robots.gui.comm.IConnectListener;
+import robots.gui.comm.IRobotConnection;
+import robots.gui.comm.bluetooth.BluetoothConnection;
 import robots.nxt.gui.NXTRobot;
 import robots.roomba.ctrl.Roomba;
 import robots.roomba.ctrl.RoombaTypes;
@@ -196,7 +197,7 @@ public class RoombaRobot extends BluetoothRobot {
 		if (m_oRoomba.isConnected()) {
 			m_oRoomba.destroyConnection();
 		}
-		BluetoothConnection oBluetoothConnection = new BluetoothConnection(i_oDevice, RoombaTypes.ROOMBA_UUID);
+		IRobotConnection oBluetoothConnection = new BluetoothConnection(i_oDevice, RoombaTypes.ROOMBA_UUID);
 		m_oRoomba.setConnection(oBluetoothConnection);
 		m_oRoomba.connect();
 	}

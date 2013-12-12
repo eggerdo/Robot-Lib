@@ -7,7 +7,7 @@ import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
 
 import robots.RobotType;
-import robots.ctrl.RemoteControlHelper;
+import robots.ctrl.control.RemoteControlHelper;
 import robots.gui.SensorGatherer;
 import robots.gui.WifiRobot;
 import robots.spytank.ctrl.SpyTank;

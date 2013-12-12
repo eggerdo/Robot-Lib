@@ -6,7 +6,7 @@ import org.dobots.communication.control.ZmqRemoteControlHelper;
 
 import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
-import robots.gui.RobotDriveCommandListener;
+import robots.ctrl.control.RobotDriveCommandListener;
 
 import com.romotive.library.RomoCommandInterface;
 
@@ -47,7 +47,7 @@ public class Romo extends DifferentialRobot {
 
 	@Override
 	public void destroy() {
-		m_oRemoteHelper.close();
+		m_oRemoteHelper.destroy();
 	}
 
 	@Override

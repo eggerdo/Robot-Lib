@@ -158,6 +158,14 @@ public class VideoHelper implements IVideoListener, IFpsListener, IRawVideoListe
 	}
 	
 	/**
+	 * check if video is started/stopped
+	 * @return true if stopped, false otherwise
+	 */
+	public boolean isStopped() {
+		return m_bVideoStopped;
+	}
+	
+	/**
 	 * shows/hides the video and video loading progress
 	 * @param i_bShow if false, the video is shown and progress is hidden
 	 * 					 true, the video is hidden and progress is shown

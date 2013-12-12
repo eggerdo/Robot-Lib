@@ -10,8 +10,8 @@ import org.dobots.communication.video.ZmqVideoSender;
 
 import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
-import robots.ctrl.ICameraControlListener;
-import robots.gui.RobotDriveCommandListener;
+import robots.ctrl.control.ICameraControlListener;
+import robots.ctrl.control.RobotDriveCommandListener;
 import android.os.Handler;
 
 public class SpyTank extends DifferentialRobot implements ICameraControlListener {
@@ -64,6 +64,7 @@ public class SpyTank extends DifferentialRobot implements ICameraControlListener
 
 	@Override
 	public void destroy() {
+		m_oRemoteHelper.destroy();
 		m_oController.destroy();
 	}
 	
@@ -91,6 +92,7 @@ public class SpyTank extends DifferentialRobot implements ICameraControlListener
 		try {
 			m_oController.disconnect();
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

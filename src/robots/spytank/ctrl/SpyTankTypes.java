@@ -54,5 +54,16 @@ public class SpyTankTypes {
 	public static final byte[] END_MARKER = { 45, 45, 97, 114, 102, 108, 101, 98, 97, 114, 102, 108, 101 };
 	public static final byte[] EOF_MARKER = { -1, -39 };
 	public static final byte[] SOI_MARKER = { -1, -40 };
+	
+	public static byte[] getMotorCommand(int id, int direction) {
+		String cmd = String.format("%d%d", id, direction);
+		return cmd.getBytes();
+	}
+	
+	public static byte[] getKeepAlive() {
+		String cmd = String.format("%s", SpyTankTypes.KEEP_ALIVE);
+		return cmd.getBytes();
+	}
+	
 
 }

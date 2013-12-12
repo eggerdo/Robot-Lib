@@ -10,12 +10,13 @@ import org.dobots.utilities.CameraPreview;
 import org.dobots.utilities.Utils;
 
 import robots.RobotType;
-import robots.ctrl.ICameraControlListener;
-import robots.gui.BluetoothConnection;
+import robots.ctrl.control.ICameraControlListener;
 import robots.gui.BluetoothRobot;
-import robots.gui.IConnectListener;
 import robots.gui.RobotInventory;
 import robots.gui.SensorGatherer;
+import robots.gui.comm.IConnectListener;
+import robots.gui.comm.IRobotConnection;
+import robots.gui.comm.bluetooth.BluetoothConnection;
 import robots.piratedotty.ctrl.PirateDotty;
 import robots.piratedotty.ctrl.PirateDottyTypes;
 import android.bluetooth.BluetoothDevice;
@@ -102,7 +103,7 @@ public class PirateDottyRobot extends BluetoothRobot implements ICameraControlLi
 	@Override
 	public void onDestroy() {
 		m_oCamera.stopCamera();
-		m_oRemoteCtrl.close();
+		m_oRemoteCtrl.destroy();
 		m_oZmqRemoteSender.close();
 		
 		if (m_bOwnsRobot) {
@@ -248,7 +249,7 @@ public class PirateDottyRobot extends BluetoothRobot implements ICameraControlLi
 			}
 			catch (IOException e) { }
 		}
-		BluetoothConnection connection = new BluetoothConnection(i_oDevice, PirateDottyTypes.PIRATEDOTTY_UUID);
+		IRobotConnection connection = new BluetoothConnection(i_oDevice, PirateDottyTypes.PIRATEDOTTY_UUID);
 		connection.setReceiveHandler(m_oUiHandler);
 		m_oPirateDotty.setConnection(connection);
 		m_oPirateDotty.connect();
@@ -271,7 +272,7 @@ public class PirateDottyRobot extends BluetoothRobot implements ICameraControlLi
 		}
 
 		i_oPirateDotty.setHandler(m_oRobot.getUIHandler());
-		BluetoothConnection connection = new BluetoothConnection(i_oDevice, PirateDottyTypes.PIRATEDOTTY_UUID);
+		IRobotConnection connection = new BluetoothConnection(i_oDevice, PirateDottyTypes.PIRATEDOTTY_UUID);
 		connection.setReceiveHandler(m_oRobot.getUIHandler());
 		i_oPirateDotty.setConnection(connection);
 		i_oPirateDotty.connect();

@@ -2,3 +2,5 @@
 /gen
 .settings/
 obj/
+.classpath
+.project

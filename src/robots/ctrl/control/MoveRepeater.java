@@ -1,22 +1,16 @@
-package robots.ctrl;
+package robots.ctrl.control;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import org.dobots.lib.comm.Move;
+import org.dobots.utilities.DoBotsThread;
 import org.dobots.utilities.Utils;
-import org.dobots.utilities.joystick.JoystickSurfaceThread;
 
 import android.util.Log;
 
-public class MoveRepeater extends Thread {
+public class MoveRepeater extends DoBotsThread {
 	
 	private static final String TAG = "MoveRepeater";
-	
-    public enum MoveCommand {
-    	MOVE_UP, MOVE_DOWN, MOVE_FWD, MOVE_BWD, MOVE_LEFT, MOVE_RIGHT, ROTATE_LEFT, ROTATE_RIGHT
-    }
 
-	private boolean m_bRun = true;
+//	private boolean m_bRun = true;
     private Runnable m_oCurrentMove = null;
 
     private IMoveRepeaterListener m_oRobot;
@@ -34,6 +28,7 @@ public class MoveRepeater extends Thread {
 //	private long m_lDelay=70;
 	
 	public MoveRepeater(IMoveRepeaterListener i_oRobot, int i_nInterval) {
+		super("MoveRepeater");
 		m_oRobot = i_oRobot;
 		m_nInterval = i_nInterval;
 		start();
@@ -47,11 +42,11 @@ public class MoveRepeater extends Thread {
 		return m_bRepeat;
 	}
 	
-	public void startMove(MoveCommand i_eMove, double i_dblSpeed, int i_nRadius, boolean i_bRepeat) {
+	public void startMove(Move i_eMove, double i_dblSpeed, int i_nRadius, boolean i_bRepeat) {
 		startMove(new MoveRunner(i_eMove, i_dblSpeed, i_nRadius), i_bRepeat);
 	}
 
-	public void startMove(MoveCommand i_eMove, double i_dblSpeed, boolean i_bRepeat) {
+	public void startMove(Move i_eMove, double i_dblSpeed, boolean i_bRepeat) {
 		startMove(new MoveRunner(i_eMove, i_dblSpeed, 0), i_bRepeat);
 	}
 	
@@ -74,11 +69,11 @@ public class MoveRepeater extends Thread {
 	
 	class MoveRunner implements Runnable {
 		
-		private MoveCommand eMove;
+		private Move eMove;
 		private double dblSpeed;
 		private int nRadius;
 		
-		public MoveRunner(MoveCommand i_eMove, double i_dblSpeed, int i_nRadius) {
+		public MoveRunner(Move i_eMove, double i_dblSpeed, int i_nRadius) {
 			super();
 			
 			eMove = i_eMove;
@@ -105,41 +100,43 @@ public class MoveRepeater extends Thread {
 	}
 	
 	@Override
-	public void run() {
+	public void execute() {
 		
-		while (m_bRun) {
-			
-			m_lUpdateTime = System.nanoTime();
-			
-			if (m_oCurrentMove == null) {
-				Utils.waitSomeTime(10);
-			} else {
+		m_lUpdateTime = System.nanoTime();
+		
+		if (m_oCurrentMove == null) {
+			Utils.waitSomeTime(10);
+		} else {
 
-				synchronized (m_oMoveMutex) {
-					m_oCurrentMove.run();
-					
-					if (!m_bRepeat) {
-						m_oCurrentMove = null;
-					}
-				}
-
-				//SLEEP
-				//Sleep time. Time required to sleep to keep game consistent
-				//This starts with the specified delay time (in milliseconds) then subtracts from that the
-				//actual time it took to update and render the game. This allows the joystick to render smoothly.
-				this.m_lSleepTime = m_nInterval-((System.nanoTime()-m_lUpdateTime)/1000000L);
-
-				try {
-					//actual sleep code
-					if(m_lSleepTime>0){
-						Thread.sleep(m_lSleepTime);
-					}
-				} catch (InterruptedException ex) {
-					Logger.getLogger(JoystickSurfaceThread.class.getName()).log(Level.SEVERE, null, ex);
+			synchronized (m_oMoveMutex) {
+				m_oCurrentMove.run();
+				
+				if (!m_bRepeat) {
+					m_oCurrentMove = null;
 				}
 			}
 
+			//SLEEP
+			//Sleep time. Time required to sleep to keep game consistent
+			//This starts with the specified delay time (in milliseconds) then subtracts from that the
+			//actual time it took to update and render the game. This allows the joystick to render smoothly.
+			this.m_lSleepTime = m_nInterval-((System.nanoTime()-m_lUpdateTime)/1000000L);
+
+			try {
+				//actual sleep code
+				if(m_lSleepTime>0){
+					Thread.sleep(m_lSleepTime);
+				}
+			} catch (InterruptedException ex) {
+				ex.printStackTrace();
+			}
 		}
+
+	}
+
+	@Override
+	public void shutDown() {
+		// TODO Auto-generated method stub
 		
 	}
 

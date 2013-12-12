@@ -2,11 +2,13 @@ package robots.gui;
 
 import robots.RobotType;
 import robots.nxt.ctrl.NXTTypes;
+import robots.nxt.gui.NXTRobot;
 import robots.parrot.gui.ParrotRobot;
 import robots.piratedotty.ctrl.PirateDottyTypes;
 import robots.piratedotty.gui.PirateDottyRobot;
 import robots.replicator.gui.ReplicatorUI;
-import robots.romo.ctrl.RomoTypes;
+import robots.roboscooper.ctrl.RoboScooperTypes;
+import robots.roboscooper.gui.RoboScooperRobot;
 import robots.romo.gui.RomoRobot;
 import robots.roomba.ctrl.RoombaTypes;
 import robots.roomba.gui.RoombaRobot;
@@ -34,12 +36,12 @@ public class RobotViewFactory {
 		switch (i_eRobot) {
 		case RBT_ROOMBA:
 			return RoombaRobot.class;
-//		case RBT_NXT:
-//			return NXTRobot.class;
+		case RBT_NXT:
+			return NXTRobot.class;
 //		case RBT_DOTTY:
 //			return DottyRobot.class;
-//		case RBT_ROBOSCOOPER:
-//			return RoboScooperRobot.class;
+		case RBT_ROBOSCOOPER:
+			return RoboScooperRobot.class;
 //		case RBT_SPYKEE:
 //			return SpykeeRobot.class;
 		case RBT_AC13ROVER:
@@ -72,14 +74,14 @@ public class RobotViewFactory {
 //			return DottyTypes.MAC_FILTER;
 //		case RBT_PARROT:
 //			return ParrotTypes.SSID_FILTER;
-//		case RBT_ROBOSCOOPER:
-//			return RoboScooperTypes.MAC_FILTER;
+		case RBT_ROBOSCOOPER:
+			return RoboScooperTypes.MAC_FILTER;
 //		case RBT_SPYKEE:
 //			return SpykeeTypes.SSID_FILTER;
 //		case RBT_AC13ROVER:
 //			return AC13RoverTypes.SSID_FILTER;
-		case RBT_ROMO:
-			return RomoTypes.SSID_FILTER;
+//		case RBT_ROMO:
+//			return RomoTypes.SSID_FILTER;
 		case RBT_PIRATEDOTTY:
 			return PirateDottyTypes.MAC_FILTER;
 		default:

@@ -5,6 +5,7 @@ import robots.RobotType;
 import robots.parrot.ctrl.Parrot;
 import robots.piratedotty.ctrl.PirateDotty;
 import robots.replicator.ctrl.Replicator;
+import robots.roboscooper.ctrl.RoboScooper;
 import robots.romo.ctrl.Romo;
 import robots.roomba.ctrl.Roomba;
 import robots.rover.ac13.ctrl.AC13Rover;
@@ -41,6 +42,8 @@ public class RobotDeviceFactory {
 			case RBT_ROOMBA:
 				oRobot = new Roomba();
 				break;
+			case RBT_ROBOSCOOPER:
+				oRobot = new RoboScooper();
 			default: 		
 				throw new Exception();
 		}

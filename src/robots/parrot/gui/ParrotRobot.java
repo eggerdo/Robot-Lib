@@ -6,12 +6,12 @@ import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
 
 import robots.RobotType;
-import robots.ctrl.IDriveControlListener;
-import robots.ctrl.RemoteControlHelper;
-import robots.gui.IConnectListener;
-import robots.gui.RobotDriveCommandListener;
+import robots.ctrl.control.IDriveControlListener;
+import robots.ctrl.control.RemoteControlHelper;
+import robots.ctrl.control.RobotDriveCommandListener;
 import robots.gui.SensorGatherer;
 import robots.gui.WifiRobot;
+import robots.gui.comm.IConnectListener;
 import robots.parrot.ctrl.Parrot;
 import android.content.Intent;
 import android.os.Bundle;

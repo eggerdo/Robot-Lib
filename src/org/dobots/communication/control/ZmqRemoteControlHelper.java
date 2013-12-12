@@ -20,8 +20,8 @@ import org.zeromq.ZMQ.Context;
 import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMsg;
 
-import robots.ctrl.ICameraControlListener;
-import robots.ctrl.RemoteControlHelper;
+import robots.ctrl.control.ICameraControlListener;
+import robots.ctrl.control.RemoteControlHelper;
 import android.util.Log;
 
 public class ZmqRemoteControlHelper extends RemoteControlHelper {
@@ -228,7 +228,10 @@ public class ZmqRemoteControlHelper extends RemoteControlHelper {
 		
 	}
 
-	public void close() {
+	@Override
+	public void destroy() {
+		super.destroy();
+		
 		if (m_oCmdRecvSocket != null) {
 			m_oCmdRecvSocket.close();
 			m_oCmdRecvSocket = null;

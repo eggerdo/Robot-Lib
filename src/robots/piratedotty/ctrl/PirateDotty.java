@@ -4,8 +4,8 @@ import org.dobots.communication.control.ZmqRemoteControlHelper;
 
 import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
-import robots.gui.BluetoothConnection;
-import robots.gui.RobotDriveCommandListener;
+import robots.ctrl.control.RobotDriveCommandListener;
+import robots.gui.comm.IRobotConnection;
 
 public class PirateDotty extends DifferentialRobot {
 
@@ -57,11 +57,11 @@ public class PirateDotty extends DifferentialRobot {
 		m_oController.destroyConnection();
 	}
 
-	public void setConnection(BluetoothConnection i_oConnection) {
+	public void setConnection(IRobotConnection i_oConnection) {
 		m_oController.setConnection(i_oConnection);
 	}
 	
-	public BluetoothConnection getConnection() {
+	public IRobotConnection getConnection() {
 		return m_oController.getConnection();
 	}
 

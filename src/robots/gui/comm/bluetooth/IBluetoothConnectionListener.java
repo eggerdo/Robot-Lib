@@ -1,4 +1,4 @@
-package robots.gui;
+package robots.gui.comm.bluetooth;
 
 import android.bluetooth.BluetoothDevice;
 

@@ -4,24 +4,24 @@ import java.io.IOException;
 
 import org.dobots.utilities.log.Loggable;
 
-import robots.ctrl.AsciiProtocolHandler;
-import robots.ctrl.AsciiProtocolHandler.IAsciiMessageHandler;
-import robots.gui.BluetoothConnection;
+import robots.ctrl.comm.AsciiProtocolHandler;
+import robots.ctrl.comm.AsciiProtocolHandler.IAsciiMessageHandler;
+import robots.gui.comm.IRobotConnection;
 
 public class PirateDottyController extends Loggable implements IAsciiMessageHandler {
 	
 	private static final String TAG = "PirateDottyController";
 	
-	private BluetoothConnection m_oConnection;
+	private IRobotConnection m_oConnection;
 
 	private AsciiProtocolHandler mProtocolHandler;
 	
-	public void setConnection(BluetoothConnection i_oConnection) {
+	public void setConnection(IRobotConnection i_oConnection) {
 		m_oConnection = i_oConnection;
 		mProtocolHandler = new AsciiProtocolHandler(i_oConnection, this);
 	}
 	
-	public BluetoothConnection getConnection() {
+	public IRobotConnection getConnection() {
 		return m_oConnection;
 	}
 	

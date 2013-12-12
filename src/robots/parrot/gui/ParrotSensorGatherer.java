@@ -5,8 +5,8 @@ import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.ScalableImageView;
 import org.dobots.utilities.Utils;
 
-import robots.gui.IConnectListener;
 import robots.gui.SensorGatherer;
+import robots.gui.comm.IConnectListener;
 import robots.parrot.ctrl.Parrot;
 import robots.parrot.ctrl.ParrotTypes;
 import robots.parrot.ctrl.ParrotVideoProcessor;

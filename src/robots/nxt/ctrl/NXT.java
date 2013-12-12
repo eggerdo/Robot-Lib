@@ -10,9 +10,9 @@ import org.dobots.utilities.Utils;
 
 import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
-import robots.gui.BluetoothConnection;
+import robots.ctrl.control.RobotDriveCommandListener;
 import robots.gui.MessageTypes;
-import robots.gui.RobotDriveCommandListener;
+import robots.gui.comm.IRobotConnection;
 import robots.nxt.MsgTypes;
 import robots.nxt.MsgTypes.MotorDataRequestMsg;
 import robots.nxt.MsgTypes.MotorSpeedMsg;
@@ -306,11 +306,11 @@ public class NXT extends DifferentialRobot {
 		}
 	}
 	
-	public void setConnection(BluetoothConnection i_oConnection) {
+	public void setConnection(IRobotConnection i_oConnection) {
 		m_oController.setConnection(i_oConnection);
 	}
 
-	public BluetoothConnection getConnection() {
+	public IRobotConnection getConnection() {
 		return m_oController.getConnection();
 	}
 

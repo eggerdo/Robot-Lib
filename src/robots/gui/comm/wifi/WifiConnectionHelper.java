@@ -1,4 +1,4 @@
-package robots.gui;
+package robots.gui.comm.wifi;
 
 import org.dobots.utilities.Utils;
 

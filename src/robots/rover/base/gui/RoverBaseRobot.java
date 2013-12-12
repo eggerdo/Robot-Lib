@@ -7,9 +7,9 @@ import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
 
 import robots.RobotType;
-import robots.gui.IConnectListener;
 import robots.gui.SensorGatherer;
 import robots.gui.WifiRobot;
+import robots.gui.comm.IConnectListener;
 import robots.rover.ac13.gui.AC13RoverRobot;
 import robots.rover.base.ctrl.RoverBase;
 import robots.rover.base.ctrl.RoverBaseTypes.VideoResolution;

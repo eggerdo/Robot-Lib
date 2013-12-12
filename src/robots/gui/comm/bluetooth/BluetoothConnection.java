@@ -1,4 +1,4 @@
-package robots.gui;
+package robots.gui.comm.bluetooth;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -10,12 +10,15 @@ import java.util.UUID;
 
 import org.dobots.utilities.Utils;
 
+import robots.gui.MessageTypes;
+import robots.gui.comm.IRobotConnection;
+
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
 import android.os.Looper;
 
-public class BluetoothConnection {
+public class BluetoothConnection implements IRobotConnection {
 
 //    public interface IMessageListener {
 //    	public void onMessage(byte[] message);
@@ -34,8 +37,8 @@ public class BluetoothConnection {
 
 	protected Handler m_oUiHandler = null;
 
-	protected boolean connected = false;
-	protected boolean m_bStopped = false;
+	protected boolean mConnected = false;
+	protected boolean mStopped = false;
 	
 	private UUID m_oUUID = null;
 	
@@ -71,7 +74,7 @@ public class BluetoothConnection {
      * @return the current status of the connection
      */            
     public boolean isConnected() {
-        return connected;
+        return mConnected;
     }
 
 //	public void startThread() {
@@ -161,7 +164,7 @@ public class BluetoothConnection {
                 return;
             }
         }
-    	connected = false;
+    	mConnected = false;
         m_oSocket = m_oDevice.createRfcommSocketToServiceRecord(m_oUUID);
     }
 
@@ -172,7 +175,7 @@ public class BluetoothConnection {
     public void close() throws IOException {
         try {
             if (m_oSocket != null) {
-                connected = false;
+                mConnected = false;
 //                stopThread();
                 m_oSocket.close();
                 m_oSocket = null;
@@ -232,7 +235,7 @@ public class BluetoothConnection {
 	    	m_oDataOut = new DataOutputStream(m_oOutStream);
 	    	m_oDataIn = new DataInputStream(m_oInStream);
 	    	
-	        connected = true;
+	        mConnected = true;
 	    } catch (IOException e) {
 	    	e.printStackTrace();
 	        if (m_oUiHandler == null)
@@ -319,8 +322,8 @@ public class BluetoothConnection {
 	}
 
 	public void onReadError(IOException e) {
-		if (connected) {
-        	connected = false;
+		if (mConnected) {
+        	mConnected = false;
             sendState(MessageTypes.STATE_RECEIVEERROR);
         }
 
@@ -328,8 +331,8 @@ public class BluetoothConnection {
 	}
 	
 	public void onWriteError(IOException e) {
-		if (connected) {
-        	connected = false;
+		if (mConnected) {
+        	mConnected = false;
             sendState(MessageTypes.STATE_SENDERROR);
         }
 

@@ -7,7 +7,7 @@ import org.dobots.utilities.CameraPreview;
 import org.dobots.utilities.Utils;
 
 import robots.RobotType;
-import robots.ctrl.ICameraControlListener;
+import robots.ctrl.control.ICameraControlListener;
 import robots.gui.RobotInventory;
 import robots.gui.RobotView;
 import robots.gui.SensorGatherer;
@@ -88,7 +88,7 @@ public class RomoRobot extends RobotView implements ICameraControlListener {
 	@Override
 	public void onDestroy() {
 		m_oCamera.stopCamera();
-		m_oRemoteCtrl.close();
+		m_oRemoteCtrl.destroy();
 		m_oZmqRemoteSender.close();
 		
 		if (m_bOwnsRobot) {

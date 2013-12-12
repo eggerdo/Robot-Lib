@@ -1,7 +1,10 @@
-package robots.gui;
+package robots.gui.comm.bluetooth;
 
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.IActivityResultListener;
+
+import robots.gui.MessageTypes;
+import robots.gui.comm.bluetooth.IBluetoothConnectionListener;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -89,7 +92,7 @@ public class BluetoothConnectionHelper implements IActivityResultListener {
 			// When DeviceListActivity returns with a device to connect
 			if (resultCode == Activity.RESULT_OK) {
 				// Get the device MAC address and connect to the robot
-				String address = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+				String address = data.getExtras().getString(BluetoothDeviceListActivity.EXTRA_DEVICE_ADDRESS);
 				
 				m_oListener.connect(m_oBTAdapter.getRemoteDevice(address));
 			}
@@ -105,7 +108,7 @@ public class BluetoothConnectionHelper implements IActivityResultListener {
 	}
 
 	public void selectRobot() {
-		Intent serverIntent = new Intent(m_oParent, DeviceListActivity.class);
+		Intent serverIntent = new Intent(m_oParent, BluetoothDeviceListActivity.class);
 		Bundle oParam = new Bundle();
 		oParam.putString(MAC_FILTER, m_strMacFilter);
 		oParam.putString(TITLE, m_strTitle);

@@ -6,23 +6,23 @@ import java.util.concurrent.TimeoutException;
 import org.dobots.utilities.Utils;
 import org.dobots.utilities.log.Loggable;
 
-import robots.gui.BluetoothConnection;
+import robots.gui.comm.IRobotConnection;
 
 public class RoombaController extends Loggable {
 	
 	private static final String TAG = "RoombaCtrl";
 	
-	BluetoothConnection m_oConnection;
+	IRobotConnection m_oConnection;
 	
 	/////////////////////////////////////////////////////////////////////////
 	/// Public Functions
 	/////////////////////////////////////////////////////////////////////////
 
-	public void setConnection(BluetoothConnection i_oConnection) {
+	public void setConnection(IRobotConnection i_oConnection) {
 		m_oConnection = i_oConnection;
 	}
 	
-	public BluetoothConnection getConnection() {
+	public IRobotConnection getConnection() {
 		return m_oConnection;
 	}
 	

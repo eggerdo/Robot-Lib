@@ -27,8 +27,8 @@ import org.dobots.lib.comm.msg.RoboCommands.ControlCommand;
 import org.dobots.lib.comm.msg.RoboCommands.DriveCommand;
 import org.zeromq.ZMQ;
 
-import robots.ctrl.ICameraControlListener;
-import robots.ctrl.IDriveControlListener;
+import robots.ctrl.control.ICameraControlListener;
+import robots.ctrl.control.IDriveControlListener;
 
 public class ZmqRemoteControlSender implements IDriveControlListener, ICameraControlListener {
 

@@ -20,11 +20,12 @@
  * (original work is) Copyright (C) 2009 The Android Open Source Project
 **/
 
-package robots.gui;
+package robots.gui.comm.bluetooth;
 
 import java.util.Set;
 
 import org.dobots.R;
+
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -50,7 +51,7 @@ import android.widget.TextView;
  * by the user, the MAC address of the device is sent back to the parent
  * Activity in the result Intent.
  */
-public class DeviceListActivity extends Activity {
+public class BluetoothDeviceListActivity extends Activity {
     public static final String PAIRING = "pairing";
     
     // Return Intent extra
@@ -71,7 +72,7 @@ public class DeviceListActivity extends Activity {
 
         // Setup the window
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        setContentView(R.layout.device_list);
+        setContentView(R.layout.bluetooth_device_list);
  
         // Set result CANCELED incase the user backs out
         setResult(Activity.RESULT_CANCELED);
@@ -87,8 +88,8 @@ public class DeviceListActivity extends Activity {
 
         // Initialize array adapters. One for already paired devices and
         // one for newly discovered devices
-        mPairedDevicesArrayAdapter = new ArrayAdapter<String>(this, R.layout.device_name);
-        mNewDevicesArrayAdapter = new ArrayAdapter<String>(this, R.layout.device_name);
+        mPairedDevicesArrayAdapter = new ArrayAdapter<String>(this, R.layout.bluetooth_device_name);
+        mNewDevicesArrayAdapter = new ArrayAdapter<String>(this, R.layout.bluetooth_device_name);
 
         // Find and set up the ListView for paired devices
         ListView pairedListView = (ListView) findViewById(R.id.paired_devices);

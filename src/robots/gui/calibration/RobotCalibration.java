@@ -1,11 +1,13 @@
-package robots.gui;
+package robots.gui.calibration;
 
 import org.dobots.R;
 import org.dobots.utilities.BaseActivity;
 
 import robots.RobotType;
 import robots.ctrl.IRobotDevice;
-import robots.gui.CalibrationDialogSelf.OnRunClick;
+import robots.gui.MessageTypes;
+import robots.gui.RobotInventory;
+import robots.gui.calibration.CalibrationDialogSelf.OnRunClick;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;

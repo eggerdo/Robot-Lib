@@ -16,7 +16,7 @@
 * @project:		Robot-Lib
 * @company:		Distributed Organisms B.V.
 */
-package robots.ctrl;
+package robots.ctrl.control;
 
 import org.dobots.R;
 import org.dobots.lib.comm.Move;

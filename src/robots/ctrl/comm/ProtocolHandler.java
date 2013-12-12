@@ -1,8 +1,8 @@
-package robots.ctrl;
+package robots.ctrl.comm;
 
 import org.dobots.utilities.DoBotsThread;
 
-import robots.gui.BluetoothConnection;
+import robots.gui.comm.IRobotConnection;
 
 public abstract class ProtocolHandler extends DoBotsThread {
 
@@ -12,11 +12,11 @@ public abstract class ProtocolHandler extends DoBotsThread {
 	
 	protected ICommHandler mMessageHandler = null;
 	
-	protected BluetoothConnection mConnection = null;
+	protected IRobotConnection mConnection = null;
 	
 //	private boolean mStopped = false;
 	
-	public ProtocolHandler(BluetoothConnection connection, ICommHandler handler) {
+	public ProtocolHandler(IRobotConnection connection, ICommHandler handler) {
 		super("ProtocolHandler");
 		mConnection = connection;
 		mMessageHandler = handler;

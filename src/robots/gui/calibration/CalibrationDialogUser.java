@@ -1,8 +1,8 @@
-package robots.gui;
+package robots.gui.calibration;
 
 import org.dobots.R;
 
-import robots.gui.CalibrationDialogSelf.OnRunClick;
+import robots.gui.calibration.CalibrationDialogSelf.OnRunClick;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;

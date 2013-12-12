@@ -7,15 +7,16 @@ import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
 
 import robots.RobotType;
-import robots.ctrl.RemoteControlHelper;
-import robots.gui.BluetoothConnection;
+import robots.ctrl.control.RemoteControlHelper;
+import robots.ctrl.control.RobotDriveCommandListener;
 import robots.gui.BluetoothRobot;
-import robots.gui.IConnectListener;
 import robots.gui.MessageTypes;
-import robots.gui.RobotCalibration;
-import robots.gui.RobotDriveCommandListener;
 import robots.gui.RobotInventory;
 import robots.gui.SensorGatherer;
+import robots.gui.calibration.RobotCalibration;
+import robots.gui.comm.IConnectListener;
+import robots.gui.comm.IRobotConnection;
+import robots.gui.comm.bluetooth.BluetoothConnection;
 import robots.nxt.ctrl.NXT;
 import robots.nxt.ctrl.NXTTypes;
 import robots.nxt.ctrl.NXTTypes.ENXTMotorID;
@@ -188,7 +189,7 @@ public class NXTRobot extends BluetoothRobot {
 			m_oNxt.disconnect();
 		}
 
-		BluetoothConnection connection = new BluetoothConnection(i_oDevice, NXTTypes.SERIAL_PORT_SERVICE_CLASS_UUID);
+		IRobotConnection connection = new BluetoothConnection(i_oDevice, NXTTypes.SERIAL_PORT_SERVICE_CLASS_UUID);
 		connection.setReceiveHandler(m_oUiHandler);
 		m_oNxt.setConnection(connection);
 		m_oNxt.connect();
@@ -211,7 +212,7 @@ public class NXTRobot extends BluetoothRobot {
 		}
 
 		i_oNxt.setHandler(m_oRobot.getUIHandler());
-		BluetoothConnection connection = new BluetoothConnection(i_oDevice, NXTTypes.SERIAL_PORT_SERVICE_CLASS_UUID);
+		IRobotConnection connection = new BluetoothConnection(i_oDevice, NXTTypes.SERIAL_PORT_SERVICE_CLASS_UUID);
 		connection.setReceiveHandler(m_oRobot.getUIHandler());
 		i_oNxt.setConnection(connection);
 		i_oNxt.connect();

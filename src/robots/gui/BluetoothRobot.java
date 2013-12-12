@@ -3,6 +3,9 @@ package robots.gui;
 import org.dobots.R;
 import org.dobots.utilities.BaseActivity;
 
+import robots.gui.comm.bluetooth.BluetoothConnectionHelper;
+import robots.gui.comm.bluetooth.IBluetoothConnectionListener;
+
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothSocket;
 import android.content.DialogInterface;
