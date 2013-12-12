@@ -260,7 +260,7 @@ public class NXT extends DifferentialRobot {
 		m_oKeepAliveTimer.schedule(m_oKeepAlive, 30000, 30000);
 		
 		m_oRemoteListener = new RobotDriveCommandListener(this);
-		m_oRemoteHelper = new ZmqRemoteControlHelper();
+		m_oRemoteHelper = new ZmqRemoteControlHelper(this);
 		m_oRemoteHelper.setDriveControlListener(m_oRemoteListener);
 		m_oRemoteHelper.startReceiver(getID());
 		

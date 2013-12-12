@@ -100,7 +100,7 @@ public class Dotty extends DifferentialRobot {
 		m_oController = new DottyController();
 
 		m_oRemoteListener = new RobotDriveCommandListener(this);
-		m_oRemoteHelper = new ZmqRemoteControlHelper();
+		m_oRemoteHelper = new ZmqRemoteControlHelper(this);
 		m_oRemoteHelper.setDriveControlListener(m_oRemoteListener);
 		m_oRemoteHelper.startReceiver(getID());
 	}

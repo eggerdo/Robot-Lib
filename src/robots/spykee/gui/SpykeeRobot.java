@@ -135,13 +135,13 @@ public class SpykeeRobot extends WifiRobot {
 		m_oRemoteCtrl = new ZmqRemoteControlHelper(m_oActivity);
 		m_oRemoteCtrl.setDriveControlListener(m_oZmqRemoteSender);
 		
-//        updateButtons(false);
-//
-//        if (m_oSpykee.isConnected()) {
+        updateButtons(false);
+
+        if (m_oSpykee.isConnected()) {
 			updateButtons(true);
-//		} else {
-//			connectToRobot();
-//		}
+		} else {
+			connectToRobot();
+		}
     }
 
 	@Override

@@ -76,7 +76,7 @@ public class RoboScooper extends BaseRobot {
 		m_oRepeater = new MoveRepeater(null, m_nInterval);
 
 		m_oRemoteListener = new RobotDriveCommandListener(this);
-		m_oRemoteHelper = new ZmqRemoteControlHelper();
+		m_oRemoteHelper = new ZmqRemoteControlHelper(this);
 		m_oRemoteHelper.setDriveControlListener(m_oRemoteListener);
 		m_oRemoteHelper.startReceiver("RoboScooper");
 	}

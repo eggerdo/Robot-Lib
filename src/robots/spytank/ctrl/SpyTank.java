@@ -32,7 +32,7 @@ public class SpyTank extends DifferentialRobot implements ICameraControlListener
 		m_oController.setVideoListener(m_oVideoSender);
 
 		m_oRemoteListener = new RobotDriveCommandListener(this);
-		m_oRemoteHelper = new ZmqRemoteControlHelper();
+		m_oRemoteHelper = new ZmqRemoteControlHelper(this);
 		m_oRemoteHelper.setDriveControlListener(m_oRemoteListener);
 		m_oRemoteHelper.setCameraControlListener(this);
 		m_oRemoteHelper.startReceiver(getID());

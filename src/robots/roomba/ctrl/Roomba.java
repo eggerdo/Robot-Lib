@@ -45,9 +45,8 @@ public class Roomba extends BaseRobot {
 		m_eMode = ERoombaModes.mod_Unknown;
 
 		m_oRemoteListener = new RobotDriveCommandListener(this);
-		m_oRemoteHelper = new ZmqRemoteControlHelper();
+		m_oRemoteHelper = new ZmqRemoteControlHelper(this);
 		m_oRemoteHelper.setDriveControlListener(m_oRemoteListener);
-		m_oRemoteHelper.setControlListener(this);
 		m_oRemoteHelper.startReceiver(getID());
 
 		m_oSensorsSender = new ZmqSensorsSender();

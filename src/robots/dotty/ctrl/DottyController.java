@@ -3,6 +3,7 @@ package robots.dotty.ctrl;
 import java.io.IOException;
 
 import org.dobots.utilities.Utils;
+import org.dobots.utilities.log.Loggable;
 
 import robots.ctrl.comm.ProtocolHandler;
 import robots.ctrl.comm.ProtocolHandler.ICommHandler;
@@ -10,7 +11,9 @@ import robots.gui.comm.bluetooth.BluetoothConnection;
 import robots.nxt.MsgTypes;
 import android.os.Handler;
 
-public class DottyController implements ICommHandler<byte[]> {
+public class DottyController extends Loggable implements ICommHandler<byte[]> {
+	
+	private static final String TAG = "DottyController";
 	
 	private BluetoothConnection m_oConnection;
 
@@ -115,44 +118,58 @@ public class DottyController implements ICommHandler<byte[]> {
 	}
 	
 	public void connect() {
+		debug(TAG, "connect...");
 		m_oConnection.open();
 		mProtocolHandler.start();
 	}
 	
 	public void disconnect() {
+		debug(TAG, "disconnect...");
 		byte[] message = DottyTypes.getDisconnectPackage();
-		m_oConnection.send(message);
+		send(message);
 		destroyConnection();
 	}
 	
 	public void control(boolean i_bEnable) {
+		debug(TAG, "control(%b)", i_bEnable);
 		byte[] message = DottyTypes.getControlPackage(i_bEnable);
-		m_oConnection.send(message);
+		send(message);
 	}
 	
 	public void drive(int i_nLeftVelocity, int i_nRightVelocity) {
+		debug(TAG, "drive(%d,%d)", i_nLeftVelocity, i_nRightVelocity);
 		byte[] message = DottyTypes.getDrivePackage(i_nLeftVelocity, i_nRightVelocity);
-		m_oConnection.send(message);
+		send(message);
 	}
 	
 	public void driveStop() {
+		debug(TAG, "driveStop()");
 		byte[] message = DottyTypes.getDriveStopPackage();
-		m_oConnection.send(message);
+		send(message);
 	}
 	
 	public void requestSensorData() {
+		debug(TAG, "requestSensorData()");
 		byte[] message = DottyTypes.getDataRequestPackage();
-		m_oConnection.send(message);
+		send(message);
 	}
 	
 	public void startStreaming(int i_nInterval) {
+		debug(TAG, "startStreaming(%d)", i_nInterval);
 		byte[] message = DottyTypes.getStreamingONPackage(i_nInterval);
-		m_oConnection.send(message);
+		send(message);
 	}
 	
 	public void stopStreaming() {
+		debug(TAG, "stopStreaming()");
 		byte[] message = DottyTypes.getStreamingOFFPackage();
-		m_oConnection.send(message);
+		send(message);
+	}
+	
+	private void send(byte[] message) {
+		if (isConnected()) {
+			m_oConnection.send(message);
+		}
 	}
 
 	@Override

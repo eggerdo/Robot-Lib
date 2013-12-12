@@ -108,11 +108,6 @@ public class DottyRobot extends BluetoothRobot {
 		}
     }
     
-    public void setNXT(Dotty i_oNxt) {
-    	m_oDotty = i_oNxt;
-    	m_oDotty.setHandler(m_oUiHandler);
-    }
-	
 	@Override
 	public void handleUIMessage(Message msg) {
 		super.handleUIMessage(msg);

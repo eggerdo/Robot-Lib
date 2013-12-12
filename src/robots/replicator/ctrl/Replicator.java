@@ -36,7 +36,7 @@ public class Replicator extends DifferentialRobot implements ICameraControlListe
 		m_oController = new ReplicatorController();
 
 		m_oDriveCommandListener = new RobotDriveCommandListener(this);
-		m_oRemoteCtrl = new ZmqRemoteControlHelper();
+		m_oRemoteCtrl = new ZmqRemoteControlHelper(this);
 		m_oRemoteCtrl.setDriveControlListener(m_oDriveCommandListener);
 		m_oRemoteCtrl.startReceiver("Replicator");
 

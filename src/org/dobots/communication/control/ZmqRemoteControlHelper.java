@@ -20,6 +20,7 @@ import org.zeromq.ZMQ.Context;
 import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMsg;
 
+import robots.ctrl.IRobotDevice;
 import robots.ctrl.control.ICameraControlListener;
 import robots.ctrl.control.RemoteControlHelper;
 import android.util.Log;
@@ -51,12 +52,16 @@ public class ZmqRemoteControlHelper extends RemoteControlHelper {
 	}
 	
 	/**
-	 * Starts a helper object without activity. the helper class now only serves as a hub to forward
-	 * remote controls. Optionally, the receiver can be started which listens for incoming zmq messages
-	 * parses them and forwards them to the listener.
+	 */
+	public ZmqRemoteControlHelper(Object controlListener) {
+		this((BaseActivity)null);
+		m_oControlListener = controlListener;
+	}
+
+	/**
 	 */
 	public ZmqRemoteControlHelper() {
-		this(null);
+		this((BaseActivity)null);
 	}
 	
 	/**
