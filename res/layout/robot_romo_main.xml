@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+    <org.dobots.utilities.CameraPreview
+        android:id="@+id/svCamera"
+	    android:scaleType="fitCenter" 
+	    android:layout_height="wrap_content" 
+	    android:layout_width="match_parent" 
+	    android:adjustViewBounds="true" />
+
+    <ImageButton
+        android:id="@+id/btnCameraToggle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+		android:src="@android:drawable/ic_menu_camera"
+		android:background="@null" />
+
+    <TextView 
+        android:id="@+id/lblFPS"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#e0ff0000"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:textSize="24sp" />
+    
+    <ToggleButton
+        android:id="@+id/btnRemoteControl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:text="@string/control"
+        android:textOff="@string/control"
+        android:textOn="@string/control"
+        android:visibility="gone" />
+
+	<include 
+        android:id="@+id/layRemoteControl"
+        layout="@layout/remote_control"
+         />
+	
+</RelativeLayout>

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<org.dobots.utilities.LockableScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scrollview"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+	
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:gravity="fill"
+	    android:orientation="vertical" >
+
+		<LinearLayout
+		    android:id="@+id/layTitle"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content" >
+
+			<TextView
+			    android:id="@+id/lblTitle"
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:text="@string/roomba_title"
+			    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+		</LinearLayout>
+	
+	    <TextView
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/roomba_commands" />
+	
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="bottom|fill" >
+	
+	        <ToggleButton
+	            android:id="@+id/btnPower"
+	            android:layout_width="wrap_content"
+	            android:layout_height="match_parent"
+	            android:layout_gravity="center"
+	            android:paddingLeft="10dp"
+	            android:paddingRight="10dp"
+	            android:text="@string/roomba_btn_power"
+	            android:textOff="@string/roomba_btn_power"
+	            android:textOn="@string/roomba_btn_power" />
+	        
+	        <ToggleButton
+	            android:id="@+id/btnRemoteControl"
+	            android:layout_width="wrap_content"
+	            android:layout_height="match_parent"
+	            android:layout_gravity="center"
+	            android:paddingLeft="10dp"
+	            android:paddingRight="10dp"
+	            android:text="@string/control"
+	            android:textOff="@string/control"
+	            android:textOn="@string/control" />
+	        
+	        <Button
+	            android:id="@+id/btnCalibrate"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="Calibrate" />
+	
+	    </LinearLayout>
+
+	    <View
+	        android:layout_width="wrap_content"
+	        android:layout_height="10dp" />
+
+	    <LinearLayout
+	        android:id="@+id/layControls"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content" >
+
+	        <Button
+	            android:id="@+id/btnClean"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="@string/roomba_btn_clean" />
+
+	        <Button
+	            android:id="@+id/btnStopAction"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="@string/control_stop" />
+
+	        <Button
+	            android:id="@+id/btnDock"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="@string/roomba_btn_dock" />
+	    </LinearLayout>
+
+	    <LinearLayout
+	        android:id="@+id/layBrushes"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="vertical" >
+
+	        <TextView
+	            android:id="@+id/TextView02"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="@string/roomba_brushcontrol" />
+
+	        <LinearLayout
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:gravity="bottom|fill" >
+
+	            <Button
+	                android:id="@+id/btnMainBrush"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:text="@string/roomba_btn_mainbrush" />
+
+	            <Button
+	                android:id="@+id/btnSideBrush"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:text="@string/roomba_btn_sidebrush" />
+
+	            <Button
+	                android:id="@+id/btnVacuum"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:text="@string/roomba_btn_vacuum" />
+	        </LinearLayout>
+	    </LinearLayout>
+	
+	    <include 
+	        layout="@layout/robot_roomba_sensors" />
+	    
+	    <include
+            layout="@layout/remote_control" />
+	    
+	</LinearLayout>
+
+</org.dobots.utilities.LockableScrollView>
