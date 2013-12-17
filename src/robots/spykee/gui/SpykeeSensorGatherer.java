@@ -1,11 +1,7 @@
 package robots.spykee.gui;
 
 import org.dobots.R;
-import org.dobots.communication.video.VideoDisplayThread;
-import org.dobots.communication.zmq.ZmqHandler;
 import org.dobots.utilities.BaseActivity;
-import org.dobots.utilities.Utils;
-import org.zeromq.ZMQ;
 
 import robots.gui.VideoSensorGatherer;
 import robots.spykee.ctrl.Spykee;

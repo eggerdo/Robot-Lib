@@ -26,7 +26,6 @@ import java.util.Set;
 
 import org.dobots.R;
 
-
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;

@@ -7,8 +7,8 @@ import org.dobots.zmq.sensors.ZmqSensorsSender;
 
 import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
-import robots.gui.BluetoothConnection;
-import robots.gui.RobotDriveCommandListener;
+import robots.ctrl.control.RobotDriveCommandListener;
+import robots.gui.comm.IRobotConnection;
 import android.os.Handler;
 
 public class Arduino extends DifferentialRobot implements IArduino, ISensorDataListener {
@@ -67,11 +67,11 @@ public class Arduino extends DifferentialRobot implements IArduino, ISensorDataL
 		m_oController.setHandler(i_oHandler);
 	}
 
-	public void setConnection(BluetoothConnection i_oConnection) {
+	public void setConnection(IRobotConnection i_oConnection) {
 		m_oController.setConnection(i_oConnection);
 	}
 	
-	public BluetoothConnection getConnection() {
+	public IRobotConnection getConnection() {
 		return m_oController.getConnection();
 	}
 

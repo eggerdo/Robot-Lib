@@ -4,12 +4,13 @@ import robots.RobotType;
 import robots.arduino.ctrl.ArduinoTypes;
 import robots.arduino.gui.ArduinoUI;
 import robots.nxt.ctrl.NxtTypes;
-import robots.nxt.gui.NxtRobot;
+import robots.nxt.gui.NxtUI;
 import robots.parrot.gui.ParrotUI;
 import robots.piratedotty.ctrl.PirateDottyTypes;
 import robots.piratedotty.gui.PirateDottyUI;
 import robots.replicator.gui.ReplicatorUI;
-import robots.romo.ctrl.RomoTypes;
+import robots.roboscooper.ctrl.RoboScooperTypes;
+import robots.roboscooper.gui.RoboScooperRobot;
 import robots.romo.gui.RomoUI;
 import robots.roomba.ctrl.RoombaTypes;
 import robots.roomba.gui.RoombaRobot;
@@ -38,7 +39,7 @@ public class RobotViewFactory {
 		case RBT_ROOMBA:
 			return RoombaRobot.class;
 		case RBT_NXT:
-			return NxtRobot.class;
+			return NxtUI.class;
 //		case RBT_DOTTY:
 //			return DottyRobot.class;
 		case RBT_ROBOSCOOPER:

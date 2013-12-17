@@ -4,7 +4,6 @@ package robots.ctrl.control;
 import org.dobots.lib.comm.Move;
 
 import robots.ctrl.IRobotDevice;
-
 import android.util.Log;
 
 public class RobotDriveCommandListener implements IDriveControlListener {

@@ -19,14 +19,12 @@
 package robots.spykee.gui;
 
 import org.dobots.R;
-import org.dobots.communication.control.ZmqRemoteControlHelper;
-import org.dobots.communication.control.ZmqRemoteControlSender;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
+import org.dobots.zmq.ZmqRemoteControlHelper;
+import org.dobots.zmq.ZmqRemoteControlSender;
 
 import robots.RobotType;
-import robots.ctrl.control.RemoteControlHelper;
-import robots.ctrl.control.RobotDriveCommandListener;
 import robots.gui.SensorGatherer;
 import robots.gui.WifiRobot;
 import robots.gui.comm.IConnectListener;
@@ -118,7 +116,7 @@ public class SpykeeRobot extends WifiRobot {
     	m_oSpykee.setHandler(m_oUiHandler);
 		
 		m_oSensorGatherer = new SpykeeSensorGatherer(this, m_oSpykee);
-		m_dblSpeed = m_oSpykee.getBaseSped();
+		m_dblSpeed = m_oSpykee.getBaseSpeed();
 
     	m_oZmqRemoteSender = new ZmqRemoteControlSender(m_oSpykee.getID()) {
 			
@@ -143,6 +141,12 @@ public class SpykeeRobot extends WifiRobot {
 			connectToRobot();
 		}
     }
+
+	@Override
+	public void onRobotCtrlReady() {
+		// TODO Auto-generated method stub
+		
+	}
 
 	@Override
 	protected void setProperties(RobotType i_eRobot) {

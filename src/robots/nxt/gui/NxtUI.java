@@ -7,13 +7,16 @@ import org.dobots.zmq.ZmqRemoteControlHelper;
 import org.dobots.zmq.ZmqRemoteControlSender;
 
 import robots.RobotType;
-import robots.ctrl.RemoteControlHelper;
+import robots.ctrl.control.RemoteControlHelper;
 import robots.ctrl.control.RobotDriveCommandListener;
-import robots.gui.BluetoothConnection;
 import robots.gui.BluetoothRobot;
 import robots.gui.MessageTypes;
 import robots.gui.RobotInventory;
 import robots.gui.SensorGatherer;
+import robots.gui.calibration.RobotCalibration;
+import robots.gui.comm.IConnectListener;
+import robots.gui.comm.IRobotConnection;
+import robots.gui.comm.bluetooth.BluetoothConnection;
 import robots.nxt.ctrl.Nxt;
 import robots.nxt.ctrl.NxtTypes;
 import robots.nxt.ctrl.NxtTypes.ENXTMotorID;

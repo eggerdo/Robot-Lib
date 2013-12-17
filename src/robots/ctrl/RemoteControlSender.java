@@ -24,6 +24,9 @@ import org.dobots.lib.comm.msg.RoboCommands.CameraCommandType;
 import org.dobots.lib.comm.msg.RoboCommands.ControlCommand;
 import org.dobots.lib.comm.msg.RoboCommands.DriveCommand;
 
+import robots.ctrl.control.ICameraControlListener;
+import robots.ctrl.control.IDriveControlListener;
+
 public abstract class RemoteControlSender implements IDriveControlListener, ICameraControlListener {
 
 	private static final int BASE_SPEED = -1;

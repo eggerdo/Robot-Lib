@@ -11,7 +11,6 @@ import robots.gui.SensorGatherer;
 import android.app.Activity;
 import android.hardware.Camera;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager.LayoutParams;

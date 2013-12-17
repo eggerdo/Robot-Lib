@@ -7,10 +7,10 @@ import java.util.concurrent.Executors;
 
 import javax.security.auth.login.LoginException;
 
-import org.dobots.communication.control.ZmqRemoteControlHelper;
-import org.dobots.communication.video.ZmqVideoSender;
 import org.dobots.lib.comm.Move;
 import org.dobots.utilities.Utils;
+import org.dobots.zmq.ZmqRemoteControlHelper;
+import org.dobots.zmq.video.ZmqVideoSender;
 
 import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
@@ -348,18 +348,12 @@ public class Spykee extends DifferentialRobot implements IMoveRepeaterListener {
 	}
 	
 	@Override
-	public void executeCircle(double i_dblTime, double i_dblSpeed) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void setBaseSpeed(double i_dblSpeed) {
 		m_dblBaseSpeed = i_dblSpeed;
 	}
 
 	@Override
-	public double getBaseSped() {
+	public double getBaseSpeed() {
 		// TODO Auto-generated method stub
 		return m_dblBaseSpeed;
 	}

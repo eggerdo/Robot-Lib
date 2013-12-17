@@ -13,6 +13,7 @@ import robots.ctrl.control.RobotDriveCommandListener;
 import robots.gui.BluetoothRobot;
 import robots.gui.SensorGatherer;
 import robots.gui.comm.IConnectListener;
+import robots.gui.comm.IRobotConnection;
 import robots.gui.comm.bluetooth.BluetoothConnection;
 import robots.nxt.MsgTypes.RawDataMsg;
 import robots.robo40.ctrl.Robo40;
@@ -76,7 +77,7 @@ public class Robo40Robot extends BluetoothRobot {
     	m_oRobo40.setHandler(m_oUiHandler);
 		
 		m_oSensorGatherer = new Robo40SensorGatherer(m_oActivity, m_oRobo40);
-		m_dblSpeed = m_oRobo40.getBaseSped();
+		m_dblSpeed = m_oRobo40.getBaseSpeed();
 
 		m_oRemoteListener = new RobotDriveCommandListener(m_oRobo40);
 		m_oRemoteCtrl = new RemoteControlHelper(m_oActivity);
@@ -90,7 +91,13 @@ public class Robo40Robot extends BluetoothRobot {
 			connectToRobot();
 		}
     }
-    	
+
+	@Override
+	public void onRobotCtrlReady() {
+		// TODO Auto-generated method stub
+		
+	}
+
 	@Override
 	public void handleUIMessage(Message msg) {
 		super.handleUIMessage(msg);
@@ -245,22 +252,27 @@ public class Robo40Robot extends BluetoothRobot {
 	protected void disconnect() {
 		m_oRobo40.disconnect();
 	}
+
+	@Override
+	public void setConnection(BluetoothDevice i_oDevice) {
+		m_strAddress = i_oDevice.getAddress();
+		showConnectingDialog();
+
+		if (m_oRobo40.getConnection() != null) {
+			try {
+				m_oRobo40.getConnection().close();
+			}
+			catch (IOException e) { }
+		}
+		IRobotConnection connection = new BluetoothConnection(i_oDevice, Robo40Types.ROBO40_UUID);
+		connection.setReceiveHandler(m_oUiHandler);
+		m_oRobo40.setConnection(connection);
+		
+	}
 	
 	@Override
-	public void connect(BluetoothDevice i_oDevice) {
-//		if (m_oBTHelper.initBluetooth()) {
-			m_strAddress = i_oDevice.getAddress();
-			showConnectingDialog();
-			
-			if (m_oRobo40.getConnection() != null) {
-				try {
-					m_oRobo40.getConnection().close();
-				}
-				catch (IOException e) { }
-			}
-			m_oRobo40.setConnection(new BluetoothConnection(i_oDevice, Robo40Types.ROBO40_UUID));
-			m_oRobo40.connect();
-//		}
+	public void connect() {
+		m_oRobo40.connect();
 	}
 
 	public static void connectToRobo40(final BaseActivity m_oOwner, Robo40 i_oRobo40, BluetoothDevice i_oDevice, final IConnectListener i_oConnectListener) {

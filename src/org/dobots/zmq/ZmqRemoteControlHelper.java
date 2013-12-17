@@ -18,7 +18,7 @@ import org.zeromq.ZMQ.Context;
 import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMsg;
 
-import robots.ctrl.RemoteControlHelper;
+import robots.ctrl.control.RemoteControlHelper;
 import android.util.Log;
 
 public class ZmqRemoteControlHelper extends RemoteControlHelper {

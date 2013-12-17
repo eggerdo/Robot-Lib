@@ -3,7 +3,6 @@ package robots.roomba.ctrl;
 import java.util.concurrent.TimeoutException;
 
 import org.dobots.utilities.ThreadHandler;
-import org.dobots.utilities.Utils;
 import org.dobots.zmq.ZmqRemoteControlHelper;
 import org.dobots.zmq.sensors.ZmqSensorsSender;
 

@@ -3,7 +3,6 @@ package robots.gui.calibration;
 import org.dobots.R;
 
 import robots.gui.MessageTypes;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;

@@ -3,7 +3,11 @@ package robots.gui.comm;
 import org.dobots.utilities.BaseActivity;
 
 import robots.ctrl.IRobotDevice;
-import robots.gui.BluetoothConnectionHelper.BTEnableCallback;
+import robots.gui.RobotViewFactory;
+import robots.gui.comm.bluetooth.BluetoothConnectionHelper;
+import robots.gui.comm.bluetooth.BluetoothConnectionHelper.BTEnableCallback;
+import robots.gui.comm.bluetooth.IBluetoothConnectionListener;
+import robots.gui.comm.wifi.WifiConnectionHelper;
 import robots.nxt.ctrl.Nxt;
 import robots.nxt.gui.NxtUI;
 import robots.parrot.ctrl.Parrot;

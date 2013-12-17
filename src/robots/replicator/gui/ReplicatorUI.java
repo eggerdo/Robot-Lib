@@ -151,7 +151,11 @@ public class ReplicatorUI extends WifiRobot {
 			showDialog(DIALOG_CONNECTION_SETTINGS_ID);
 			break;
 		case VIDEO_ID:
-			m_oSensorGatherer.setVideoEnabled(!m_oReplicator.isStreaming());
+			if (m_oSensorGatherer.isStopped()) {
+				m_oSensorGatherer.startVideo();
+			} else {
+				m_oSensorGatherer.stopVideo();
+			}
 			break;
 		}
 

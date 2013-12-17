@@ -1,15 +1,15 @@
 package robots.romo.ctrl;
 
+import org.dobots.utilities.Utils;
 import org.dobots.utilities.camera.CameraPreview;
 import org.dobots.utilities.camera.CameraPreview.CameraPreviewCallback;
-import org.dobots.utilities.Utils;
 import org.dobots.zmq.ZmqRemoteControlHelper;
 import org.dobots.zmq.video.ZmqVideoSender;
 
 import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
-import robots.ctrl.ICameraControlListener;
-import robots.gui.RobotDriveCommandListener;
+import robots.ctrl.control.ICameraControlListener;
+import robots.ctrl.control.RobotDriveCommandListener;
 import android.content.Context;
 
 import com.romotive.library.RomoCommandInterface;

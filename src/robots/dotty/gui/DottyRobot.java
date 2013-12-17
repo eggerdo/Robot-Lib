@@ -4,14 +4,12 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.dobots.R;
-import org.dobots.communication.control.ZmqRemoteControlHelper;
-import org.dobots.communication.control.ZmqRemoteControlSender;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
+import org.dobots.zmq.ZmqRemoteControlHelper;
+import org.dobots.zmq.ZmqRemoteControlSender;
 
 import robots.RobotType;
-import robots.ctrl.control.RemoteControlHelper;
-import robots.ctrl.control.RobotDriveCommandListener;
 import robots.dotty.ctrl.Dotty;
 import robots.dotty.ctrl.DottyTypes;
 import robots.dotty.ctrl.DottyTypes.EDottySensors;
@@ -93,7 +91,7 @@ public class DottyRobot extends BluetoothRobot {
     	m_oDotty.setHandler(m_oUiHandler);
 
     	m_oSensorGatherer = new DottySensorGatherer(m_oActivity, m_oDotty);
-		m_dblSpeed = m_oDotty.getBaseSped();
+		m_dblSpeed = m_oDotty.getBaseSpeed();
 
     	m_oZmqRemoteListener = new ZmqRemoteControlSender(getRobot().getID());
 		m_oRemoteCtrl = new ZmqRemoteControlHelper(m_oActivity);
@@ -107,7 +105,13 @@ public class DottyRobot extends BluetoothRobot {
 			connectToRobot();
 		}
     }
-    
+
+	@Override
+	public void onRobotCtrlReady() {
+		// TODO Auto-generated method stub
+		
+	}
+
 	@Override
 	public void handleUIMessage(Message msg) {
 		super.handleUIMessage(msg);
@@ -331,24 +335,26 @@ public class DottyRobot extends BluetoothRobot {
 	protected void disconnect() {
 		m_oDotty.disconnect();
 	}
+
+	@Override
+	public void setConnection(BluetoothDevice i_oDevice) {
+		m_strAddress = i_oDevice.getAddress();
+		showConnectingDialog();
+
+		if (m_oDotty.getConnection() != null) {
+			try {
+				m_oDotty.getConnection().close();
+			}
+			catch (IOException e) { }
+		}
+		BluetoothConnection connection = new BluetoothConnection(i_oDevice, DottyTypes.DOTTY_UUID);
+		connection.setReceiveHandler(m_oUiHandler);
+		m_oDotty.setConnection(connection);
+	}
 	
 	@Override
-	public void connect(BluetoothDevice i_oDevice) {
-//		if (m_oBTHelper.initBluetooth()) {
-			m_strAddress = i_oDevice.getAddress();
-			showConnectingDialog();
-			
-			if (m_oDotty.getConnection() != null) {
-				try {
-					m_oDotty.getConnection().close();
-				}
-				catch (IOException e) { }
-			}
-			BluetoothConnection connection = new BluetoothConnection(i_oDevice, DottyTypes.DOTTY_UUID);
-			connection.setReceiveHandler(m_oUiHandler);
-			m_oDotty.setConnection(connection);
-			m_oDotty.connect();
-//		}
+	public void connect() {
+		m_oDotty.connect();
 	}
 
 	public static void connectToDotty(final BaseActivity m_oOwner, Dotty i_oDotty, BluetoothDevice i_oDevice, final IConnectListener i_oConnectListener) {

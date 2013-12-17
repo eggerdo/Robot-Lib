@@ -1,15 +1,14 @@
 package robots.roboscooper.gui;
 
 import org.dobots.R;
-import org.dobots.communication.control.ZmqRemoteControlHelper;
-import org.dobots.communication.control.ZmqRemoteControlSender;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
+import org.dobots.zmq.ZmqRemoteControlHelper;
+import org.dobots.zmq.ZmqRemoteControlSender;
 
 import robots.RobotType;
 import robots.brainlink.ctrl.BrainlinkDevice;
 import robots.brainlink.ctrl.BrainlinkDevice.BrainlinkSensors;
-import robots.ctrl.control.RemoteControlHelper;
 import robots.ctrl.control.RobotDriveCommandListener;
 import robots.gui.BluetoothRobot;
 import robots.gui.SensorGatherer;
@@ -115,6 +114,12 @@ public class RoboScooperRobot extends BluetoothRobot {
         	showToast("Failed to install device config file", Toast.LENGTH_LONG);
         }
     }
+
+	@Override
+	public void onRobotCtrlReady() {
+		// TODO Auto-generated method stub
+		
+	}
 
 	@Override
 	protected void setProperties(RobotType i_eRobot) {
@@ -292,18 +297,20 @@ public class RoboScooperRobot extends BluetoothRobot {
 	}
 
 	@Override
-	public void connect(BluetoothDevice i_oDevice) {
-//		if (m_oBTHelper.initBluetooth()) {
-			m_strAddress = i_oDevice.getAddress();
-			showConnectingDialog();
-			
-			if (m_oRoboScooper.isConnected()) {
-				m_oRoboScooper.disconnect();
-			}
+	public void setConnection(BluetoothDevice i_oDevice) {
+		m_strAddress = i_oDevice.getAddress();
+		showConnectingDialog();
 
-			m_oRoboScooper.setConnection(i_oDevice);
-			m_oRoboScooper.connect();
-//		}
+		if (m_oRoboScooper.isConnected()) {
+			m_oRoboScooper.disconnect();
+		}
+
+		m_oRoboScooper.setConnection(i_oDevice);
+	}
+	
+	@Override
+	public void connect() {
+		m_oRoboScooper.connect();
 	}
 
 	public static void connectToRoboScooper(final BaseActivity m_oOwner, RoboScooper i_oRoboScooper, BluetoothDevice i_oDevice, final IConnectListener i_oConnectListener) {

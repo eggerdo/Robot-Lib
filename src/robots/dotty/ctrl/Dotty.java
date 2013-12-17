@@ -1,7 +1,7 @@
 package robots.dotty.ctrl;
 
-import org.dobots.communication.control.ZmqRemoteControlHelper;
 import org.dobots.utilities.Utils;
+import org.dobots.zmq.ZmqRemoteControlHelper;
 
 import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
@@ -293,12 +293,6 @@ public class Dotty extends DifferentialRobot {
 	}
 
 	@Override
-	public void executeCircle(double i_nTime, double i_nSpeed) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void moveForward() {
 		moveForward(m_dblBaseSpeed);
 	}
@@ -324,7 +318,7 @@ public class Dotty extends DifferentialRobot {
 	}
 
 	@Override
-	public double getBaseSped() {
+	public double getBaseSpeed() {
 		// TODO Auto-generated method stub
 		return m_dblBaseSpeed;
 	}

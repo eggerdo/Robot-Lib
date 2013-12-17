@@ -22,7 +22,6 @@ import robots.nxt.ctrl.NxtTypes.ENXTSensorID;
 import robots.nxt.ctrl.NxtTypes.ENXTSensorType;
 import robots.nxt.ctrl.NxtTypes.MotorData;
 import robots.nxt.ctrl.NxtTypes.SensorData;
-import android.os.Looper;
 import android.util.Log;
 import android.widget.TableLayout;
 import android.widget.TextView;

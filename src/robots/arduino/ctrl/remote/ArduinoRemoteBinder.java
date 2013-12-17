@@ -2,8 +2,8 @@ package robots.arduino.ctrl.remote;
 
 import robots.RobotType;
 import robots.arduino.ctrl.IArduino;
-import robots.gui.BluetoothConnection;
 import robots.gui.RobotView;
+import robots.gui.comm.IRobotConnection;
 import robots.remote.RemoteRobotBinder;
 
 public class ArduinoRemoteBinder extends RemoteRobotBinder implements IArduino {
@@ -22,7 +22,7 @@ public class ArduinoRemoteBinder extends RemoteRobotBinder implements IArduino {
 	}
 
 	@Override
-	public BluetoothConnection getConnection() {
+	public IRobotConnection getConnection() {
 		if (mBound) {
 			return getArduino().getConnection();
 		} else {
@@ -31,7 +31,7 @@ public class ArduinoRemoteBinder extends RemoteRobotBinder implements IArduino {
 	}
 
 	@Override
-	public void setConnection(BluetoothConnection connection) {
+	public void setConnection(IRobotConnection connection) {
 		if (mBound) {
 			getArduino().setConnection(connection);
 		}

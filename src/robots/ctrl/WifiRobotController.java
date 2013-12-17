@@ -3,7 +3,6 @@ package robots.ctrl;
 import java.io.IOException;
 
 import robots.gui.comm.wifi.WifiConnection;
-
 import android.os.Handler;
 
 public class WifiRobotController {

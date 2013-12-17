@@ -7,9 +7,9 @@ import org.dobots.zmq.ZmqRemoteControlHelper;
 import org.dobots.zmq.ZmqRemoteControlSender;
 
 import robots.RobotType;
-import robots.gui.IConnectListener;
 import robots.gui.SensorGatherer;
 import robots.gui.WifiRobot;
+import robots.gui.comm.IConnectListener;
 import robots.rover.ac13.gui.AC13RoverUI;
 import robots.rover.base.ctrl.IRoverBase;
 import robots.rover.base.ctrl.RoverBase;

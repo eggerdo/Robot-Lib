@@ -289,12 +289,6 @@ public class Robo40 extends DifferentialRobot {
 //	}
 
 	@Override
-	public void executeCircle(double i_nTime, double i_nSpeed) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void moveForward() {
 		moveForward(m_dblBaseSpeed);
 	}
@@ -320,7 +314,7 @@ public class Robo40 extends DifferentialRobot {
 	}
 
 	@Override
-	public double getBaseSped() {
+	public double getBaseSpeed() {
 		// TODO Auto-generated method stub
 		return m_dblBaseSpeed;
 	}

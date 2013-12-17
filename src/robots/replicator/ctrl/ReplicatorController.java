@@ -1,12 +1,7 @@
 package robots.replicator.ctrl;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
 
 import org.dobots.utilities.Utils;
 import org.dobots.zmq.video.IRawVideoListener;
@@ -16,7 +11,6 @@ import robots.gui.comm.wifi.WifiConnection;
 import robots.replicator.ctrl.ReplicatorMessage.MessageType;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
-import android.os.Handler;
 import android.util.Log;
 
 public class ReplicatorController extends WifiRobotController {

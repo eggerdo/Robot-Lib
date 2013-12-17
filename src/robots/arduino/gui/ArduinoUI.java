@@ -8,10 +8,11 @@ import org.dobots.zmq.ZmqRemoteControlSender;
 
 import robots.RobotType;
 import robots.arduino.ctrl.IArduino;
-import robots.gui.BluetoothConnection;
 import robots.gui.BluetoothRobot;
 import robots.gui.RobotInventory;
 import robots.gui.SensorGatherer;
+import robots.gui.comm.IRobotConnection;
+import robots.gui.comm.bluetooth.BluetoothConnection;
 import robots.piratedotty.ctrl.PirateDottyTypes;
 import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
@@ -57,7 +58,7 @@ public class ArduinoUI extends BluetoothRobot {
 	
 	@Override
 	public void onDestroy() {
-		m_oRemoteCtrl.close();
+		m_oRemoteCtrl.destroy();
 		
 		if (m_oZmqRemoteSender != null) {
 			m_oZmqRemoteSender.close();
@@ -81,7 +82,7 @@ public class ArduinoUI extends BluetoothRobot {
 			}
 			catch (IOException e) { }
 		}
-		BluetoothConnection connection = new BluetoothConnection(i_oDevice, PirateDottyTypes.PIRATEDOTTY_UUID);
+		IRobotConnection connection = new BluetoothConnection(i_oDevice, PirateDottyTypes.PIRATEDOTTY_UUID);
 		connection.setReceiveHandler(m_oUiHandler);
 		mArduino.setConnection(connection);
 	}

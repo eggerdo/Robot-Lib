@@ -36,7 +36,7 @@ public class Robo40Controller extends Loggable implements IAsciiMessageHandler {
 	
 	public void destroyConnection() {
 		if (mProtocolHandler != null) {
-			mProtocolHandler.close();
+			mProtocolHandler.destroy();
 			mProtocolHandler = null;
 		}
 		

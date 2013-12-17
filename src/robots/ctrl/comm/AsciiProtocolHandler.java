@@ -1,5 +1,7 @@
 package robots.ctrl.comm;
 
+import org.dobots.utilities.DoBotsThread;
+
 import robots.gui.comm.IRobotConnection;
 
 public class AsciiProtocolHandler extends DoBotsThread {
@@ -34,7 +36,7 @@ public class AsciiProtocolHandler extends DoBotsThread {
 
 	@Override
 	protected void execute() {
-		if (mConnection.isConnected) {
+		if (mConnection.isConnected()) {
 			String message = receiveMessage();
 			if (message != null) {
 				if (mHandler != null) {
