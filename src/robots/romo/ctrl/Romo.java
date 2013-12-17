@@ -1,11 +1,9 @@
 package robots.romo.ctrl;
 
-import org.dobots.utilities.CameraPreview;
-import org.dobots.utilities.CameraPreview.CameraPreviewCallback;
+import org.dobots.utilities.camera.CameraPreview;
+import org.dobots.utilities.camera.CameraPreview.CameraPreviewCallback;
 import org.dobots.utilities.Utils;
 import org.dobots.zmq.ZmqRemoteControlHelper;
-import org.dobots.zmq.video.FpsCounter;
-import org.dobots.zmq.video.IFpsListener;
 import org.dobots.zmq.video.ZmqVideoSender;
 
 import robots.RobotType;
@@ -13,12 +11,6 @@ import robots.ctrl.DifferentialRobot;
 import robots.ctrl.ICameraControlListener;
 import robots.gui.RobotDriveCommandListener;
 import android.content.Context;
-import android.graphics.PixelFormat;
-import android.util.Log;
-import android.view.SurfaceHolder;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.view.WindowManager.LayoutParams;
 
 import com.romotive.library.RomoCommandInterface;
 

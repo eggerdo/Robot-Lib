@@ -1,7 +1,5 @@
 package robots.remote;
 
-import java.io.IOException;
-
 import robots.ctrl.IRobotDevice;
 import robots.gui.RobotView;
 import robots.remote.RobotServiceBinder.RobotBinder;

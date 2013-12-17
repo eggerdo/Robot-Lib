@@ -14,7 +14,6 @@ public class AC13Rover extends RoverBase {
 		super(AC13RoverTypes.AXLE_WIDTH, AC13RoverTypes.MIN_SPEED, AC13RoverTypes.MAX_SPEED, AC13RoverTypes.MIN_RADIUS, AC13RoverTypes.MAX_RADIUS);
 		
 		m_oController = new AC13Controller();
-		
 	}
 
 	// Default Robot Device Functions =========================================

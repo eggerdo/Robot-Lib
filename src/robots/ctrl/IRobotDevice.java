@@ -1,7 +1,5 @@
 package robots.ctrl;
 
-import java.io.IOException;
-
 import robots.RobotType;
 import android.os.Handler;
 

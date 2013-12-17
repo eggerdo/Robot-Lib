@@ -1,7 +1,7 @@
 package robots.piratedotty.gui;
 
 import org.dobots.utilities.BaseActivity;
-import org.dobots.utilities.CameraPreview.CameraPreviewCallback;
+import org.dobots.utilities.camera.CameraPreview.CameraPreviewCallback;
 import org.dobots.utilities.Utils;
 import org.dobots.zmq.ZmqHandler;
 import org.dobots.zmq.comm.VideoMessage;

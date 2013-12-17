@@ -9,7 +9,7 @@
 	    android:layout_height="wrap_content" 
 	    android:layout_width="match_parent" />
     
-    <org.dobots.utilities.CameraPreview
+    <org.dobots.utilities.camera.CameraPreview
         android:id="@+id/svCamera"
 	    android:scaleType="fitCenter" 
 	    android:layout_height="wrap_content" 

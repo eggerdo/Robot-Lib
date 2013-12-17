@@ -4,9 +4,8 @@ import java.io.IOException;
 
 import org.dobots.R;
 import org.dobots.utilities.BaseActivity;
-import org.dobots.utilities.CameraPreview;
 import org.dobots.utilities.Utils;
-import org.dobots.utilities.log.AndroidLogger;
+import org.dobots.utilities.camera.CameraPreview;
 import org.dobots.zmq.ZmqRemoteControlHelper;
 import org.dobots.zmq.ZmqRemoteControlSender;
 

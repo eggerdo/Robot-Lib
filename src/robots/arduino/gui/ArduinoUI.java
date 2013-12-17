@@ -15,7 +15,6 @@ import robots.gui.SensorGatherer;
 import robots.piratedotty.ctrl.PirateDottyTypes;
 import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
-import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;

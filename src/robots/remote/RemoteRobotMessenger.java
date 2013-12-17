@@ -1,6 +1,5 @@
 package robots.remote;
 
-import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 import org.dobots.lib.comm.msg.RoboCommands;

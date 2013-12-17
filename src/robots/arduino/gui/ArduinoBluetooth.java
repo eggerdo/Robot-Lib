@@ -3,9 +3,9 @@ package robots.arduino.gui;
 import java.io.IOException;
 import java.util.UUID;
 
-import android.bluetooth.BluetoothDevice;
 import robots.gui.BluetoothConnection;
 import robots.gui.MessageTypes;
+import android.bluetooth.BluetoothDevice;
 
 public class ArduinoBluetooth extends BluetoothConnection {
 

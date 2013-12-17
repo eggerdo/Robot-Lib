@@ -1,21 +1,16 @@
 package robots.romo.gui;
 
 import org.dobots.R;
-import org.dobots.utilities.CameraPreview;
 import org.dobots.zmq.ZmqRemoteControlHelper;
 import org.dobots.zmq.ZmqRemoteControlSender;
-import org.dobots.utilities.Utils;
 
 import robots.RobotType;
-import robots.ctrl.ICameraControlListener;
 import robots.gui.RobotInventory;
 import robots.gui.RobotView;
 import robots.gui.SensorGatherer;
-import robots.romo.ctrl.Romo;
 import android.app.Activity;
 import android.hardware.Camera;
 import android.os.Bundle;
-import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;

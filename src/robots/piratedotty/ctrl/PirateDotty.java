@@ -1,6 +1,5 @@
 package robots.piratedotty.ctrl;
 
-import org.dobots.utilities.log.ILogListener;
 import org.dobots.zmq.ZmqRemoteControlHelper;
 
 import robots.RobotType;

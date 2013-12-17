@@ -3,10 +3,8 @@ package org.dobots.zmq.video;
 import java.util.concurrent.Semaphore;
 
 import org.dobots.utilities.DoBotsThread;
-import org.zeromq.ZMQ;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 
 public class VideoThrottle extends DoBotsThread implements IRawVideoListener, IVideoListener {
 
@@ -38,7 +36,7 @@ public class VideoThrottle extends DoBotsThread implements IRawVideoListener, IV
 	public void setVideoListener(IVideoListener listener) {
 		mVideoListener = listener;
 	}
-
+	
 	@Override
 	public void shutDown() {
 //		mVideoReceiver.close();

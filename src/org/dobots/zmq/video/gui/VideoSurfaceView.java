@@ -21,6 +21,7 @@ package org.dobots.zmq.video.gui;
 import java.io.ByteArrayInputStream;
 
 import org.dobots.utilities.Utils;
+import org.dobots.utilities.camera.ExifUtils;
 import org.dobots.zmq.video.FpsCounter;
 import org.dobots.zmq.video.IFpsListener;
 import org.dobots.zmq.video.IRawVideoListener;
@@ -140,6 +141,10 @@ public class VideoSurfaceView extends SurfaceView implements IVideoListener, IRa
 				
 				try {
 					ByteArrayInputStream stream = new ByteArrayInputStream(rgb);
+					
+					if (rotation == -1) {
+						rotation = ExifUtils.getExifRotation(rgb);
+					}
 					Bitmap frame = BitmapFactory.decodeStream(stream);
 					
 					// if not already, initialize the size in which the frame should
@@ -165,7 +170,7 @@ public class VideoSurfaceView extends SurfaceView implements IVideoListener, IRa
 				}
 			}
 			
-		};
+		}
 	};
 	
 	FpsCounter counter = new FpsCounter(new IFpsListener() {

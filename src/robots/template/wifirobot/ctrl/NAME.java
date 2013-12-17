@@ -1,7 +1,5 @@
 package robots.template.wifirobot.ctrl;
 
-import java.io.IOException;
-
 import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
 
