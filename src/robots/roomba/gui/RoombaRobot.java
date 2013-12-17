@@ -7,12 +7,10 @@ import org.dobots.zmq.ZmqRemoteControlHelper;
 import org.dobots.zmq.ZmqRemoteControlSender;
 
 import robots.RobotType;
-import robots.ctrl.RemoteControlHelper;
-import robots.gui.BluetoothConnection;
+import robots.ctrl.control.RemoteControlHelper;
 import robots.gui.BluetoothRobot;
 import robots.gui.IConnectListener;
 import robots.gui.MessageTypes;
-import robots.gui.RobotCalibration;
 import robots.gui.RobotInventory;
 import robots.gui.SensorGatherer;
 import robots.roomba.ctrl.Roomba;
@@ -201,7 +199,7 @@ public class RoombaRobot extends BluetoothRobot {
 		if (m_oRoomba.isConnected()) {
 			m_oRoomba.destroyConnection();
 		}
-		BluetoothConnection oBluetoothConnection = new BluetoothConnection(i_oDevice, RoombaTypes.ROOMBA_UUID);
+		IRobotConnection oBluetoothConnection = new BluetoothConnection(i_oDevice, RoombaTypes.ROOMBA_UUID);
 		m_oRoomba.setConnection(oBluetoothConnection);
 	}
 
@@ -277,7 +275,7 @@ public class RoombaRobot extends BluetoothRobot {
 
 	@Override
 	protected void setProperties(RobotType i_eRobot) {
-        m_oActivity.setContentView(R.layout.roomba_main);
+        m_oActivity.setContentView(R.layout.robot_roomba_main);
         
         m_spSensors = (Spinner) m_oActivity.findViewById(R.id.spSensors);
 		final ArrayAdapter<ERoombaSensorPackages> adapter = new ArrayAdapter<ERoombaSensorPackages>(m_oActivity, 

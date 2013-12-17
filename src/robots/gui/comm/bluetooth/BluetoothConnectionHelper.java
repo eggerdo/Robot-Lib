@@ -1,0 +1,132 @@
+package robots.gui.comm.bluetooth;
+
+import org.dobots.utilities.BaseActivity;
+import org.dobots.utilities.IActivityResultListener;
+
+import robots.gui.MessageTypes;
+import robots.gui.comm.bluetooth.IBluetoothConnectionListener;
+
+import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+
+public class BluetoothConnectionHelper implements IActivityResultListener {
+	
+	public interface BTEnableCallback {
+		public void onEnabled();
+	}
+	
+	public static String TAG = "BTHelper";
+
+	private BaseActivity m_oParent;
+	
+	private BluetoothAdapter m_oBTAdapter;
+	
+	private boolean m_bBTOnByUs;
+	private String m_strMacFilter;
+
+	public static String MAC_FILTER = "MAC_FILTER";
+	public static String TITLE = "TITLE";
+
+	private IBluetoothConnectionListener m_oListener;
+
+	private String m_strTitle = "";
+	
+	private BTEnableCallback mCallback;
+	
+	public BluetoothConnectionHelper(BaseActivity i_oParent, String i_strMacFilter) {
+		m_oParent = i_oParent;
+		m_strMacFilter = i_strMacFilter;
+	}
+	
+	public void SetOnConnectListener(IBluetoothConnectionListener i_oListener) {
+		m_oListener = i_oListener;
+	}
+
+	public void initBluetooth(BTEnableCallback callback) {
+
+		mCallback = callback;
+		try {
+			m_oBTAdapter = BluetoothAdapter.getDefaultAdapter();
+			if (m_oBTAdapter == null) {
+				throw new Exception("Robot Connection not possible without Bluetooth!");
+			}
+			
+			if (!m_oBTAdapter.isEnabled()) {
+				m_bBTOnByUs = true;
+				Intent oEnableBTIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+				m_oParent.startActivityForResult(oEnableBTIntent, MessageTypes.REQUEST_ENABLE_BT, this);
+			} else
+				mCallback.onEnabled();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public boolean disableBluetooth() {
+		if (m_bBTOnByUs) {
+			if (m_oBTAdapter != null) {
+				// requires BLUETOOTH_ADMIN permission and is discouraged in the API Doc
+	//			m_oBTAdapter.disable();
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public BluetoothDevice getRemoteDevice(String i_strAddr) {
+		if (m_oBTAdapter != null) {
+			return m_oBTAdapter.getRemoteDevice(i_strAddr);
+		} else
+			return null;
+	}
+
+	public void cancelDiscovery() {
+		if (m_oBTAdapter.isDiscovering()) {
+			m_oBTAdapter.cancelDiscovery();
+		}
+	}
+
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch (requestCode) {
+		case MessageTypes.REQUEST_CONNECT_ROBOT:
+			Log.d(TAG, "DeviceListActivity returns with device to connect");
+			// When DeviceListActivity returns with a device to connect
+			if (resultCode == Activity.RESULT_OK) {
+				// Get the device MAC address and connect to the robot
+				String address = data.getExtras().getString(BluetoothDeviceListActivity.EXTRA_DEVICE_ADDRESS);
+				
+				m_oListener.setConnection(m_oBTAdapter.getRemoteDevice(address));
+				m_oListener.connect();
+			}
+			break;
+		case MessageTypes.REQUEST_ENABLE_BT:
+			Log.d(TAG, "SelectRobot request received");
+			if (resultCode == Activity.RESULT_OK) {
+				if (mCallback != null) {
+					mCallback.onEnabled();
+				}
+			}
+			break;
+		}
+
+	}
+
+	public void selectRobot() {
+		Intent serverIntent = new Intent(m_oParent, BluetoothDeviceListActivity.class);
+		Bundle oParam = new Bundle();
+		oParam.putString(MAC_FILTER, m_strMacFilter);
+		oParam.putString(TITLE, m_strTitle);
+		serverIntent.putExtras(oParam);
+		m_oParent.startActivityForResult(serverIntent, MessageTypes.REQUEST_CONNECT_ROBOT, this);
+	}
+	
+	public void setTitle(String i_strTitle) {
+		m_strTitle = i_strTitle;
+	}
+	
+}

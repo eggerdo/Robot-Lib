@@ -1,3 +1,19 @@
+/**
+* 456789------------------------------------------------------------------------------------------------------------120
+*
+* @brief:	Helper class to handle remote control
+* @file: ${file_name}
+*
+* @desc:	Creates messsages out of remote commands and sends them out.
+*
+*
+* Copyright (c) 2013 Dominik Egger <dominik@dobots.nl>
+*
+* @author:		Dominik Egger
+* @date:		2.9.2013
+* @project:		Robot-Lib
+* @company:		Distributed Organisms B.V.
+*/
 package robots.ctrl;
 
 import org.dobots.lib.comm.Move;

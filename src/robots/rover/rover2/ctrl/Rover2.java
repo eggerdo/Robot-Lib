@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.dobots.zmq.video.ZmqVideoSender;
 
 import robots.RobotType;
-import robots.ctrl.ICameraControlListener;
+import robots.ctrl.control.ICameraControlListener;
 import robots.rover.base.ctrl.RoverBase;
 import android.util.Log;
 

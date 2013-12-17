@@ -10,8 +10,8 @@ import org.dobots.zmq.video.ZmqVideoSender;
 
 import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
-import robots.ctrl.ICameraControlListener;
-import robots.gui.RobotDriveCommandListener;
+import robots.ctrl.control.ICameraControlListener;
+import robots.ctrl.control.RobotDriveCommandListener;
 import android.os.Handler;
 import android.util.Log;
 
@@ -36,7 +36,7 @@ public class Replicator extends DifferentialRobot implements ICameraControlListe
 		m_oController = new ReplicatorController();
 
 		m_oDriveCommandListener = new RobotDriveCommandListener(this);
-		m_oRemoteCtrl = new ZmqRemoteControlHelper();
+		m_oRemoteCtrl = new ZmqRemoteControlHelper(this);
 		m_oRemoteCtrl.setDriveControlListener(m_oDriveCommandListener);
 		m_oRemoteCtrl.startReceiver("Replicator");
 
@@ -48,6 +48,8 @@ public class Replicator extends DifferentialRobot implements ICameraControlListe
 	}
 	
 	public void setHandler(Handler m_oUiHandler) {
+		super.setHandler(m_oUiHandler);
+		
 		m_oController.setReceiveHandler(m_oUiHandler);
 	}
 

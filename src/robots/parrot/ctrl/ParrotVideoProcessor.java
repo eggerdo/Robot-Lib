@@ -3,7 +3,7 @@ package robots.parrot.ctrl;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
 
-import robots.gui.IConnectListener;
+import robots.gui.comm.IConnectListener;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;

@@ -11,20 +11,22 @@ import java.net.Socket;
 import org.dobots.utilities.Utils;
 import org.dobots.zmq.video.IRawVideoListener;
 
-import robots.ctrl.BaseWifi;
+import robots.ctrl.WifiRobotController;
+import robots.gui.comm.wifi.WifiConnection;
 import robots.replicator.ctrl.ReplicatorMessage.MessageType;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
+import android.os.Handler;
 import android.util.Log;
 
-public class ReplicatorController extends BaseWifi {
+public class ReplicatorController extends WifiRobotController {
 
 	private static final String TAG = "ReplicatorCtrl";
 
-	private int m_nVideoPort;
+//	private int m_nVideoPort;
 
-	Socket m_oVideoSocket;
-	DataInputStream m_oVideoIn;
+//	Socket m_oVideoSocket;
+//	DataInputStream m_oVideoIn;
 
 	private IRawVideoListener oVideoListener = null;
 
@@ -32,16 +34,20 @@ public class ReplicatorController extends BaseWifi {
 	private boolean m_bStreaming = false;
 	private boolean m_bInitialized = false;
 
-	private DataOutputStream m_oVideoOut;
+//	private DataOutputStream m_oVideoOut;
 
+	private WifiConnection m_oVideoConnection;
+	
 	public ReplicatorController() {
 		super(ReplicatorTypes.ADDRESS, ReplicatorTypes.COMMAND_PORT);
 		Log.w(TAG, "Construct controller as BaseWifi(" + ReplicatorTypes.ADDRESS + ":" + ReplicatorTypes.COMMAND_PORT + ")");
-		m_nVideoPort = ReplicatorTypes.VIDEO_PORT;
+		
+		m_oVideoConnection = new WifiConnection(ReplicatorTypes.ADDRESS, ReplicatorTypes.COMMAND_PORT);
+//		m_nVideoPort = ReplicatorTypes.VIDEO_PORT;
 	}
 	
 	private void initialize() {
-		if (m_bConnected) {
+		if (isConnected()) {
 			sendData(MessageType.MSG_INIT);
 			Utils.waitSomeTime(1000);
 
@@ -68,17 +74,9 @@ public class ReplicatorController extends BaseWifi {
 	
 	private void sendData(ReplicatorMessage message) {
 		byte[] buffer = message.serialize();
-		
-		try {
-			if (m_oDataOut != null) {
-				m_oDataOut.write(buffer);
-			}
-		} catch (IOException e) {
-			onConnectError();
-		}
+		send(buffer);
 	}
 	
-	@Override
 	public boolean connect() throws IOException {
 		if (super.connect()) {
 			initialize();
@@ -104,9 +102,13 @@ public class ReplicatorController extends BaseWifi {
 
 	public void setConnection(String address, int commandPort, int videoPort) {
 		Log.w(TAG, "Set connection info as " + address + ":" + videoPort);
-		m_strAddress = address;
-		m_nPort = commandPort;
-		m_nVideoPort = videoPort;
+		m_oConnection.setAddress(address);
+		m_oConnection.setPort(commandPort);
+		
+		m_oVideoConnection.setAddress(address);
+		m_oVideoConnection.setPort(videoPort);
+		
+//		m_nVideoPort = videoPort;
 	}
 
 	private void connectVideo() throws IOException {
@@ -119,10 +121,12 @@ public class ReplicatorController extends BaseWifi {
 //		sendData(MessageType.MSG_CAM_VIDEOSTREAM_START);
 //		Utils.waitSomeTime(3000);
 		
-		m_oVideoSocket = new Socket();
-		m_oVideoSocket.connect(new InetSocketAddress(m_strAddress, m_nVideoPort), CONNECT_TIMEOUT);
-		m_oVideoIn = new DataInputStream(new BufferedInputStream(m_oVideoSocket.getInputStream()));
-		m_oVideoOut = new DataOutputStream(m_oVideoSocket.getOutputStream());
+		m_oVideoConnection.connect();
+		
+//		m_oVideoSocket = new Socket();
+//		m_oVideoSocket.connect(new InetSocketAddress(m_oConnection.getAddress(), m_nVideoPort), WifiConnection.CONNECT_TIMEOUT);
+//		m_oVideoIn = new DataInputStream(new BufferedInputStream(m_oVideoSocket.getInputStream()));
+//		m_oVideoOut = new DataOutputStream(m_oVideoSocket.getOutputStream());
 
 		Utils.waitSomeTime(1000);
 
@@ -135,7 +139,9 @@ public class ReplicatorController extends BaseWifi {
 						if (!m_bStreaming) {
 							return;
 						}
-						m_oVideoOut.write(0);
+						Log.d(TAG, "request image");
+						m_oVideoConnection.getOutputStream().write(0);
+//						m_oVideoOut.write(0);
 
 						final byte[] data = readFrame();
 
@@ -151,10 +157,10 @@ public class ReplicatorController extends BaseWifi {
 							Log.w(TAG, "Byte array too small!");
 							continue;
 						}
-
-						Log.i(TAG, "Try to decode array to bitmap with size " + data.length);			
 										
 						if (oVideoListener != null) {
+							Log.i(TAG, "Try to decode array to bitmap with size " + data.length);	
+							
 							// the decoding shouldn't be dependent on the registered listener. but why
 							// should we do the work of decoding if nobody is listening anyway.
 							
@@ -201,7 +207,7 @@ public class ReplicatorController extends BaseWifi {
 			try {
 				do {
 					//int len = m_oVideoIn.read(buffer, 0, ReplicatorTypes.FRAME_SIZE);
-					int len = m_oVideoIn.read(buffer, len_read, ReplicatorTypes.FRAME_SIZE - len_read);
+					int len = m_oVideoConnection.read(buffer, len_read, ReplicatorTypes.FRAME_SIZE - len_read);
 					len_read += len;
 					if (len > 0) {
 						//String str = new String(buffer, 0, len);
@@ -300,25 +306,25 @@ public class ReplicatorController extends BaseWifi {
 	//		}
 	//	}
 	
-	@Override
 	public void disconnect() throws IOException {
 		disconnectVideo();
-		super.disconnect();
+		m_oConnection.disconnect();
 	}
 
 	private void disconnectVideo() {
 		m_bRun = false;
 		try {
-			
-			if (m_oVideoSocket != null) {
-//				sendData(MessageType.MSG_CAM_VIDEOSTREAM_STOP);
-				
-				m_oVideoSocket.close();
-				m_oVideoSocket = null;
-			}
-
-			m_oVideoIn = null;
-			m_oVideoOut = null;
+			m_oVideoConnection.disconnect();
+//			
+//			if (m_oVideoSocket != null) {
+////				sendData(MessageType.MSG_CAM_VIDEOSTREAM_STOP);
+//				
+//				m_oVideoSocket.close();
+//				m_oVideoSocket = null;
+//			}
+//
+//			m_oVideoIn = null;
+//			m_oVideoOut = null;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -338,7 +344,7 @@ public class ReplicatorController extends BaseWifi {
 	}
 
 	public void startVideo() {
-		if (!m_bStreaming && m_bConnected) {
+		if (!m_bStreaming && m_oConnection.isConnected()) {
 			Log.d(TAG, "startVideo");
 
 			m_bRun = true;

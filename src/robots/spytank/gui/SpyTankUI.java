@@ -7,7 +7,7 @@ import org.dobots.zmq.ZmqRemoteControlHelper;
 import org.dobots.zmq.ZmqRemoteControlSender;
 
 import robots.RobotType;
-import robots.ctrl.RemoteControlHelper;
+import robots.ctrl.control.RemoteControlHelper;
 import robots.gui.SensorGatherer;
 import robots.gui.WifiRobot;
 import robots.spytank.ctrl.SpyTank;
@@ -103,7 +103,7 @@ public class SpyTankUI extends WifiRobot {
 
 	@Override
 	protected void setProperties(RobotType i_eRobot) {
-		m_oActivity.setContentView(R.layout.spytank_main);
+		m_oActivity.setContentView(R.layout.robot_spytank_main);
 
     	Button btnCameraUp = (Button) findViewById(R.id.btnCameraUp);
     	btnCameraUp.setOnTouchListener(new View.OnTouchListener() {

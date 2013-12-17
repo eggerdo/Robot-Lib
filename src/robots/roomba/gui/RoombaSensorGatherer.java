@@ -681,7 +681,7 @@ public class RoombaSensorGatherer extends SensorGatherer implements ISensorDataL
 		private final List<SensorEntry> list;
 		
 		public SensorListAdapter(Activity context, List<SensorEntry> list) {
-			super(context, R.layout.roomba_sensor_entry, list);
+			super(context, R.layout.robot_roomba_sensor_entry, list);
 			this.context = context;
 			this.list = list;
 		}
@@ -699,7 +699,7 @@ public class RoombaSensorGatherer extends SensorGatherer implements ISensorDataL
 			
 			if (convertView == null) {
 				LayoutInflater inflater = context.getLayoutInflater();
-				view = inflater.inflate(R.layout.roomba_sensor_entry, null);
+				view = inflater.inflate(R.layout.robot_roomba_sensor_entry, null);
 				final ViewHolder viewHolder = new ViewHolder();
 				viewHolder.lblSensorName = (TextView) view.findViewById(R.id.lblSensorName);
 				viewHolder.txtSensorValue = (TextView) view.findViewById(R.id.txtSensorValue);

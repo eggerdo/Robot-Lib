@@ -9,8 +9,8 @@ import org.dobots.zmq.sensors.ZmqSensorsSender;
 
 import robots.RobotType;
 import robots.ctrl.BaseRobot;
-import robots.gui.BluetoothConnection;
-import robots.gui.RobotDriveCommandListener;
+import robots.ctrl.control.RobotDriveCommandListener;
+import robots.gui.comm.IRobotConnection;
 import robots.roomba.ctrl.RoombaTypes.ERoombaModes;
 import robots.roomba.ctrl.RoombaTypes.ERoombaSensorPackages;
 import robots.roomba.ctrl.RoombaTypes.SensorPackage;
@@ -45,9 +45,8 @@ public class Roomba extends BaseRobot {
 		m_eMode = ERoombaModes.mod_Unknown;
 
 		m_oRemoteListener = new RobotDriveCommandListener(this);
-		m_oRemoteHelper = new ZmqRemoteControlHelper();
+		m_oRemoteHelper = new ZmqRemoteControlHelper(this);
 		m_oRemoteHelper.setDriveControlListener(m_oRemoteListener);
-		m_oRemoteHelper.setControlListener(this);
 		m_oRemoteHelper.startReceiver(getID());
 
 		m_oSensorsSender = new ZmqSensorsSender();
@@ -58,7 +57,7 @@ public class Roomba extends BaseRobot {
 			disconnect();
 		}
 		destroyConnection();
-		m_oRemoteHelper.close();
+		m_oRemoteHelper.destroy();
 		m_oRoombaCtrl = null;
 		m_oSensorHandler.destroy();
 	}
@@ -79,12 +78,12 @@ public class Roomba extends BaseRobot {
 		m_oUiHandler = i_oHandler;
 	}
 	
-	public void setConnection(BluetoothConnection i_oConnection) {
+	public void setConnection(IRobotConnection i_oConnection) {
 		i_oConnection.setReceiveHandler(m_oUiHandler);
 		m_oRoombaCtrl.setConnection(i_oConnection);
 	}
 	
-	public BluetoothConnection getConnection() {
+	public IRobotConnection getConnection() {
 		return m_oRoombaCtrl.getConnection();
 	}
 	

@@ -4,15 +4,15 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.concurrent.TimeoutException;
 
+import org.dobots.lib.comm.Move;
 import org.dobots.utilities.Utils;
 
 import robots.RobotType;
 import robots.ctrl.BaseRobot;
-import robots.ctrl.IMoveRepeaterListener;
-import robots.ctrl.MoveRepeater;
-import robots.ctrl.MoveRepeater.MoveCommand;
-import robots.gui.IConnectListener;
+import robots.ctrl.control.IMoveRepeaterListener;
+import robots.ctrl.control.MoveRepeater;
 import robots.gui.MessageTypes;
+import robots.gui.comm.IConnectListener;
 import android.os.SystemClock;
 
 import com.codeminders.ardrone.ARDrone;
@@ -43,7 +43,7 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 	private Object state_mutex = new Object();
 	
 	private MoveRepeater m_oRepeater;
-
+	
 	public Parrot() {
 		m_oInstance = this;
 		
@@ -62,6 +62,7 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 
 	@Override
 	public void destroy() {
+		m_oRepeater.destroy();
 		if (isConnected()) {
 			disconnect();
 		}
@@ -372,7 +373,7 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 	}
 
 	public void increaseAltitude(double i_dblSpeed) {
-		m_oRepeater.startMove(MoveCommand.MOVE_UP, i_dblSpeed, true);
+		m_oRepeater.startMove(Move.UP, i_dblSpeed, true);
 	}
 
 	private void executeMoveUp(double i_dblSpeed) {
@@ -391,7 +392,7 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 	}
 
 	public void decreaseAltitude(double i_dblSpeed) {
-		m_oRepeater.startMove(MoveCommand.MOVE_DOWN, i_dblSpeed, true);
+		m_oRepeater.startMove(Move.DOWN, i_dblSpeed, true);
 	}
 
 	public void executeMoveDown(double i_dblSpeed) {
@@ -426,24 +427,24 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 
 
 	@Override
-	public void onDoMove(MoveCommand i_eMove, double i_dblSpeed) {
+	public void onDoMove(Move i_eMove, double i_dblSpeed) {
 		switch(i_eMove) {
-		case MOVE_BWD:
+		case BACKWARD:
 			executeMoveBackward(i_dblSpeed);
 			break;
-		case MOVE_FWD:
+		case FORWARD:
 			executeMoveForward(i_dblSpeed);
 			break;
-		case MOVE_LEFT:
+		case LEFT:
 			executeMoveLeft(i_dblSpeed);
 			break;
-		case MOVE_RIGHT:
+		case RIGHT:
 			executeMoveRight(i_dblSpeed);
 			break;
-		case MOVE_UP:
+		case UP:
 			executeMoveUp(i_dblSpeed);
 			break;
-		case MOVE_DOWN:
+		case DOWN:
 			executeMoveDown(i_dblSpeed);
 			break;
 		case ROTATE_LEFT:
@@ -459,18 +460,18 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 	}
 
 	@Override
-	public void onDoMove(MoveCommand i_eMove, double i_dblSpeed, int i_nRadius) {
+	public void onDoMove(Move i_eMove, double i_dblSpeed, int i_nRadius) {
 		switch(i_eMove) {
-		case MOVE_BWD:
+		case BACKWARD:
 			executeMoveBackward(i_dblSpeed, i_nRadius);
 			break;
-		case MOVE_FWD:
+		case FORWARD:
 			executeMoveForward(i_dblSpeed, i_nRadius);
 			break;
-		case MOVE_LEFT:
+		case LEFT:
 			executeMoveLeft(i_dblSpeed, i_nRadius);
 			break;
-		case MOVE_RIGHT:
+		case RIGHT:
 			executeMoveRight(i_dblSpeed, i_nRadius);
 			break;
 		}
@@ -486,7 +487,7 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 
 	@Override
 	public void moveForward(double i_dblSpeed) {
-		m_oRepeater.startMove(MoveCommand.MOVE_FWD, i_dblSpeed, true);
+		m_oRepeater.startMove(Move.FORWARD, i_dblSpeed, true);
 	}
 
 	private void executeMoveForward(double i_dblSpeed) {
@@ -500,7 +501,7 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 
 	@Override
 	public void moveForward(double i_dblSpeed, int i_nRadius) {
-		m_oRepeater.startMove(MoveCommand.MOVE_FWD, i_dblSpeed, i_nRadius, true);
+		m_oRepeater.startMove(Move.FORWARD, i_dblSpeed, i_nRadius, true);
 	}
 
 	@Override
@@ -525,7 +526,7 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 
 	@Override
 	public void moveBackward(double i_dblSpeed) {
-		m_oRepeater.startMove(MoveCommand.MOVE_BWD, i_dblSpeed, true);
+		m_oRepeater.startMove(Move.BACKWARD, i_dblSpeed, true);
 	}
 
 	public void executeMoveBackward(double i_dblSpeed) {
@@ -542,7 +543,7 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 		i_dblSpeed = capSpeed(i_dblSpeed);
 		i_nRadius = capRadius(i_nRadius);
 		
-		m_oRepeater.startMove(MoveCommand.MOVE_BWD, i_dblSpeed, i_nRadius, true);
+		m_oRepeater.startMove(Move.BACKWARD, i_dblSpeed, i_nRadius, true);
 	}
 
 	@Override
@@ -566,7 +567,7 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 	}
 
 	public void moveLeft(double i_dblSpeed) {
-		m_oRepeater.startMove(MoveCommand.MOVE_LEFT, i_dblSpeed, true);
+		m_oRepeater.startMove(Move.LEFT, i_dblSpeed, true);
 	}
 
 	public void executeMoveLeft(double i_dblSpeed) {
@@ -582,7 +583,7 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 		i_dblSpeed = capSpeed(i_dblSpeed);
 		i_nRadius = capRadius(i_nRadius);
 
-		m_oRepeater.startMove(MoveCommand.MOVE_LEFT, i_dblSpeed, i_nRadius, true);
+		m_oRepeater.startMove(Move.LEFT, i_dblSpeed, i_nRadius, true);
 	}
 
 	private void executeMoveLeft(double i_dblSpeed, int i_nRadius) {
@@ -601,7 +602,7 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 	}
 
 	public void moveRight(double i_dblSpeed) {
-		m_oRepeater.startMove(MoveCommand.MOVE_RIGHT, i_dblSpeed, true);
+		m_oRepeater.startMove(Move.RIGHT, i_dblSpeed, true);
 	}
 
 	public void executeMoveRight(double i_dblSpeed) {
@@ -617,7 +618,7 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 		i_dblSpeed = capSpeed(i_dblSpeed);
 		i_nRadius = capRadius(i_nRadius);
 
-		m_oRepeater.startMove(MoveCommand.MOVE_RIGHT, i_dblSpeed, i_nRadius, true);
+		m_oRepeater.startMove(Move.RIGHT, i_dblSpeed, i_nRadius, true);
 	}
 
 	private void executeMoveRight(double i_dblSpeed, int i_nRadius) {
@@ -638,7 +639,7 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 
 	@Override
 	public void rotateClockwise(double i_dblSpeed) {
-		m_oRepeater.startMove(MoveCommand.ROTATE_RIGHT, i_dblSpeed, true);
+		m_oRepeater.startMove(Move.ROTATE_RIGHT, i_dblSpeed, true);
 	}
 
 	public void executeRotateClockwise(double i_dblSpeed) {
@@ -661,7 +662,7 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 
 	@Override
 	public void rotateCounterClockwise(double i_dblSpeed) {
-		m_oRepeater.startMove(MoveCommand.ROTATE_LEFT, i_dblSpeed, true);
+		m_oRepeater.startMove(Move.ROTATE_LEFT, i_dblSpeed, true);
 	}
 
 	public void executeRotateCounterClockwise(double i_dblSpeed) {

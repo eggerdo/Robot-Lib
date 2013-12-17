@@ -2,6 +2,8 @@ package robots.gui;
 
 import org.dobots.utilities.BaseActivity;
 
+import robots.gui.comm.wifi.WifiConnectionHelper;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;

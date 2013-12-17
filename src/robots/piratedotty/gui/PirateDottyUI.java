@@ -10,12 +10,13 @@ import org.dobots.zmq.ZmqRemoteControlHelper;
 import org.dobots.zmq.ZmqRemoteControlSender;
 
 import robots.RobotType;
-import robots.ctrl.ICameraControlListener;
-import robots.gui.BluetoothConnection;
+import robots.ctrl.control.ICameraControlListener;
 import robots.gui.BluetoothRobot;
-import robots.gui.IConnectListener;
 import robots.gui.RobotInventory;
 import robots.gui.SensorGatherer;
+import robots.gui.comm.IConnectListener;
+import robots.gui.comm.IRobotConnection;
+import robots.gui.comm.bluetooth.BluetoothConnection;
 import robots.piratedotty.ctrl.PirateDotty;
 import robots.piratedotty.ctrl.PirateDottyTypes;
 import android.bluetooth.BluetoothDevice;
@@ -106,7 +107,7 @@ public class PirateDottyUI extends BluetoothRobot implements ICameraControlListe
 	@Override
 	public void onDestroy() {
 		m_oCamera.stopCamera();
-		m_oRemoteCtrl.close();
+		m_oRemoteCtrl.destroy();
 		m_oZmqRemoteSender.close();
 		
 		if (m_bOwnsRobot) {
@@ -129,7 +130,7 @@ public class PirateDottyUI extends BluetoothRobot implements ICameraControlListe
 	
     @Override
 	protected void setProperties(RobotType i_eRobot) {
-        m_oActivity.setContentView(R.layout.piratedotty_main);
+        m_oActivity.setContentView(R.layout.robot_piratedotty_main);
 
 		m_oCamera = (CameraPreview) findViewById(R.id.svCamera);
 		m_oCamera.setScale(false);
@@ -252,7 +253,7 @@ public class PirateDottyUI extends BluetoothRobot implements ICameraControlListe
 			}
 			catch (IOException e) { }
 		}
-		BluetoothConnection connection = new BluetoothConnection(i_oDevice, PirateDottyTypes.PIRATEDOTTY_UUID);
+		IRobotConnection connection = new BluetoothConnection(i_oDevice, PirateDottyTypes.PIRATEDOTTY_UUID);
 		connection.setReceiveHandler(m_oUiHandler);
 		m_oPirateDotty.setConnection(connection);
 	}
@@ -279,7 +280,7 @@ public class PirateDottyUI extends BluetoothRobot implements ICameraControlListe
 		}
 
 		i_oPirateDotty.setHandler(m_oRobot.getUIHandler());
-		BluetoothConnection connection = new BluetoothConnection(i_oDevice, PirateDottyTypes.PIRATEDOTTY_UUID);
+		IRobotConnection connection = new BluetoothConnection(i_oDevice, PirateDottyTypes.PIRATEDOTTY_UUID);
 		connection.setReceiveHandler(m_oRobot.getUIHandler());
 		i_oPirateDotty.setConnection(connection);
 		i_oPirateDotty.connect();

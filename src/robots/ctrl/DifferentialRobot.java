@@ -1,5 +1,6 @@
 package robots.ctrl;
 
+
 public abstract class DifferentialRobot extends BaseRobot {
 	
 	protected double m_dblAxleWidth = -1;

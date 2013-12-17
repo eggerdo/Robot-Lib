@@ -61,7 +61,7 @@ public class RomoUI extends RobotView {
 	@Override
 	protected void setProperties(RobotType i_eRobot) {
 
-		setContentView(R.layout.romo_main);
+		setContentView(R.layout.robot_romo_main);
 
 		getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
 		
@@ -81,7 +81,7 @@ public class RomoUI extends RobotView {
 	
 	@Override
 	public void onDestroy() {
-		m_oRemoteCtrl.close();
+		m_oRemoteCtrl.destroy();
 		m_oZmqRemoteSender.close();
 		
 		m_oSensorGatherer.stopVideo();

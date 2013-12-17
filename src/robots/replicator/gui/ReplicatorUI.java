@@ -59,7 +59,7 @@ public class ReplicatorUI extends WifiRobot {
 
 		m_oSensorGatherer = new ReplicatorSensorGatherer(this, m_oReplicator);
 		
-		m_oZmqSender = new ZmqRemoteControlSender("");
+		m_oZmqSender = new ZmqRemoteControlSender(m_oReplicator.getID());
 		m_oRemoteCtrl = new ZmqRemoteControlHelper(this);
 		m_oRemoteCtrl.setDriveControlListener(m_oZmqSender);
 
@@ -100,7 +100,7 @@ public class ReplicatorUI extends WifiRobot {
 
 	@Override
 	protected void setProperties(RobotType i_eRobot) {
-		m_oActivity.setContentView(R.layout.replicator_main);
+		m_oActivity.setContentView(R.layout.robot_replicator_main);
 	}
 
 	@Override

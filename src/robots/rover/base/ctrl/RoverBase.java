@@ -10,11 +10,10 @@ import org.dobots.zmq.ZmqRemoteControlHelper;
 import org.dobots.zmq.video.IRawVideoListener;
 
 import robots.ctrl.DifferentialRobot;
-import robots.ctrl.IMoveRepeaterListener;
-import robots.ctrl.MoveRepeater;
-import robots.ctrl.MoveRepeater.MoveCommand;
+import robots.ctrl.control.IMoveRepeaterListener;
+import robots.ctrl.control.MoveRepeater;
+import robots.ctrl.control.RobotDriveCommandListener;
 import robots.gui.MessageTypes;
-import robots.gui.RobotDriveCommandListener;
 import robots.rover.base.ctrl.RoverBaseTypes.RoverParameters;
 import robots.rover.base.ctrl.RoverBaseTypes.VideoResolution;
 
@@ -46,7 +45,7 @@ public abstract class RoverBase extends DifferentialRobot implements IMoveRepeat
 		m_oRepeater = new MoveRepeater(this, 500);
 
 		m_oRemoteListener = new RobotDriveCommandListener(this);
-		m_oRemoteHelper = new ZmqRemoteControlHelper();
+		m_oRemoteHelper = new ZmqRemoteControlHelper(this);
 		m_oRemoteHelper.setDriveControlListener(m_oRemoteListener);
 		m_oRemoteHelper.startReceiver(getID());
 	}
@@ -83,9 +82,9 @@ public abstract class RoverBase extends DifferentialRobot implements IMoveRepeat
 
 	@Override
 	public void destroy() {
-		m_oRemoteHelper.close();
+		m_oRepeater.destroy();
+		m_oRemoteHelper.destroy();
 		m_oController.close();
-		m_oRepeater.stopThread();
 		m_oKeepAliveTimer.cancel();
 		disconnect();
 	}
@@ -125,12 +124,12 @@ public abstract class RoverBase extends DifferentialRobot implements IMoveRepeat
 
 	@Override
 	public void moveForward(double i_dblSpeed) {
-		m_oRepeater.startMove(MoveCommand.MOVE_FWD, i_dblSpeed, true);
+		m_oRepeater.startMove(Move.FORWARD, i_dblSpeed, true);
 	}
 
 	@Override
 	public void moveForward(double i_dblSpeed, int i_nRadius) {
-		m_oRepeater.startMove(MoveCommand.MOVE_FWD, i_dblSpeed, i_nRadius, true);
+		m_oRepeater.startMove(Move.FORWARD, i_dblSpeed, i_nRadius, true);
 	}
 
 	@Override
@@ -149,12 +148,12 @@ public abstract class RoverBase extends DifferentialRobot implements IMoveRepeat
 
 	@Override
 	public void moveBackward(double i_dblSpeed) {
-		m_oRepeater.startMove(MoveCommand.MOVE_BWD, i_dblSpeed, true);
+		m_oRepeater.startMove(Move.BACKWARD, i_dblSpeed, true);
 	}
 
 	@Override
 	public void moveBackward(double i_dblSpeed, int i_nRadius) {
-		m_oRepeater.startMove(MoveCommand.MOVE_BWD, i_dblSpeed, i_nRadius, true);
+		m_oRepeater.startMove(Move.BACKWARD, i_dblSpeed, i_nRadius, true);
 	}
 
 	@Override
@@ -173,12 +172,12 @@ public abstract class RoverBase extends DifferentialRobot implements IMoveRepeat
 
 	@Override
 	public void rotateClockwise(double i_dblSpeed) {
-		m_oRepeater.startMove(MoveCommand.ROTATE_RIGHT, i_dblSpeed, true);
+		m_oRepeater.startMove(Move.ROTATE_RIGHT, i_dblSpeed, true);
 	}
 
 	@Override
 	public void rotateCounterClockwise(double i_dblSpeed) {
-		m_oRepeater.startMove(MoveCommand.ROTATE_LEFT, i_dblSpeed, true);
+		m_oRepeater.startMove(Move.ROTATE_LEFT, i_dblSpeed, true);
 	}
 
 	@Override
@@ -191,12 +190,12 @@ public abstract class RoverBase extends DifferentialRobot implements IMoveRepeat
 	// ------------------------------------------------------------------------------------------
 
 	@Override
-	public void onDoMove(MoveCommand i_eMove, double i_dblSpeed) {
+	public void onDoMove(Move i_eMove, double i_dblSpeed) {
 		switch(i_eMove) {
-		case MOVE_BWD:
+		case BACKWARD:
 			executeMoveBackward(i_dblSpeed);
 			break;
-		case MOVE_FWD:
+		case FORWARD:
 			executeMoveForward(i_dblSpeed);
 			break;
 		case ROTATE_LEFT:
@@ -236,12 +235,12 @@ public abstract class RoverBase extends DifferentialRobot implements IMoveRepeat
 	}
 
 	@Override
-	public void onDoMove(MoveCommand i_eMove, double i_dblSpeed, int i_nRadius) {
+	public void onDoMove(Move i_eMove, double i_dblSpeed, int i_nRadius) {
 		switch(i_eMove) {
-		case MOVE_BWD:
+		case BACKWARD:
 			executeMoveBackward(i_dblSpeed, i_nRadius);
 			break;
-		case MOVE_FWD:
+		case FORWARD:
 			executeMoveForward(i_dblSpeed, i_nRadius);
 			break;
 		default:

@@ -4,6 +4,7 @@ import robots.RobotType;
 import robots.arduino.ctrl.ArduinoTypes;
 import robots.arduino.gui.ArduinoUI;
 import robots.nxt.ctrl.NxtTypes;
+import robots.nxt.gui.NxtRobot;
 import robots.parrot.gui.ParrotUI;
 import robots.piratedotty.ctrl.PirateDottyTypes;
 import robots.piratedotty.gui.PirateDottyUI;
@@ -36,12 +37,12 @@ public class RobotViewFactory {
 		switch (i_eRobot) {
 		case RBT_ROOMBA:
 			return RoombaRobot.class;
-//		case RBT_NXT:
-//			return NXTRobot.class;
+		case RBT_NXT:
+			return NxtRobot.class;
 //		case RBT_DOTTY:
 //			return DottyRobot.class;
-//		case RBT_ROBOSCOOPER:
-//			return RoboScooperRobot.class;
+		case RBT_ROBOSCOOPER:
+			return RoboScooperRobot.class;
 //		case RBT_SPYKEE:
 //			return SpykeeRobot.class;
 		case RBT_AC13ROVER:
@@ -76,14 +77,14 @@ public class RobotViewFactory {
 //			return DottyTypes.MAC_FILTER;
 //		case RBT_PARROT:
 //			return ParrotTypes.SSID_FILTER;
-//		case RBT_ROBOSCOOPER:
-//			return RoboScooperTypes.MAC_FILTER;
+		case RBT_ROBOSCOOPER:
+			return RoboScooperTypes.MAC_FILTER;
 //		case RBT_SPYKEE:
 //			return SpykeeTypes.SSID_FILTER;
 //		case RBT_AC13ROVER:
 //			return AC13RoverTypes.SSID_FILTER;
-		case RBT_ROMO:
-			return RomoTypes.SSID_FILTER;
+//		case RBT_ROMO:
+//			return RomoTypes.SSID_FILTER;
 		case RBT_PIRATEDOTTY:
 			return PirateDottyTypes.MAC_FILTER;
 		case RBT_ARDUINO:

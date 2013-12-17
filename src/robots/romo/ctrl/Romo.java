@@ -38,7 +38,7 @@ public class Romo extends DifferentialRobot implements IRomo, ICameraControlList
 		m_oController = new RomoCommandInterface();
 
 		m_oRemoteListener = new RobotDriveCommandListener(this);
-		m_oRemoteHelper = new ZmqRemoteControlHelper();
+		m_oRemoteHelper = new ZmqRemoteControlHelper(this);
 		m_oRemoteHelper.setDriveControlListener(m_oRemoteListener);
 		m_oRemoteHelper.startReceiver("Romo");
 		
@@ -79,7 +79,7 @@ public class Romo extends DifferentialRobot implements IRomo, ICameraControlList
 			mCamera.destroy();
 			mCamera = null;
 		}
-		m_oRemoteHelper.close();
+		m_oRemoteHelper.destroy();
 	}
 
 	@Override

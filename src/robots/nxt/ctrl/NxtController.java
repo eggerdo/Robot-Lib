@@ -23,9 +23,9 @@ import java.io.IOException;
 
 import org.dobots.utilities.Utils;
 
-import robots.ctrl.ProtocolHandler;
-import robots.ctrl.ProtocolHandler.ICommHandler;
-import robots.gui.BluetoothConnection;
+import robots.ctrl.comm.ProtocolHandler;
+import robots.ctrl.comm.ProtocolHandler.ICommHandler;
+import robots.gui.comm.IRobotConnection;
 import robots.nxt.MsgTypes;
 import android.os.Handler;
 
@@ -37,7 +37,7 @@ import android.os.Handler;
  */
 public class NxtController implements ICommHandler<byte[]> {
 
-	private BluetoothConnection m_oConnection;
+	private IRobotConnection m_oConnection;
 
     private byte[] returnMessage;
 
@@ -45,7 +45,7 @@ public class NxtController implements ICommHandler<byte[]> {
 
     private class NXTProtocolHandler extends ProtocolHandler {
 
-		public NXTProtocolHandler(BluetoothConnection connection, ICommHandler handler) {
+		public NXTProtocolHandler(IRobotConnection connection, ICommHandler handler) {
 			super(connection, handler);
 		}
 
@@ -83,12 +83,12 @@ public class NxtController implements ICommHandler<byte[]> {
 		}
 	}
 	
-	public void setConnection(BluetoothConnection i_oConnection) {
+	public void setConnection(IRobotConnection i_oConnection) {
 		m_oConnection = i_oConnection;
 		mProtocolHandler = new NXTProtocolHandler(m_oConnection, this);
 	}
 	
-	public BluetoothConnection getConnection() {
+	public IRobotConnection getConnection() {
 		return m_oConnection;
 	}
 

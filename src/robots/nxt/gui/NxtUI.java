@@ -8,12 +8,10 @@ import org.dobots.zmq.ZmqRemoteControlSender;
 
 import robots.RobotType;
 import robots.ctrl.RemoteControlHelper;
+import robots.ctrl.control.RobotDriveCommandListener;
 import robots.gui.BluetoothConnection;
 import robots.gui.BluetoothRobot;
-import robots.gui.IConnectListener;
 import robots.gui.MessageTypes;
-import robots.gui.RobotCalibration;
-import robots.gui.RobotDriveCommandListener;
 import robots.gui.RobotInventory;
 import robots.gui.SensorGatherer;
 import robots.nxt.ctrl.Nxt;
@@ -193,7 +191,7 @@ public class NxtUI extends BluetoothRobot {
 			m_oNxt.disconnect();
 		}
 
-		BluetoothConnection connection = new BluetoothConnection(i_oDevice, NxtTypes.SERIAL_PORT_SERVICE_CLASS_UUID);
+		IRobotConnection connection = new BluetoothConnection(i_oDevice, NxtTypes.SERIAL_PORT_SERVICE_CLASS_UUID);
 		connection.setReceiveHandler(m_oUiHandler);
 		m_oNxt.setConnection(connection);
 	}
@@ -220,7 +218,7 @@ public class NxtUI extends BluetoothRobot {
 		}
 
 		i_oNxt.setHandler(m_oRobot.getUIHandler());
-		BluetoothConnection connection = new BluetoothConnection(i_oDevice, NxtTypes.SERIAL_PORT_SERVICE_CLASS_UUID);
+		IRobotConnection connection = new BluetoothConnection(i_oDevice, NxtTypes.SERIAL_PORT_SERVICE_CLASS_UUID);
 		connection.setReceiveHandler(m_oRobot.getUIHandler());
 		i_oNxt.setConnection(connection);
 		i_oNxt.connect();
@@ -313,7 +311,7 @@ public class NxtUI extends BluetoothRobot {
 	
 	@Override
 	protected void setProperties(RobotType i_eRobot) {
-        m_oActivity.setContentView(R.layout.nxt_main);
+        m_oActivity.setContentView(R.layout.robot_nxt_main);
 
         // adapter is the same, for each sensor we can choose the same types
 		final ArrayAdapter<ENXTSensorType> oSensorTypeAdapter = new ArrayAdapter<ENXTSensorType>(m_oActivity, 
@@ -547,7 +545,7 @@ public class NxtUI extends BluetoothRobot {
 		m_oSensorGatherer.setDebug(i_bDebug);
 		
 		// create a temporary layout from the nxt layout
-		View oTempView = LayoutInflater.from(m_oActivity).inflate(R.layout.nxt_main, null);
+		View oTempView = LayoutInflater.from(m_oActivity).inflate(R.layout.robot_nxt_main, null);
 		
 		for (ENXTSensorID eSensorID : ENXTSensorID.values()) {
 

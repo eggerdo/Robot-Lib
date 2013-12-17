@@ -200,7 +200,7 @@ public abstract class RoverBaseUI extends WifiRobot {
     	// TODO Auto-generated method stub
     	super.onDestroy();
     	
-    	m_oRemoteCtrl.close();
+    	m_oRemoteCtrl.destroy();
     }
 
 	@Override
@@ -272,7 +272,7 @@ public abstract class RoverBaseUI extends WifiRobot {
     private Dialog createVideoSettingsDialog() {
     	LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
     	AlertDialog.Builder builder = new AlertDialog.Builder(this);
-    	View layout = inflater.inflate(R.layout.rover_videosettings, null);
+    	View layout = inflater.inflate(R.layout.robot_rover_videosettings, null);
     	builder.setTitle("Video Resolution");
     	builder.setView(layout);
     	builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {

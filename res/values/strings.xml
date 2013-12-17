@@ -204,10 +204,78 @@
     <string name="roomba_btn_sidebrush">Side Brush</string>    
     <string name="roomba_btn_vacuum">Vacuum</string>    
     <string name="roomba_btn_power">Power</string>    
+     
+    <!--  RoboScooper -->
+    <string name="roboscooper_title">RoboScooper</string>
+    <string name="roboscooper_commands">RoboScooper Commands</string>
+    <string name="roboscooper_dump">Dump</string>
+    <string name="roboscooper_pickup">Pick-up</string>
+    <string name="roboscooper_talk">Talk</string>
+    <string name="roboscooper_vision">Vision</string>
+    <string name="roboscooper_whack">Whack</string>
+    <string name="roboscooper_cleansweep">Clean Sweep</string>
+    <string name="roboscooper_playmodes">Play Modes</string>
     
+    <!--  Brainlink -->
+    <string name="brainlink_sensors">Brainlink Sensors</string>
+    <string name="brainlink_accelerometer">Accelerometer</string>
+    <string name="brainlink_xaxis">x-axis</string>
+    <string name="brainlink_yaxis">y-axis</string>
+    <string name="brainlink_zaxis">z-axis</string>
+    <string name="brainlink_light">Light</string>
+    <string name="brainlink_intensity">Intensity</string>
+    <string name="brainlink_battery">Battery</string>
+    <string name="brainlink_batterylevel">Level</string>
+    <string name="brainlink_rawvalue">Raw Value</string>
     
+    <!--  Spykee -->
+    <string name="spykee_title">Spykee</string>
+    <string name="spykee_commands">Spykee Commands</string>
+    <string name="spykee_canceldock">Cancel Dock</string>
+    <string name="spykee_dock">Dock</string>
+    <string name="spykee_undock">Undock</string>
+    <string name="spykee_battery">Battery</string>
+    <string name="spykee_dockingstate">Docking State</string>
+    <string name="spykee_port">Port</string>
+    <string name="spykee_address">Address</string>
+    <string name="spykee_login">Login</string>
+    <string name="spykee_password">Password</string>
+    <string name="spykee_led1">Led 1</string>
+    <string name="spykee_led2">Led 2</string>
+    <string name="spykee_led3">Led 3</string>
+    <string name="spykee_play">Play</string>
+        
+    <!--  Dotty -->
+    <string name="dotty_title">Dotty</string>
+    <string name="dotty_commands">Dotty Commands</string>
+    <string name="dotty_sensorselection">Choose which sensors you want to display</string>
+    <string name="dotty_dist">Distance</string>
+    <string name="dotty_light">Light</string>
+    <string name="dotty_value">Value</string>
+    <string name="dotty_sound">Sound</string>
+    <string name="dotty_battery">Battery</string>
+    <string name="dotty_motorsensor1">Motor 1</string>
+    <string name="dotty_motorsensor2">Motor 2</string>
+    <string name="dotty_wheel1">Wheel 1</string>
+    <string name="dotty_wheel2">Wheel 2</string>
+    <string name="dotty_led1">Led 1</string>
+    <string name="dotty_led2">Led 2</string>
+    <string name="dotty_led3">Led 3</string>
+    <string name="dotty_all">All</string>
+    <string name="dotty_interval">Interval:</string>
+    <string name="dotty_streaming">Streaming: OFF</string>
     
-    
+    <!--  Robo40 -->
+    <string name="robo40_title">Robo40</string>
+    <string name="robo40_commands">Robo40 Commands</string>
+    <string name="robo40_motoraccess">Set value for motor</string>
+    <string name="Robo40_Sensor1Value">Sensor 1</string>
+    <string name="Robo40_Sensor2Value">Sensor 2</string>
+    <string name="Robo40_Sensor3Value">Sensor 3</string>
+    <string name="Robo40_Sensor4Value">Sensor 4</string>
+    <string name="robo40_motor1">Motor 1</string>
+    <string name="robo40_motor2">Motor 2</string>
+    <string name="robo40_motor3">Motor 3</string>
     
     
     <!-- unassigned -->    

@@ -14,34 +14,32 @@ import java.util.TimerTask;
 
 import org.dobots.zmq.video.IRawVideoListener;
 
-import robots.ctrl.BaseWifi;
+import robots.ctrl.WifiRobotController;
+import robots.gui.comm.wifi.WifiConnection;
+import android.os.Handler;
 import android.util.Log;
 
-public class SpyTankController extends BaseWifi {
+public class SpyTankController extends WifiRobotController {
 	
 	public static final String TAG = "SpyTankController";
 	
-//	boolean connected;
-	
-	Socket m_oMediaSocket;
-	DataInputStream m_oMediaIn;
+	private DataInputStream m_oMediaIn;
 
-	private IRawVideoListener oVideoListener = null;
+	private IRawVideoListener m_oVideoListener = null;
 
 	private boolean m_bRun = true;
-	private boolean m_bStreaming = false;
+	private boolean m_bStreaming = true;
 
 	protected Timer m_oKeepAliveTimer;
 	
 	private int m_nMediaPort;
-
+	
 	public SpyTankController() {
 		super(SpyTankTypes.ADDRESS, SpyTankTypes.COMMAND_PORT);
 		m_nMediaPort = SpyTankTypes.MEDIA_PORT;
 
 		m_oKeepAliveTimer = new Timer("KeepAliveTimer");
 		m_oKeepAliveTimer.schedule(m_oKeepAliveTask, 10000, 10000);
-
 	}
 
 	private final TimerTask m_oKeepAliveTask = new TimerTask() {
@@ -54,22 +52,20 @@ public class SpyTankController extends BaseWifi {
 	};
 
 	public void setVideoListener(IRawVideoListener listener) {
-		this.oVideoListener = listener;
+		this.m_oVideoListener = listener;
 	}
 	
 	public void removeVideoListener(IRawVideoListener listener) {
-		if (this.oVideoListener == listener) {
-			this.oVideoListener = null;
+		if (this.m_oVideoListener == listener) {
+			this.m_oVideoListener = null;
 		}
 	}
 	
 	public void setConnection(String address, int commandPort, int mediaPort) {
-		m_strAddress = address;
-		m_nPort = commandPort;
+		super.setConnection(address, commandPort);
 		m_nMediaPort = mediaPort;
 	}
 
-	@Override
 	public boolean connect() throws IOException {
 		if (super.connect()) {
 			if (m_bStreaming) {
@@ -81,7 +77,7 @@ public class SpyTankController extends BaseWifi {
 	}
 
 	private void connectMedia() throws IOException {
-		URL url = new URL(String.format("http://%s:%d", m_strAddress, m_nMediaPort));
+		URL url = new URL(String.format("http://%s:%d", getAddress(), m_nMediaPort));
 		HttpURLConnection mediaCon = (HttpURLConnection) url.openConnection();
 		m_oMediaIn = new DataInputStream(new BufferedInputStream(mediaCon.getInputStream()));
 		
@@ -97,8 +93,8 @@ public class SpyTankController extends BaseWifi {
 
 						byte[] data = readFrame();
 						
-						if (oVideoListener  != null) {
-							oVideoListener.onFrame(data, 0);
+						if (m_oVideoListener  != null && data != null) {
+							m_oVideoListener.onFrame(data, 0);
 						}
 
 					} catch (IOException e) {
@@ -124,15 +120,8 @@ public class SpyTankController extends BaseWifi {
 	}
 	
 	public void destroy() {
-		try {
-			disconnect();
-			disconnectMedia();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		m_oKeepAliveTimer.cancel();
-		m_bRun = false;
+		super.destroy();
 	}
 
 	private byte[] readFrame() throws IOException {
@@ -189,7 +178,7 @@ public class SpyTankController extends BaseWifi {
 	}
 	
 	public void startVideo() {
-		if (!m_bStreaming && m_bConnected) {
+		if (!m_bStreaming && isConnected()) {
 			Log.d(TAG, "startVideo");
 			
 			try {
@@ -210,35 +199,21 @@ public class SpyTankController extends BaseWifi {
 		}
 	}
 	
-	private void send(byte[] buffer) throws IOException {
-		if (m_bConnected) {
-			m_oDataOut.write(buffer);
-			m_oDataOut.flush();
-		}
-	}
-	
 	public void keepAlive() {
-		try {
-			if (m_bConnected) {
-				byte[] request = CommandEncoder.getKeepAlive();
-				send(request);
-				return;
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		byte[] request = SpyTankTypes.getKeepAlive();
+		send(request);
 	}
 	
-	public boolean cameraDown() throws IOException {
-		return motor(SpyTankTypes.CAMERA, SpyTankTypes.DOWN);
+	public void cameraDown() throws IOException {
+		motor(SpyTankTypes.CAMERA, SpyTankTypes.DOWN);
 	}
 
-	public boolean cameraStop() throws IOException {
-		return motor(SpyTankTypes.CAMERA, SpyTankTypes.STOP);
+	public void cameraStop() throws IOException {
+		motor(SpyTankTypes.CAMERA, SpyTankTypes.STOP);
 	}
 
-	public boolean cameraUp() throws IOException {
-		return motor(SpyTankTypes.CAMERA, SpyTankTypes.UP);
+	public void cameraUp() throws IOException {
+		motor(SpyTankTypes.CAMERA, SpyTankTypes.UP);
 	}
 	
 	public void moveForward(int i_nVelocity) {
@@ -282,18 +257,9 @@ public class SpyTankController extends BaseWifi {
 		moveRightStop();
 	}
 	
-	private boolean motor(int id, int direction) {
-		if (m_bConnected) {
-			try {
-				byte[] cmd = CommandEncoder.getMotorCommand(id, direction);
-				send(cmd);
-				return true;
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		return false;
+	private void motor(int id, int direction) {
+		byte[] cmd = SpyTankTypes.getMotorCommand(id, direction);
+		send(cmd);
 	}
 	
 	private void moveLeftForward(int i_nVelocity) {
@@ -334,6 +300,14 @@ public class SpyTankController extends BaseWifi {
 	
 	private void moveRightStop() {
 		motor(SpyTankTypes.RIGHT, SpyTankTypes.STOP);
+	}
+
+	@Override
+	public void disconnect() throws IOException {
+		if (m_bStreaming) {
+			disconnectMedia();
+		}
+		super.disconnect();
 	}
 
 }
