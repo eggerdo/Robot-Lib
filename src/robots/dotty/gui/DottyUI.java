@@ -33,7 +33,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class DottyRobot extends BluetoothRobot {
+public class DottyUI extends BluetoothRobot {
 
 	private static String TAG = "Dotty";
 	
@@ -67,15 +67,11 @@ public class DottyRobot extends BluetoothRobot {
 	
 	private double m_dblSpeed;
 
-	private ZmqRemoteControlSender m_oZmqRemoteListener;
-
-	private ZmqRemoteControlHelper m_oRemoteCtrl;
-
-	public DottyRobot(BaseActivity i_oOwner) {
+	public DottyUI(BaseActivity i_oOwner) {
 		super(i_oOwner);
 	}
 	
-	public DottyRobot() {
+	public DottyUI() {
 		super();
 	}
 	
@@ -93,9 +89,9 @@ public class DottyRobot extends BluetoothRobot {
     	m_oSensorGatherer = new DottySensorGatherer(m_oActivity, m_oDotty);
 		m_dblSpeed = m_oDotty.getBaseSpeed();
 
-    	m_oZmqRemoteListener = new ZmqRemoteControlSender(getRobot().getID());
+    	m_oZmqRemoteSender = new ZmqRemoteControlSender(getRobot().getID());
 		m_oRemoteCtrl = new ZmqRemoteControlHelper(m_oActivity);
-		m_oRemoteCtrl.setDriveControlListener(m_oZmqRemoteListener);
+		m_oRemoteCtrl.setDriveControlListener(m_oZmqRemoteSender);
         
         updateButtons(false);
         
@@ -128,7 +124,7 @@ public class DottyRobot extends BluetoothRobot {
 	}
 	
     @Override
-	protected void setProperties(RobotType i_eRobot) {
+	protected void setLayout(RobotType i_eRobot) {
         m_oActivity.setContentView(R.layout.robot_dotty_main);
 
         m_cbDistance = (CheckBox) m_oActivity.findViewById(R.id.cbDotty_Distance);
@@ -358,7 +354,7 @@ public class DottyRobot extends BluetoothRobot {
 	}
 
 	public static void connectToDotty(final BaseActivity m_oOwner, Dotty i_oDotty, BluetoothDevice i_oDevice, final IConnectListener i_oConnectListener) {
-		DottyRobot m_oRobot = new DottyRobot(m_oOwner) {
+		DottyUI m_oRobot = new DottyUI(m_oOwner) {
 			public void onConnect() {
 				i_oConnectListener.onConnect(true);
 			};

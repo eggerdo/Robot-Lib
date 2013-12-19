@@ -39,14 +39,10 @@ public class ReplicatorUI extends WifiRobot {
 
 	private ReplicatorSensorGatherer m_oSensorGatherer;
 
-	private ZmqRemoteControlHelper m_oRemoteCtrl;
-
 	private Dialog m_dlgSettingsDialog;
 
 	private int m_nCommandPort;
 	private int m_nVideoPort;
-
-	private ZmqRemoteControlSender m_oZmqSender;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -59,9 +55,9 @@ public class ReplicatorUI extends WifiRobot {
 
 		m_oSensorGatherer = new ReplicatorSensorGatherer(this, m_oReplicator);
 		
-		m_oZmqSender = new ZmqRemoteControlSender(m_oReplicator.getID());
+		m_oZmqRemoteSender = new ZmqRemoteControlSender(m_oReplicator.getID());
 		m_oRemoteCtrl = new ZmqRemoteControlHelper(this);
-		m_oRemoteCtrl.setDriveControlListener(m_oZmqSender);
+		m_oRemoteCtrl.setDriveControlListener(m_oZmqRemoteSender);
 
 		updateButtons(false);
 
@@ -99,7 +95,7 @@ public class ReplicatorUI extends WifiRobot {
 	}
 
 	@Override
-	protected void setProperties(RobotType i_eRobot) {
+	protected void setLayout(RobotType i_eRobot) {
 		m_oActivity.setContentView(R.layout.robot_replicator_main);
 	}
 
@@ -151,10 +147,10 @@ public class ReplicatorUI extends WifiRobot {
 			showDialog(DIALOG_CONNECTION_SETTINGS_ID);
 			break;
 		case VIDEO_ID:
-			if (m_oSensorGatherer.isStopped()) {
-				m_oSensorGatherer.startVideo();
+			if (m_oSensorGatherer.isPlaybackStopped()) {
+				m_oSensorGatherer.startVideoPlayback();
 			} else {
-				m_oSensorGatherer.stopVideo();
+				m_oSensorGatherer.stopVideoPlayback();
 			}
 			break;
 		}

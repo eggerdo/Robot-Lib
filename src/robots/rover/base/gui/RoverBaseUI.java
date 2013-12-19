@@ -43,8 +43,6 @@ public abstract class RoverBaseUI extends WifiRobot {
 	protected static final int VIDEO_GRP = SENSOR_GRP + 1	;
 	
 	protected RoverBaseSensorGatherer m_oSensorGatherer;
-	protected ZmqRemoteControlHelper m_oRemoteCtrl;
-	private ZmqRemoteControlSender m_oZmqRemoteListener;
 
 	protected boolean connected;
 
@@ -97,9 +95,9 @@ public abstract class RoverBaseUI extends WifiRobot {
     }
     
     public void onRobotCtrlReady() {
-    	m_oZmqRemoteListener = new ZmqRemoteControlSender(getRover().getID());
-		m_oRemoteCtrl.setDriveControlListener(m_oZmqRemoteListener);
-		m_oRemoteCtrl.setCameraControlListener(m_oZmqRemoteListener);
+    	m_oZmqRemoteSender = new ZmqRemoteControlSender(getRover().getID());
+		m_oRemoteCtrl.setDriveControlListener(m_oZmqRemoteSender);
+		m_oRemoteCtrl.setCameraControlListener(m_oZmqRemoteSender);
     	
 		m_dblSpeed = getRover().getBaseSpeed();
 		
@@ -224,7 +222,7 @@ public abstract class RoverBaseUI extends WifiRobot {
 	}
 
 	@Override
-	protected void setProperties(RobotType i_eRobot) {
+	protected void setLayout(RobotType i_eRobot) {
 
     	m_btnInfrared = (ToggleButton) m_oActivity.findViewById(R.id.btnInfrared);
     	m_btnInfrared.setOnClickListener(new OnClickListener() {

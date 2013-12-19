@@ -74,6 +74,8 @@ public class VideoHelper implements IVideoListener, IFpsListener, IRawVideoListe
     	m_pbLoading = (ProgressBar) container.findViewById(R.id.pbLoading);
     	m_lblFps = (TextView) container.findViewById(R.id.lblFPS);
     	
+    	m_layCamera.setDrawingCacheEnabled(false);
+    	
     	m_ivVideo.setDisplayMode(DisplayMode.SCALED);
     	
     	initialize();
@@ -138,8 +140,8 @@ public class VideoHelper implements IVideoListener, IFpsListener, IRawVideoListe
 	 * call once video was started, check for incoming frames with timeout
 	 * set to true 
 	 */
-	public void onStartVideo() {
-		onStartVideo(true);
+	public void onStartVideoPlayback() {
+		onStartVideoPlayback(true);
 	}
 	
 	
@@ -149,7 +151,7 @@ public class VideoHelper implements IVideoListener, IFpsListener, IRawVideoListe
 	 * 					 then connection is assumed to have failed and the
 	 * 					 flags are reset
 	 */
-	public void onStartVideo(boolean i_bTimeout) {
+	public void onStartVideoPlayback(boolean i_bTimeout) {
 		m_bVideoConnected = false;
 		m_bVideoStopped = false;
 		showVideoLoading(true);
@@ -161,7 +163,7 @@ public class VideoHelper implements IVideoListener, IFpsListener, IRawVideoListe
 	/**
 	 * call once video was stopped
 	 */
-	public void onStopVideo() {
+	public void onStopVideoPlayback() {
 		m_bVideoStopped = true;
 		showVideoMsg("Video OFF");
 	}
@@ -170,7 +172,7 @@ public class VideoHelper implements IVideoListener, IFpsListener, IRawVideoListe
 	 * check if video is started/stopped
 	 * @return true if stopped, false otherwise
 	 */
-	public boolean isStopped() {
+	public boolean isPlaybackStopped() {
 		return m_bVideoStopped;
 	}
 	
@@ -280,10 +282,19 @@ public class VideoHelper implements IVideoListener, IFpsListener, IRawVideoListe
 	
 	/**
 	 * Set display mode. See VideoSurfaceView.DisplayMode
-	 * @param mode DisplayMode, can be normal, scaled and filled
+	 * @param mode DisplayMode, can be normal, scaled or filled
 	 */
 	public void setDisplayMode(DisplayMode mode) {
 		m_ivVideo.setDisplayMode(mode);
+	}
+
+	/**
+	 * Return the current display mode. See VideoSurfaceView.DisplayMode
+	 * @return DisplayMode, can be normal, scaled or filled
+	 */
+	public DisplayMode getDisplayMode() {
+		// TODO Auto-generated method stub
+		return m_ivVideo.getDisplayMode();
 	}
     
 }

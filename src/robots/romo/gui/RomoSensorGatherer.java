@@ -26,12 +26,12 @@ public class RomoSensorGatherer extends SensorGatherer {
 	
 	protected void startVideo() {
 		setVideoListening(true);
-		mVideoHelper.onStartVideo();
+		mVideoHelper.onStartVideoPlayback();
 	}
 
 	protected void stopVideo() {
 		setVideoListening(false);
-		mVideoHelper.onStopVideo();
+		mVideoHelper.onStopVideoPlayback();
 	}
 	
 	private void setVideoListening(boolean i_bListening) {

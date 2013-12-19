@@ -28,6 +28,7 @@ import org.dobots.utilities.joystick.IJoystickListener;
 import org.dobots.utilities.joystick.Joystick;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.SystemClock;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -539,7 +540,7 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 	public boolean onCreateOptionsMenu(Activity activity, Menu menu) {
 		
 		if (m_bJoystickControlAvailable) {
-			menu.add(GRP_REMOTE_CTRL, MENU_JOYSTICK_CTRL, Menu.NONE, activity.getString(R.string.joystick));
+			menu.add(GRP_REMOTE_CTRL, MENU_JOYSTICK_CTRL, Menu.FIRST, activity.getString(R.string.joystick));
 		}
 		
 		return true;
@@ -622,4 +623,17 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 		}
 	}
 	
+	private static final String PREFS_JOYSTICKCONTROL = "joystick_control";
+
+	private static final boolean DEF_JOYSTICKCONTROL = false;
+	
+	public void loadSettings(SharedPreferences prefs, String suffix) {
+		setJoystickControl(prefs.getBoolean(String.format("%s_%s", suffix, PREFS_JOYSTICKCONTROL), DEF_JOYSTICKCONTROL));
+	}
+
+	public void saveSettings(SharedPreferences.Editor editor, String suffix) {
+		editor.putBoolean(String.format("%s_%s", suffix, PREFS_JOYSTICKCONTROL), m_bJoystickControl);
+	}
+
+
 }

@@ -1,13 +1,20 @@
 package robots.piratedotty.ctrl;
 
+import org.dobots.utilities.Utils;
+import org.dobots.utilities.camera.CameraPreview;
+import org.dobots.utilities.camera.CameraPreview.CameraPreviewCallback;
 import org.dobots.zmq.ZmqRemoteControlHelper;
+import org.dobots.zmq.video.ZmqVideoSender;
+
+import android.content.Context;
 
 import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
+import robots.ctrl.control.ICameraControlListener;
 import robots.ctrl.control.RobotDriveCommandListener;
 import robots.gui.comm.IRobotConnection;
 
-public class PirateDotty extends DifferentialRobot {
+public class PirateDotty extends DifferentialRobot implements IPirateDotty, ICameraControlListener {
 
 	private PirateDottyController m_oController;
 
@@ -16,6 +23,10 @@ public class PirateDotty extends DifferentialRobot {
 	private RobotDriveCommandListener m_oRemoteListener;
 
 	private ZmqRemoteControlHelper m_oRemoteHelper;
+
+	private CameraPreview mCamera;
+
+	private ZmqVideoSender mVideoSender;
 
 	// inverted = -1
 	// normal 	= +1
@@ -32,11 +43,29 @@ public class PirateDotty extends DifferentialRobot {
 		m_oRemoteHelper = new ZmqRemoteControlHelper(this);
 		m_oRemoteHelper.setDriveControlListener(m_oRemoteListener);
 		m_oRemoteHelper.startReceiver("PirateDotty");
+
+		mVideoSender = new ZmqVideoSender(getID());
+		
+		m_oRemoteHelper.setCameraControlListener(this);
+	}
+
+	public void startCamera(Context context) {
+		mCamera = CameraPreview.createCameraWithoutSurface(context);
+		mCamera.setPreviewSize(320, 240);
+		mCamera.setFrameListener(new CameraPreviewCallback() {
+			@Override
+			public void onFrame(byte[] rgb, int width, int height, int rotation) {
+				mVideoSender.onFrame(rgb, rotation);
+			}
+		});
+	}
+
+	public void startCamera(CameraPreview camera) {
+		mCamera = camera;
 	}
 
 	@Override
 	public RobotType getType() {
-		// TODO Auto-generated method stub
 		return RobotType.RBT_PIRATEDOTTY;
 	}
 
@@ -51,10 +80,15 @@ public class PirateDotty extends DifferentialRobot {
 
 	@Override
 	public void destroy() {
+		if (mCamera != null) {
+			mCamera.destroy();
+			mCamera = null;
+		}
+
+		m_oRemoteHelper.destroy();
 		if (isConnected()) {
 			disconnect();
 		}
-		m_oController.destroyConnection();
 	}
 
 	public void setConnection(IRobotConnection i_oConnection) {
@@ -204,6 +238,49 @@ public class PirateDotty extends DifferentialRobot {
 	public boolean toggleInvertDrive() {
 		m_nInverted *= -1;
 		return true;
+	}
+
+	@Override
+	public boolean isStreaming() {
+		return mCamera.isStopped();
+	}
+
+	@Override
+	public void startVideo() {
+		mCamera.startCamera();
+	}
+
+	@Override
+	public void stopVideo() {
+		mCamera.stopCamera();
+	}
+
+	@Override
+	public void toggleCamera() {
+		// toggle camera only works if it is executed by the UI thread
+		// so we check if the calling thread is the main thread, otherwise
+		// we call the function again inside the main thread.
+		Utils.runAsyncUiTask(new Runnable() {
+			@Override
+			public void run() {
+				mCamera.toggleCamera();
+			}
+		});
+	}
+
+	@Override
+	public void cameraUp() {
+		// NOT APPLICABLE
+	}
+
+	@Override
+	public void cameraDown() {
+		// NOT APPLICABLE
+	}
+
+	@Override
+	public void cameraStop() {
+		// NOT APPLICABLE
 	}
 
 }

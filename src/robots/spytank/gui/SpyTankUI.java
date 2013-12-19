@@ -10,7 +10,7 @@ import robots.RobotType;
 import robots.ctrl.control.RemoteControlHelper;
 import robots.gui.SensorGatherer;
 import robots.gui.WifiRobot;
-import robots.spytank.ctrl.SpyTank;
+import robots.spytank.ctrl.ISpyTank;
 import robots.spytank.ctrl.SpyTankTypes;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -35,10 +35,8 @@ public class SpyTankUI extends WifiRobot {
 	protected static final int CONNECTION_SETTINGS_ID = CONNECT_ID + 1;
 	
 	private SpyTankSensorGatherer m_oSensorGatherer;
-	private ZmqRemoteControlSender m_oZmqRemoteListener;
-	private RemoteControlHelper m_oRemoteCtrl;
 	
-	private SpyTank m_oSpyTank;
+	private ISpyTank m_oSpyTank;
 	
 	private int m_nCommandPort;
 	private int m_nMediaPort;
@@ -57,18 +55,24 @@ public class SpyTankUI extends WifiRobot {
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
 
-    	m_oSpyTank = (SpyTank) getRobot();
-    	m_oSpyTank.setHandler(m_oUiHandler);
-
-    	m_oZmqRemoteListener = new ZmqRemoteControlSender(m_oSpyTank.getID());
     	m_oRemoteCtrl = new ZmqRemoteControlHelper(m_oActivity);
-    	m_oRemoteCtrl.setDriveControlListener(m_oZmqRemoteListener);
-    	
-        m_oSensorGatherer = new SpyTankSensorGatherer(this, m_oSpyTank);
 
     	updateButtons(false);
     	
     	checkConnectionSettings();
+    }
+
+    @Override
+    public void onRobotCtrlReady() {
+
+    	m_oSpyTank = (ISpyTank) getRobot();
+    	m_oSpyTank.setHandler(m_oUiHandler);
+
+    	m_oZmqRemoteSender = new ZmqRemoteControlSender(m_oSpyTank.getID());
+    	m_oRemoteCtrl.setDriveControlListener(m_oZmqRemoteSender);
+
+        m_oSensorGatherer = new SpyTankSensorGatherer(this, m_oSpyTank);
+
     	m_oSpyTank.setConnection(m_strAddress, m_nCommandPort, m_nMediaPort);
     	
     	if (m_oSpyTank.isConnected()) {
@@ -76,11 +80,6 @@ public class SpyTankUI extends WifiRobot {
     	} else {
     		connectToRobot();
     	}
-    }
-
-    @Override
-    public void onRobotCtrlReady() {
-    	
     }
     
 	@Override
@@ -102,7 +101,7 @@ public class SpyTankUI extends WifiRobot {
 	}
 
 	@Override
-	protected void setProperties(RobotType i_eRobot) {
+	protected void setLayout(RobotType i_eRobot) {
 		m_oActivity.setContentView(R.layout.robot_spytank_main);
 
     	Button btnCameraUp = (Button) findViewById(R.id.btnCameraUp);

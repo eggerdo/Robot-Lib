@@ -2,10 +2,12 @@ package robots.ctrl;
 
 import java.io.IOException;
 
+import org.dobots.utilities.log.Loggable;
+
 import robots.gui.comm.wifi.WifiConnection;
 import android.os.Handler;
 
-public class WifiRobotController {
+public class WifiRobotController extends Loggable {
 
 	protected WifiConnection m_oConnection;
 	

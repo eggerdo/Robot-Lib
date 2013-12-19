@@ -32,6 +32,7 @@ import java.net.UnknownHostException;
 
 import javax.security.auth.login.LoginException;
 
+import org.dobots.utilities.DoBotsThread;
 import org.dobots.utilities.log.Loggable;
 import org.dobots.zmq.video.IRawVideoListener;
 
@@ -53,9 +54,10 @@ public class SpykeeController extends Loggable {
 	private Socket mSocket;
 	private DataInputStream mInput;
 	private DataOutputStream mOutput;
-	public enum DockState { DOCKED, UNDOCKED, DOCKING };
+	public enum DockState { DOCKED, UNDOCKED, DOCKING, UNKNOWN };
 	private DockState mDockState;
 	private boolean mConnected;
+	private boolean mStreaming = true;
 
 	private static final byte[] CMD_LOGIN       = { 'P', 'K', 0x0a, 0 };
 	private static final byte[] CMD_UNDOCK      = { 'P', 'K', 0x10, 0, 1, 5 };
@@ -83,6 +85,8 @@ public class SpykeeController extends Loggable {
 
 	private IRawVideoListener mVideoListener = null;
 
+	private DoBotsThread mNetworkThread;
+
 	public void setVideoListener(IRawVideoListener listener) {
 		mVideoListener = listener;
 	}
@@ -106,15 +110,25 @@ public class SpykeeController extends Loggable {
 		readLoginResponse();
 		startNetworkReaderThread();
 		debug(TAG, "Login OK");
+		
+		if (mStreaming) {
+			startVideo();
+		}
 	}
 
 	public void close() {
 		try {
 			mConnected = false;
-			if (mOutput != null) {
+			if (mSocket != null) {
 				mOutput.close();
 				mInput.close();
 				mSocket.close();
+				mSocket = null;
+			}
+			
+			if (mNetworkThread != null) {
+				mNetworkThread.destroy();
+				mNetworkThread = null;
 			}
 		} catch (IOException e) {
 		}
@@ -358,6 +372,7 @@ public class SpykeeController extends Loggable {
 
 	public void startVideo() {
 		try {
+			mStreaming = true;
 			sendBytes(CMD_START_VIDEO);
 		} catch (IOException e) {
 		}
@@ -365,6 +380,7 @@ public class SpykeeController extends Loggable {
 
 	public void stopVideo() {
 		try {
+			mStreaming = false;
 			sendBytes(CMD_STOP_VIDEO);
 		} catch (IOException e) {
 		}
@@ -449,11 +465,20 @@ public class SpykeeController extends Loggable {
 	}
 
 	private void startNetworkReaderThread() {
-		new Thread(new Runnable() {
-			public void run() {
+		mNetworkThread = new DoBotsThread("SpykeeController") {
+			
+			@Override
+			public void shutDown() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			protected void execute() {
 				readFromSpykee(); 
 			}
-		}).start();
+		};
+		mNetworkThread.start();
 	}
 
 	/**
@@ -463,7 +488,7 @@ public class SpykeeController extends Loggable {
 	private void readFromSpykee() {
 		Message msg;
 		byte[] bytes = new byte[8192];
-		while (true) {
+		while (mConnected) {
 			int num, len = 0;
 			int cmd = -1;
 			byte[] frame = null;
@@ -532,8 +557,9 @@ public class SpykeeController extends Loggable {
 					showBuffer("recv", bytes, num);
 				}
 			} catch (IOException e) {
-				error(TAG, "IO exception: " + e);
-				break;
+				if (mConnected) {
+					error(TAG, "IO exception: " + e);
+				}
 			}
 		}
 	}
@@ -630,6 +656,10 @@ public class SpykeeController extends Loggable {
 //			Log.d(TAG, builder.toString());
 			builder.setLength(0);
 		}
+	}
+
+	public boolean isStreaming() {
+		return mStreaming;
 	}
 
 

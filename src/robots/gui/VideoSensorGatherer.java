@@ -5,6 +5,7 @@ import org.dobots.utilities.BaseActivity;
 import org.dobots.zmq.ZmqHandler;
 import org.dobots.zmq.video.ZmqVideoReceiver;
 import org.dobots.zmq.video.gui.VideoHelper;
+import org.dobots.zmq.video.gui.VideoSurfaceView.DisplayMode;
 import org.zeromq.ZMQ;
 
 import robots.ctrl.IRobotDevice;
@@ -22,42 +23,35 @@ public class VideoSensorGatherer extends SensorGatherer {
 		mRobot = i_oRobot;
 		
 		mVideoHelper = new VideoHelper(i_oActivity, (ViewGroup)m_oActivity.findViewById(R.id.layCameraContainer));
-		//        mVideoHelper.setDisplayMode(DisplayMode.NORMAL);
+//        mVideoHelper.setDisplayMode(DisplayMode.NORMAL);
 	}
 
 	public void resetLayout() {
 		mVideoHelper.resetLayout();
 	}
 
-	public void startVideo() {
-		mVideoHelper.onStartVideo();                
+	// only starts playing the video. the robot sends video in any case.
+	public void startVideoPlayback() {
+		mVideoHelper.onStartVideoPlayback();                
 		setVideoListening(true);
 	}
-
-	public void stopVideo() {
-		mVideoHelper.onStopVideo();
+	
+	// only stops playing the video. the robot sends video in any case.
+	public void stopVideoPlayback() {
+		mVideoHelper.onStopVideoPlayback();
 		setVideoListening(false);
 	}
 	
-	public boolean isStopped() {
-		return mVideoHelper.isStopped();
+	public boolean isPlaybackStopped() {
+		return mVideoHelper.isPlaybackStopped();
 	}
-	
-	public void setVideoScaled(boolean scaled) {
-		// TODO
-	}
-	
-	public boolean isVideoScaled() {
-		// TODO
-		return false;
-	}
-	
+
 	public void onConnect() {
-		startVideo();
+		startVideoPlayback();
 	}
 
 	public void onDisconnect() {
-		stopVideo();
+		stopVideoPlayback();
 	}
 
 	private void setVideoListening(boolean i_bListening) {

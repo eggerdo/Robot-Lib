@@ -23,7 +23,7 @@ import robots.spykee.ctrl.SpykeeTypes.SpykeeSound;
 import android.os.Handler;
 import android.os.Message;
 
-public class Spykee extends DifferentialRobot implements IMoveRepeaterListener {
+public class Spykee extends DifferentialRobot implements ISpykee, IMoveRepeaterListener {
 	
 	private static final String TAG = "Spykee";
 	
@@ -38,12 +38,12 @@ public class Spykee extends DifferentialRobot implements IMoveRepeaterListener {
 
 	private double m_dblBaseSpeed = 50.0;
 	
-	private boolean m_bVideoEnabled;
+//	private boolean m_bVideoEnabled;
 	private boolean m_bAudioEnabled;
 	
 	private int m_nBatteryLevel = -1;
 
-	private int m_nInvertFactor = -1;	// normal = 1, inverted = -1
+	private int m_nInvertFactor = 1;	// normal = 1, inverted = -1
 	
 	private Handler m_oUiHandler;
 
@@ -376,12 +376,12 @@ public class Spykee extends DifferentialRobot implements IMoveRepeaterListener {
 		} else {
 			m_oController.stopVideo();
 		}
-		m_bVideoEnabled = i_bEnabled;
+//		m_bVideoEnabled = i_bEnabled;
 	}
 	
-	public boolean isVideoEnabled() {
-		return m_bVideoEnabled;
-	}
+//	public boolean isVideoEnabled() {
+//		return m_bVideoEnabled;
+//	}
 	
 	public void setAudioEnabled(boolean i_bEnabled) {
 		if (i_bEnabled) {
@@ -455,8 +455,23 @@ public class Spykee extends DifferentialRobot implements IMoveRepeaterListener {
 
 	@Override
 	public boolean toggleInvertDrive() {
-		// TODO Auto-generated method stub
-		return false;
+		setInverted(!isInverted());
+		return true;
+	}
+
+	@Override
+	public boolean isStreaming() {
+		return m_oController.isStreaming();
+	}
+
+	@Override
+	public void startVideo() {
+		m_oController.startVideo();
+	}
+
+	@Override
+	public void stopVideo() {
+		m_oController.stopVideo();
 	}
 
 }

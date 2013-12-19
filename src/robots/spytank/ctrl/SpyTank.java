@@ -14,7 +14,7 @@ import robots.ctrl.control.ICameraControlListener;
 import robots.ctrl.control.RobotDriveCommandListener;
 import android.os.Handler;
 
-public class SpyTank extends DifferentialRobot implements ICameraControlListener {
+public class SpyTank extends DifferentialRobot implements ISpyTank, ICameraControlListener {
 
 	private SpyTankController m_oController;
 	private ZmqVideoSender m_oVideoSender;
@@ -286,6 +286,11 @@ public class SpyTank extends DifferentialRobot implements ICameraControlListener
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public boolean isStreaming() {
+		return m_oController.isStreaming();
 	}
 
 }

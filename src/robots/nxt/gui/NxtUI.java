@@ -58,8 +58,6 @@ public class NxtUI extends BluetoothRobot {
 
 	private NxtSensorGatherer m_oSensorGatherer;
 
-	private RemoteControlHelper m_oRemoteCtrl;
-
 	private boolean m_bDebug;
 
 	private Button m_btnCalibrate;
@@ -85,8 +83,6 @@ public class NxtUI extends BluetoothRobot {
 
 	private RobotDriveCommandListener m_oRemoteListener;
 
-	private ZmqRemoteControlSender m_oZmqRemoteListener;
-	
 	public NxtUI(BaseActivity i_oOwner) {
 		super(i_oOwner);
 	}
@@ -109,9 +105,9 @@ public class NxtUI extends BluetoothRobot {
 		m_oSensorGatherer = new NxtSensorGatherer(this, m_oNxt);
 		m_dblSpeed = m_oNxt.getBaseSpeed();
 
-    	m_oZmqRemoteListener = new ZmqRemoteControlSender(getRobot().getID());
+		m_oZmqRemoteSender = new ZmqRemoteControlSender(getRobot().getID());
 		m_oRemoteCtrl = new ZmqRemoteControlHelper(m_oActivity);
-		m_oRemoteCtrl.setDriveControlListener(m_oZmqRemoteListener);
+		m_oRemoteCtrl.setDriveControlListener(m_oZmqRemoteSender);
         
         updateButtons(false);
         setDebug(false);
@@ -313,7 +309,7 @@ public class NxtUI extends BluetoothRobot {
 	}
 	
 	@Override
-	protected void setProperties(RobotType i_eRobot) {
+	protected void setLayout(RobotType i_eRobot) {
         m_oActivity.setContentView(R.layout.robot_nxt_main);
 
         // adapter is the same, for each sensor we can choose the same types

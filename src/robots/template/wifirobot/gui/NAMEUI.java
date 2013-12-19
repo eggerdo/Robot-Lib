@@ -30,7 +30,7 @@ public class NAMEUI extends WifiRobot {
 	}
 
 	@Override
-	protected void setProperties(RobotType i_eRobot) {
+	protected void setLayout(RobotType i_eRobot) {
 		// TODO Auto-generated method stub
 
 	}

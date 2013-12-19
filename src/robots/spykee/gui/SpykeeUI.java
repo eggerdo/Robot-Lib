@@ -20,6 +20,7 @@ package robots.spykee.gui;
 
 import org.dobots.R;
 import org.dobots.utilities.BaseActivity;
+import org.dobots.utilities.LockableScrollView;
 import org.dobots.utilities.Utils;
 import org.dobots.zmq.ZmqRemoteControlHelper;
 import org.dobots.zmq.ZmqRemoteControlSender;
@@ -28,7 +29,7 @@ import robots.RobotType;
 import robots.gui.SensorGatherer;
 import robots.gui.WifiRobot;
 import robots.gui.comm.IConnectListener;
-import robots.spykee.ctrl.Spykee;
+import robots.spykee.ctrl.ISpykee;
 import robots.spykee.ctrl.SpykeeController.DockState;
 import robots.spykee.ctrl.SpykeeMessageTypes;
 import robots.spykee.ctrl.SpykeeTypes;
@@ -52,7 +53,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-public class SpykeeRobot extends WifiRobot {
+public class SpykeeUI extends WifiRobot {
 
 	private static String TAG = "Spykee";
 
@@ -61,15 +62,15 @@ public class SpykeeRobot extends WifiRobot {
 	private static final int SETTINGS_ID = CONNECT_ID + 1;
 	private static final int INVERT_ID = SETTINGS_ID + 1;
 	private static final int ACCEL_ID = INVERT_ID + 1;
-	private static final int VIDEO_ID = ACCEL_ID + 1;
-	private static final int AUDIO_ID = VIDEO_ID + 1;
-	private static final int VIDEO_SCALE_ID = AUDIO_ID + 1;
+//	private static final int VIDEO_ID = ACCEL_ID + 1;
+	private static final int VIDEO_SCALE_ID = ACCEL_ID + 1;
+//	private static final int AUDIO_ID = VIDEO_ID + 1;
 	
 	private static final int REMOTE_CTRL_GRP = GENERAL_GRP + 1;
 	private static final int SENSOR_GRP = REMOTE_CTRL_GRP + 1;
 	private static final int VIDEO_GRP = SENSOR_GRP + 1	;
 
-	private Spykee m_oSpykee;
+	private ISpykee m_oSpykee = null;
 
 	private SpykeeSensorGatherer m_oSensorGatherer;
 
@@ -92,15 +93,11 @@ public class SpykeeRobot extends WifiRobot {
 	private String m_strPassword = null;
 	private boolean m_bSettingsValid = false;
 
-	private ZmqRemoteControlSender m_oZmqRemoteSender;
-
-	private ZmqRemoteControlHelper m_oRemoteCtrl;
-
-	public SpykeeRobot(BaseActivity i_oOwner) {
+	public SpykeeUI(BaseActivity i_oOwner) {
 		super(i_oOwner);
 	}
 	
-	public SpykeeRobot() {
+	public SpykeeUI() {
 		super();
 	}
 
@@ -112,10 +109,24 @@ public class SpykeeRobot extends WifiRobot {
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
 
-    	m_oSpykee = (Spykee) getRobot();
-    	m_oSpykee.setHandler(m_oUiHandler);
+    	// remote control helper, handles ui buttons and sends commands over zmq
+		m_oRemoteCtrl = new ZmqRemoteControlHelper(m_oActivity);
 		
+        updateButtons(false);
+
+        if (!checkConnectionSettings()) {
+        	showDialog(DIALOG_SETTINGS_ID);
+        }
+    }
+
+	@Override
+	public void onRobotCtrlReady() {
+
+    	m_oSpykee = (ISpykee) getRobot();
+    	m_oSpykee.setHandler(m_oUiHandler);
+
 		m_oSensorGatherer = new SpykeeSensorGatherer(this, m_oSpykee);
+
 		m_dblSpeed = m_oSpykee.getBaseSpeed();
 
     	m_oZmqRemoteSender = new ZmqRemoteControlSender(m_oSpykee.getID()) {
@@ -128,29 +139,25 @@ public class SpykeeRobot extends WifiRobot {
 				Utils.showLayout(m_layControls, i_bEnable);
 			}
 		};
-
-    	// remote control helper, handles ui buttons and sends commands over zmq
-		m_oRemoteCtrl = new ZmqRemoteControlHelper(m_oActivity);
 		m_oRemoteCtrl.setDriveControlListener(m_oZmqRemoteSender);
-		
-        updateButtons(false);
 
+        loadSettings();
+        
         if (m_oSpykee.isConnected()) {
 			updateButtons(true);
 		} else {
-			connectToRobot();
+			if (checkConnectionSettings()) {
+				connectToRobot();
+			}
 		}
-    }
-
-	@Override
-	public void onRobotCtrlReady() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
-	protected void setProperties(RobotType i_eRobot) {
+	protected void setLayout(RobotType i_eRobot) {
     	m_oActivity.setContentView(R.layout.robot_spykee_main);
+    	
+    	LockableScrollView sv = (LockableScrollView)m_oActivity.findViewById(R.id.scrollview);
+    	sv.setDrawingCacheEnabled(false);
 
     	m_layControls = (LinearLayout) m_oActivity.findViewById(R.id.layControls);
     	
@@ -245,18 +252,24 @@ public class SpykeeRobot extends WifiRobot {
 		}
 		
 	}
+	
+	@Override
+	public void onDestroy() {
+		saveSettings();
+		super.onDestroy();
+	}
 
     @Override
     public void onStop() {
     	
 		// first disable video and audio ...
-    	if (m_oSpykee.isVideoEnabled()) {
-    		m_oSpykee.setVideoEnabled(false);
+    	if (m_oSpykee.isStreaming()) {
+    		m_oSpykee.stopVideo();
     	}
     	
-    	if (m_oSpykee.isAudioEnabled()) {
-    		m_oSpykee.setAudioEnabled(false);
-    	}
+//    	if (m_oSpykee.isAudioEnabled()) {
+//    		m_oSpykee.setAudioEnabled(false);
+//    	}
 
 		// ... then disconnect
     	super.onStop();
@@ -266,13 +279,13 @@ public class SpykeeRobot extends WifiRobot {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 
-		menu.add(REMOTE_CTRL_GRP, INVERT_ID, 3, "Invert Driving");
+		menu.add(REMOTE_CTRL_GRP, INVERT_ID, 3, "Invert Driving ON");
 		menu.add(REMOTE_CTRL_GRP, ACCEL_ID, 4, "Accelerometer");
 		
-		menu.add(SENSOR_GRP, VIDEO_ID, 6, "Video");
-		menu.add(SENSOR_GRP, AUDIO_ID, 7, "Audio");
+//		menu.add(SENSOR_GRP, VIDEO_ID, 6, "Video");
+//		menu.add(SENSOR_GRP, AUDIO_ID, 7, "Audio");
 
-		menu.add(VIDEO_GRP, VIDEO_SCALE_ID, 8, "Scale Video");
+		menu.add(VIDEO_GRP, VIDEO_SCALE_ID, 8, "Scale Video OFF");
 
 		menu.add(GENERAL_GRP, SETTINGS_ID, 9, "Settings");
 		
@@ -285,13 +298,13 @@ public class SpykeeRobot extends WifiRobot {
     	
     	menu.setGroupVisible(REMOTE_CTRL_GRP, m_oSpykee.isConnected() && m_oRemoteCtrl.isControlEnabled());
     	menu.setGroupVisible(SENSOR_GRP, m_oSpykee.isConnected());
-    	menu.setGroupVisible(VIDEO_GRP, m_oSpykee.isConnected() && m_oSpykee.isVideoEnabled());
+    	menu.setGroupVisible(VIDEO_GRP, m_oSpykee.isConnected() && m_oSpykee.isStreaming());
     	
     	Utils.updateOnOffMenuItem(menu.findItem(ACCEL_ID), m_bAccelerometer);
     	Utils.updateOnOffMenuItem(menu.findItem(INVERT_ID), m_oSpykee.isInverted());
-    	Utils.updateOnOffMenuItem(menu.findItem(VIDEO_ID), m_oSpykee.isVideoEnabled());
-    	Utils.updateOnOffMenuItem(menu.findItem(AUDIO_ID), m_oSpykee.isAudioEnabled());
+//    	Utils.updateOnOffMenuItem(menu.findItem(VIDEO_ID), m_oSpykee.isStreaming());
     	Utils.updateOnOffMenuItem(menu.findItem(VIDEO_SCALE_ID), m_oSensorGatherer.isVideoScaled());
+//    	Utils.updateOnOffMenuItem(menu.findItem(AUDIO_ID), m_oSpykee.isAudioEnabled());
     	
 		return true;
     }
@@ -314,13 +327,13 @@ public class SpykeeRobot extends WifiRobot {
 				m_oSpykee.moveStop();
 			}
 			break;
-		case VIDEO_ID:
-			if (m_oSensorGatherer.isStopped()) {
-				m_oSensorGatherer.startVideo();
-			} else {
-				m_oSensorGatherer.stopVideo();
-			}
-			break;
+//		case VIDEO_ID:
+//			if (m_oSensorGatherer.isStopped()) {
+//				m_oSensorGatherer.startVideo();
+//			} else {
+//				m_oSensorGatherer.stopVideo();
+//			}
+//			break;
 		case VIDEO_SCALE_ID:
 			m_oSensorGatherer.setVideoScaled(!m_oSensorGatherer.isVideoScaled());
 			break;
@@ -348,7 +361,7 @@ public class SpykeeRobot extends WifiRobot {
 	@Override
 	protected void connect() {
 		
-        if (checkSettings()) {
+        if (checkConnectionSettings()) {
         	m_oSpykee.setConnection(m_strAddress, m_strPort, m_strLogin, m_strPassword);
 			m_oSpykee.connect();
 		} else {
@@ -357,8 +370,8 @@ public class SpykeeRobot extends WifiRobot {
 		}
 	}
 
-	public static void connectToSpykee(final BaseActivity m_oOwner, Spykee i_oSpykee, final IConnectListener i_oConnectListener) {
-		SpykeeRobot m_oRobot = new SpykeeRobot(m_oOwner) {
+	public static void connectToSpykee(final BaseActivity m_oOwner, ISpykee i_oSpykee, final IConnectListener i_oConnectListener) {
+		SpykeeUI m_oRobot = new SpykeeUI(m_oOwner) {
 			public void onConnect() {
 				i_oConnectListener.onConnect(true);
 			};
@@ -374,7 +387,7 @@ public class SpykeeRobot extends WifiRobot {
 		}
 
 		i_oSpykee.setHandler(m_oRobot.getUIHandler());
-		i_oSpykee.setConnection("192.168.1.101", "9000", "admin", "IcePizza");
+//		i_oSpykee.setConnection("192.168.1.101", "9000", "admin", "");
 		i_oSpykee.connect();
 	}
 
@@ -415,7 +428,7 @@ public class SpykeeRobot extends WifiRobot {
         	builder.setView(layout);
         	builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
     			public void onClick(DialogInterface arg0, int arg1) {
-    				adjustConnection();
+    				adjustConnectionSettings();
     			}
     		});
         	m_dlgConnectDialog = builder.create();
@@ -451,9 +464,12 @@ public class SpykeeRobot extends WifiRobot {
     	}
     }
     
-    private boolean checkSettings() {
+    private boolean checkConnectionSettings() {
 		// Read the login settings (if any) from the preferences file.
+    	
 		SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+		
+		// CONNECTION SETTINGS
 		m_strAddress = prefs.getString(SpykeeTypes.SPYKEE_PREFS_ADDRESS, SpykeeTypes.SPYKEE_DEFAULT_ADDRESS);
 		m_strPort = prefs.getString(SpykeeTypes.SPYKEE_PREFS_PORT, SpykeeTypes.SPYKEE_DEFAULT_PORT);
 		m_strLogin = prefs.getString(SpykeeTypes.SPYKEE_PREFS_LOGIN, SpykeeTypes.SPYKEE_DEFAULT_LOGIN);
@@ -466,7 +482,9 @@ public class SpykeeRobot extends WifiRobot {
 		return m_bSettingsValid;
     }
 
-    private void adjustConnection() {
+    private void adjustConnectionSettings() {
+
+		// CONNECTION SETTINGS
     	// Read the login settings from the text fields.
     	EditText editText = (EditText) m_dlgConnectDialog.findViewById(R.id.txtAddress);
 		String strAddress = editText.getText().toString();
@@ -486,9 +504,38 @@ public class SpykeeRobot extends WifiRobot {
 		editor.putString(SpykeeTypes.SPYKEE_PREFS_PASSWORD, strPassword);
 		editor.commit();
 		
-		if (!checkSettings()) {
+		if (!checkConnectionSettings()) {
 			showToast("Connection Settings not valid, please check again!", Toast.LENGTH_LONG);
+		} else {
+			if (m_oSpykee != null) {
+				connectToRobot();
+			}
 		}
+    }
+
+	private static final String PREFS_INVERTDRIVING = "invert_driving";
+	private static final boolean DEF_INVERTDRIVING = false;
+	
+    private void saveSettings() {
+		SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+		SharedPreferences.Editor editor = prefs.edit();
+		
+		editor.putBoolean(String.format("%s_%s", "spykee", PREFS_INVERTDRIVING), m_oSpykee.isInverted());
+		m_oRemoteCtrl.saveSettings(editor, "spykee");
+		m_oSensorGatherer.saveSettings(editor, "spykee");
+		
+		editor.commit();
+    }
+    
+    private void loadSettings() {
+
+		SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+		
+		boolean invertDriving = prefs.getBoolean(String.format("%s_%s", "spykee", PREFS_INVERTDRIVING), DEF_INVERTDRIVING);
+		m_oSpykee.setInverted(invertDriving);
+		
+		m_oRemoteCtrl.loadSettings(prefs, "spykee");
+		m_oSensorGatherer.loadSettings(prefs, "spykee");
     }
 
 }

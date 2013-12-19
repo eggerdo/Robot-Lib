@@ -14,7 +14,6 @@ import java.util.TimerTask;
 import org.dobots.zmq.video.IRawVideoListener;
 
 import robots.ctrl.WifiRobotController;
-import android.util.Log;
 
 public class SpyTankController extends WifiRobotController {
 	
@@ -59,11 +58,13 @@ public class SpyTankController extends WifiRobotController {
 	}
 	
 	public void setConnection(String address, int commandPort, int mediaPort) {
+		debug(TAG, "setConnection, address= %s, cmd port= %d, media port= %d", address, commandPort, mediaPort);
 		super.setConnection(address, commandPort);
 		m_nMediaPort = mediaPort;
 	}
 
 	public boolean connect() throws IOException {
+		debug(TAG, "connect ...");
 		if (super.connect()) {
 			if (m_bStreaming) {
 				connectMedia();
@@ -74,6 +75,7 @@ public class SpyTankController extends WifiRobotController {
 	}
 
 	private void connectMedia() throws IOException {
+		debug(TAG, "connect media ...");
 		URL url = new URL(String.format("http://%s:%d", getAddress(), m_nMediaPort));
 		HttpURLConnection mediaCon = (HttpURLConnection) url.openConnection();
 		m_oMediaIn = new DataInputStream(new BufferedInputStream(mediaCon.getInputStream()));
@@ -104,6 +106,7 @@ public class SpyTankController extends WifiRobotController {
 	}
 	
 	private void disconnectMedia() {
+		debug(TAG, "disconnect media ...");
 		m_bRun = false;
 		try {
 			if (m_oMediaIn != null) {
@@ -176,7 +179,7 @@ public class SpyTankController extends WifiRobotController {
 	
 	public void startVideo() {
 		if (!m_bStreaming && isConnected()) {
-			Log.d(TAG, "startVideo");
+			debug(TAG, "startVideo");
 			
 			try {
 				connectMedia();
@@ -190,10 +193,14 @@ public class SpyTankController extends WifiRobotController {
 
 	public void stopVideo() {
 		if (m_bStreaming) {
-			Log.d(TAG, "stopVideo");
+			debug(TAG, "stopVideo");
 			disconnectMedia();
 			m_bStreaming = false;
 		}
+	}
+	
+	public boolean isStreaming() {
+		return m_bStreaming;
 	}
 	
 	public void keepAlive() {
@@ -202,54 +209,64 @@ public class SpyTankController extends WifiRobotController {
 	}
 	
 	public void cameraDown() throws IOException {
+		debug(TAG, "camera down ...");
 		motor(SpyTankTypes.CAMERA, SpyTankTypes.DOWN);
 	}
 
 	public void cameraStop() throws IOException {
+		debug(TAG, "camera stop ...");
 		motor(SpyTankTypes.CAMERA, SpyTankTypes.STOP);
 	}
 
 	public void cameraUp() throws IOException {
+		debug(TAG, "camera up ...");
 		motor(SpyTankTypes.CAMERA, SpyTankTypes.UP);
 	}
 	
 	public void moveForward(int i_nVelocity) {
+		debug(TAG, "moveForward(%d)", i_nVelocity);
 		// there is only one velocity, either 0 or 100%
 		moveLeftForward(i_nVelocity);
 		moveRightForward(i_nVelocity);
 	}
 
 	public void moveForward(int i_nLeftVelocity, int i_nRightVelocity) {
+		debug(TAG, "moveForward(%d, %d)", i_nLeftVelocity, i_nRightVelocity);
 		// there is only one velocity, either 0 or 100%
 		moveLeftForward(i_nLeftVelocity);
 		moveRightForward(i_nRightVelocity);
 	}
 	
 	public void moveBackward(int i_nVelocity) {
+		debug(TAG, "moveBackward(%d)", i_nVelocity);
 		// there is only one velocity, either 0 or 100%
 		moveLeftBackward(i_nVelocity);
 		moveRightBackward(i_nVelocity);
 	}
 
 	public void moveBackward(int i_nLeftVelocity, int i_nRightVelocity) {
+		debug(TAG, "moveBackward(%d)", i_nLeftVelocity, i_nRightVelocity);
 		// there is only one velocity, either 0 or 100%
 		moveLeftBackward(i_nLeftVelocity);
 		moveRightBackward(i_nRightVelocity);
 	}
 
 	public void rotateLeft(int i_nVelocity) {
+		debug(TAG, "rotateLeft(%d)", i_nVelocity);
 		// there is only one velocity, either 0 or 100%
 		moveLeftBackward(i_nVelocity);
 		moveRightForward(i_nVelocity);
 	}
 
 	public void rotateRight(int i_nVelocity) {
+		debug(TAG, "rotateRight(%d)", i_nVelocity);
 		// there is only one velocity, either 0 or 100%
 		moveRightBackward(i_nVelocity);
 		moveLeftForward(i_nVelocity);
 	}
 
 	public void moveStop() {
+		debug(TAG, "moveStop()");
 		moveLeftStop();
 		moveRightStop();
 	}
@@ -301,6 +318,7 @@ public class SpyTankController extends WifiRobotController {
 
 	@Override
 	public void disconnect() throws IOException {
+		debug(TAG, "disconnect ...");
 		if (m_bStreaming) {
 			disconnectMedia();
 		}

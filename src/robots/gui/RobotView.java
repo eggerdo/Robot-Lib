@@ -4,6 +4,8 @@ import org.dobots.utilities.AccelerometerManager;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.IAccelerometerListener;
 import org.dobots.utilities.ProgressDlg;
+import org.dobots.zmq.ZmqRemoteControlHelper;
+import org.dobots.zmq.ZmqRemoteControlSender;
 
 import robots.RobotType;
 import robots.ctrl.IRobotDevice;
@@ -23,7 +25,7 @@ import android.widget.Toast;
 
 public abstract class RobotView extends BaseActivity implements IAccelerometerListener {
 	
-	protected static final int CONNECT_ID = Menu.FIRST;
+	protected static final int CONNECT_ID = Menu.NONE;
 
 	protected static final int GENERAL_GRP = 0;
 
@@ -55,7 +57,10 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
 	protected ProgressDialog connectingProgressDialog;
 
 	protected boolean btErrorPending = false;
-	
+
+	protected ZmqRemoteControlSender m_oZmqRemoteSender;
+	protected ZmqRemoteControlHelper m_oRemoteCtrl;
+
 	public RobotView(BaseActivity i_oOwner) {
 		m_oActivity = i_oOwner;
 	}
@@ -124,7 +129,7 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
 		
 		getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
 		
-        setProperties(m_eRobot);
+        setLayout(m_eRobot);
         
         onLoad();
 	}
@@ -194,7 +199,7 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
     @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		menu.add(GENERAL_GRP, CONNECT_ID, 1, "Connect");
+		menu.add(GENERAL_GRP, CONNECT_ID, CONNECT_ID, "Connect");
 		
 		return true;
     }
@@ -340,7 +345,7 @@ public abstract class RobotView extends BaseActivity implements IAccelerometerLi
     	}
 	}
 
-	protected abstract void setProperties(RobotType i_eRobot);
+	protected abstract void setLayout(RobotType i_eRobot);
 	
 	protected void shutDown() {
 		

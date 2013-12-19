@@ -19,7 +19,7 @@ package org.dobots.zmq;
 import org.dobots.lib.comm.msg.RoboCommands.BaseCommand;
 import org.zeromq.ZMQ;
 
-import robots.ctrl.RemoteControlSender;
+import robots.ctrl.control.RemoteControlSender;
 
 public class ZmqRemoteControlSender extends RemoteControlSender {
 

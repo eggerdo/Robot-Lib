@@ -30,7 +30,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-public class RoboScooperRobot extends BluetoothRobot {
+public class RoboScooperUI extends BluetoothRobot {
 	
 	private static String TAG = "RoboScooper";
 	
@@ -60,16 +60,11 @@ public class RoboScooperRobot extends BluetoothRobot {
 
 	private RobotDriveCommandListener m_oRemoteListener;
 
-	private ZmqRemoteControlSender m_oZmqRemoteSender;
-
-	private ZmqRemoteControlHelper m_oRemoteCtrl;
-
-	
-	public RoboScooperRobot(BaseActivity m_oOwner) {
+	public RoboScooperUI(BaseActivity m_oOwner) {
 		super(m_oOwner);
 	}
 	
-	public RoboScooperRobot() {
+	public RoboScooperUI() {
 		super();
 	}
 
@@ -122,7 +117,7 @@ public class RoboScooperRobot extends BluetoothRobot {
 	}
 
 	@Override
-	protected void setProperties(RobotType i_eRobot) {
+	protected void setLayout(RobotType i_eRobot) {
         m_oActivity.setContentView(R.layout.robot_roboscooper_main);
 
         m_layControls = (LinearLayout) findViewById(R.id.layControls);
@@ -314,7 +309,7 @@ public class RoboScooperRobot extends BluetoothRobot {
 	}
 
 	public static void connectToRoboScooper(final BaseActivity m_oOwner, RoboScooper i_oRoboScooper, BluetoothDevice i_oDevice, final IConnectListener i_oConnectListener) {
-		RoboScooperRobot m_oRobot = new RoboScooperRobot(m_oOwner) {
+		RoboScooperUI m_oRobot = new RoboScooperUI(m_oOwner) {
 			public void onConnect() {
 				i_oConnectListener.onConnect(true);
 			};

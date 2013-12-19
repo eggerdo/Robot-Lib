@@ -10,10 +10,10 @@ import robots.piratedotty.ctrl.PirateDottyTypes;
 import robots.piratedotty.gui.PirateDottyUI;
 import robots.replicator.gui.ReplicatorUI;
 import robots.roboscooper.ctrl.RoboScooperTypes;
-import robots.roboscooper.gui.RoboScooperRobot;
+import robots.roboscooper.gui.RoboScooperUI;
 import robots.romo.gui.RomoUI;
 import robots.roomba.ctrl.RoombaTypes;
-import robots.roomba.gui.RoombaRobot;
+import robots.roomba.gui.RoombaUI;
 import robots.rover.ac13.gui.AC13RoverUI;
 import robots.rover.rover2.gui.Rover2UI;
 import robots.spytank.gui.SpyTankUI;
@@ -37,13 +37,13 @@ public class RobotViewFactory {
 	public static Class getRobotViewClass(RobotType i_eRobot) {
 		switch (i_eRobot) {
 		case RBT_ROOMBA:
-			return RoombaRobot.class;
+			return RoombaUI.class;
 		case RBT_NXT:
 			return NxtUI.class;
 //		case RBT_DOTTY:
 //			return DottyRobot.class;
 		case RBT_ROBOSCOOPER:
-			return RoboScooperRobot.class;
+			return RoboScooperUI.class;
 //		case RBT_SPYKEE:
 //			return SpykeeRobot.class;
 		case RBT_AC13ROVER:

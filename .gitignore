@@ -35,3 +35,6 @@ lint.xml
 # including SO files in every project that uses the library
 libs/armeabi/
 libs/armeabi-v7a/
+
+# git merge files
+*.orig

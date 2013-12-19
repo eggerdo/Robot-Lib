@@ -42,9 +42,9 @@ public class AC13RoverUI extends RoverBaseUI {
     }
 
 	@Override
-	protected void setProperties(RobotType i_eRobot) {
+	protected void setLayout(RobotType i_eRobot) {
     	m_oActivity.setContentView(R.layout.robot_ac13rover_main);
-    	super.setProperties(i_eRobot);
+    	super.setLayout(i_eRobot);
 	}
 
 	@Override

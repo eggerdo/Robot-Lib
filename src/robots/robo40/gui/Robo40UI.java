@@ -28,7 +28,7 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
-public class Robo40Robot extends BluetoothRobot {
+public class Robo40UI extends BluetoothRobot {
 
 	private static String TAG = "Robo40";
 	
@@ -57,11 +57,11 @@ public class Robo40Robot extends BluetoothRobot {
 
 	private RobotDriveCommandListener m_oRemoteListener;
 
-	public Robo40Robot(BaseActivity i_oOwner) {
+	public Robo40UI(BaseActivity i_oOwner) {
 		super(i_oOwner);
 	}
 	
-	public Robo40Robot() {
+	public Robo40UI() {
 		super();
 	}
 
@@ -114,7 +114,7 @@ public class Robo40Robot extends BluetoothRobot {
 	}
 	
     @Override
-	protected void setProperties(RobotType i_eRobot) {
+	protected void setLayout(RobotType i_eRobot) {
         m_oActivity.setContentView(R.layout.robot_robo40_main);
         
         m_edtMotor1 = (TextView) findViewById(R.id.edtRobo40Motor1);
@@ -276,7 +276,7 @@ public class Robo40Robot extends BluetoothRobot {
 	}
 
 	public static void connectToRobo40(final BaseActivity m_oOwner, Robo40 i_oRobo40, BluetoothDevice i_oDevice, final IConnectListener i_oConnectListener) {
-		Robo40Robot m_oRobot = new Robo40Robot(m_oOwner) {
+		Robo40UI m_oRobot = new Robo40UI(m_oOwner) {
 			public void onConnect() {
 				i_oConnectListener.onConnect(true);
 			};

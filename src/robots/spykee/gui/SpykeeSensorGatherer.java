@@ -2,11 +2,14 @@ package robots.spykee.gui;
 
 import org.dobots.R;
 import org.dobots.utilities.BaseActivity;
+import org.dobots.zmq.video.gui.VideoSurfaceView.DisplayMode;
 
 import robots.gui.VideoSensorGatherer;
-import robots.spykee.ctrl.Spykee;
+import robots.spykee.ctrl.ISpykee;
 import robots.spykee.ctrl.SpykeeController.DockState;
 import robots.spykee.ctrl.SpykeeMessageTypes;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Handler;
 import android.os.Message;
 import android.widget.TextView;
@@ -20,9 +23,11 @@ public class SpykeeSensorGatherer extends VideoSensorGatherer {
 	
 //	protected VideoHelper mVideoHelper;
 
-	public SpykeeSensorGatherer(BaseActivity i_oActivity, Spykee i_oSpykee) {
+	public SpykeeSensorGatherer(BaseActivity i_oActivity, ISpykee i_oSpykee) {
 		super(i_oActivity, i_oSpykee, "SpykeeSensorGatherer");
 //		m_oSpykee = i_oSpykee;
+		
+		mVideoHelper.setDisplayMode(DisplayMode.SCALED_WIDTH);
 		
 		setProperties();
 
@@ -97,5 +102,29 @@ public class SpykeeSensorGatherer extends VideoSensorGatherer {
 			break;
 		}
 	}
+	
+	public void setVideoScaled(boolean scaled) {
+		if (scaled) {
+			mVideoHelper.setDisplayMode(DisplayMode.SCALED_WIDTH);
+		} else {
+			mVideoHelper.setDisplayMode(DisplayMode.NORMAL);
+		}
+	}
+	
+	public boolean isVideoScaled() {
+		return mVideoHelper.getDisplayMode() == DisplayMode.SCALED_WIDTH;
+	}
+	
+	private static final String PREFS_SCALEVIDEO = "scale_video";
+	private static final boolean DEF_SCALEVIDEO = true;
 
+	public void loadSettings(SharedPreferences prefs, String suffix) {
+		boolean scaleVideo = prefs.getBoolean(String.format("%s_%s", suffix, PREFS_SCALEVIDEO), DEF_SCALEVIDEO);
+		setVideoScaled(scaleVideo);
+	}
+
+	public void saveSettings(Editor editor, String suffix) {
+		editor.putBoolean(String.format("%s_%s", suffix, PREFS_SCALEVIDEO), isVideoScaled());
+	}
+	
 }

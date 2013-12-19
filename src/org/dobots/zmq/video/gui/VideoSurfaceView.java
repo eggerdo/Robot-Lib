@@ -39,6 +39,7 @@ import android.view.Gravity;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
+import android.view.View;
 import android.widget.FrameLayout.LayoutParams;
 
 public class VideoSurfaceView extends SurfaceView implements IVideoListener, IRawVideoListener, Callback {
@@ -47,12 +48,16 @@ public class VideoSurfaceView extends SurfaceView implements IVideoListener, IRa
 
 	/**
 	 * Mode in which the frame should be displayed on the screen:
-	 *   NORMAL: the frame will be displayed with the dimensions as received
-	 *	 SCALED: the frame will be scaled so that it fits inside the given space. proportions will be kept
-	 *   FILLED: the frame will be scaled so that it fills the given space. proportions will be discarded.
+	 *   NORMAL			: the frame will be displayed with the dimensions as received
+	 *   FILLED			: the frame will be scaled so that it fills the given space. proportions will be discarded.
+	 *	 SCALED			: the frame will be scaled so that it fits inside the given space. proportions will be kept
+	 *	 SCALED_WIDTH	: the frame will be scaled so that the width corresponds to the available width. the height
+	 *					    of the view will be adjusted if necessary. proportions will be kept.  
+	 *	 SCALED_HEIGHT	: the frame will be scaled so that the height corresponds to the available height. the width
+	 *					    of the view will be adjusted if necessary. proportions will be kept.
 	 */
 	public enum DisplayMode {
-		NORMAL, SCALED, FILLED
+		NORMAL, FILLED, SCALED, SCALED_WIDTH, SCALED_HEIGHT
 	}
 	
 	private DisplayMode mMode;
@@ -72,7 +77,9 @@ public class VideoSurfaceView extends SurfaceView implements IVideoListener, IRa
 	private byte[] mCurrentRgb = null;
 	private int mCurrentRotation = 0;
 	private Object mLock = new Object();
-	
+
+	private boolean mSurfaceReady;	
+
 	public VideoSurfaceView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		mPainter = new Paint();
@@ -92,9 +99,12 @@ public class VideoSurfaceView extends SurfaceView implements IVideoListener, IRa
 	
 	public void setDisplayMode(DisplayMode eMode) {
 		mMode = eMode;
-//		requestLayout();
 	}
 
+	public DisplayMode getDisplayMode() {
+		return mMode;
+	}
+	
 	public void setMaxWidth(int i_nMaxWidth) {
 		m_nMaxWidth = i_nMaxWidth;
 	}
@@ -142,18 +152,15 @@ public class VideoSurfaceView extends SurfaceView implements IVideoListener, IRa
 				try {
 					ByteArrayInputStream stream = new ByteArrayInputStream(rgb);
 					
+					// if the rotation parameter provided by the callback function onFrame is
+					// -1 we try to get the rotation from the EXIF metadata
 					if (rotation == -1) {
 						rotation = ExifUtils.getExifRotation(rgb);
 					}
 					Bitmap frame = BitmapFactory.decodeStream(stream);
-					
-					// if not already, initialize the size in which the frame should
-					// be displayed
-//					if (!mSizeInitialized) {
-						setSize(frame, rotation);
-//						invalidate();
-//						requestLayout();
-//					} 
+
+					// update the size based on the display mode and the bitmap dimensions
+					setSize(frame, rotation);
 					
 					// recycle the old frame before assigning the new
 					if (mCurrentFrame != null) {
@@ -177,18 +184,17 @@ public class VideoSurfaceView extends SurfaceView implements IVideoListener, IRa
 		
 		@Override
 		public void onFPS(int i_nFPS) {
-			Log.d("ZmqVideo", String.format("fps dec: %d", i_nFPS));
+			Log.d(TAG, String.format("fps dec: %d", i_nFPS));
 		}
 	});
 
-	private boolean mSurfaceReady;	
-
 	private void setSize(Bitmap bmp, int rotation) {
-		
-		Log.d("debug", "setSize start");
 		
 		int oldDispWidth = mDispWidth;
 		int oldDispHeight = mDispHeight;
+
+		int parentWidth = ((View)getParent()).getWidth();
+		int parentHeight = ((View)getParent()).getHeight();
 		
 		// if frame is rotated by 90 or 270 we need to swap
 		// height and width
@@ -200,11 +206,39 @@ public class VideoSurfaceView extends SurfaceView implements IVideoListener, IRa
 			mBmpWidth = bmp.getHeight();
 		}
 		
-		mDispWidth = getWidth();
-		mDispHeight = getHeight();
-
 		switch(mMode) {
+		
+		case SCALED_HEIGHT:
+			// set the height equal to the parent (we cannot use MATCH_PARENT otherwise
+			// calculation of the width will fail)
+			mDispHeight = parentHeight;
+
+			if (m_nMaxHeight != 0) {
+				mDispHeight = Math.min(mDispHeight, m_nMaxHeight);
+			}
+
+			mDispWidth = (int)(mBmpWidth * (double)mDispHeight / mBmpHeight);
+			break;
+			
+		case SCALED_WIDTH:
+			// set the width equal to the parent (we cannot use MATCH_PARENT otherwise
+			// calculation of the height will fail)
+			mDispWidth = parentWidth;
+			
+			// check if max width / height is set
+			if (m_nMaxWidth != 0) {
+				mDispWidth = Math.min(mDispWidth, m_nMaxWidth);
+			}
+			
+			// scale the height based on the width
+			mDispHeight = (int)(mBmpHeight * (double)mDispWidth / mBmpWidth);
+			break;
+			
 		case SCALED:
+			// set the width equal to the parent (we cannot use MATCH_PARENT otherwise
+			// calculation of the height will fail)
+			mDispWidth = parentWidth;
+			
 			// check if max width / height is set
 			if (m_nMaxWidth != 0) {
 				mDispWidth = Math.min(mDispWidth, m_nMaxWidth);
@@ -216,35 +250,28 @@ public class VideoSurfaceView extends SurfaceView implements IVideoListener, IRa
 			// scale the height based on the width
 			mDispHeight = (int)(mBmpHeight * (double)mDispWidth / mBmpWidth);
 			
-			// if the height would be greater than the available height
+			// if the height would be greater than the parent height
 			// we rescale the width based on the height
-			
-			if ((getHeight() != 0) && (mDispHeight > getHeight())) {
-				mDispHeight = getHeight();
+			if ((getHeight() != 0) && (mDispHeight > parentHeight)) {
+				mDispHeight = parentHeight;
 				mDispWidth = (int)(mBmpWidth * (double)mDispHeight / mBmpHeight);
 			}
 			break;
+
 		case FILLED:
-			// nothing to do, we just keep the width and height values already assigned above
+			// we use the parent's width and height
+			// it's not possible to use MATCH_PARENT or the drawing (in particular calculating the
+			// scaling factor) will fail
+			mDispWidth = parentWidth;
+			mDispHeight = parentHeight;
 			break;
+			
 		default:
 			// we display the frame as it is
 			mDispHeight = mBmpHeight;
 			mDispWidth = mBmpWidth;
 			
 		}
-		
-//		// if only the height is 0, then the layout was set to wrap_content, so we force
-//		// the view to take the height we calculated
-//		if (getHeight() == 0) {
-//			Utils.runAsyncUiTask(new Runnable() {
-//				
-//				@Override
-//				public void run() {
-//					setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, mDispHeight));
-//				}
-//			});
-//		}
 		
 		// if the calculated display size changed we need to updated the layout with the new
 		// width and height
@@ -292,8 +319,6 @@ public class VideoSurfaceView extends SurfaceView implements IVideoListener, IRa
 			}
 		} else {
 			Log.e(TAG, "failed to get canvas!");
-//			invalidate();
-//			requestLayout();
 		}
 	}
 
@@ -322,5 +347,5 @@ public class VideoSurfaceView extends SurfaceView implements IVideoListener, IRa
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		mSurfaceReady = false;
 	}
-	
+
 }

@@ -55,9 +55,9 @@ public class Rover2UI extends RoverBaseUI {
     }
     
 	@Override
-	protected void setProperties(RobotType i_eRobot) {
+	protected void setLayout(RobotType i_eRobot) {
     	m_oActivity.setContentView(R.layout.robot_rover2_main);
-    	super.setProperties(i_eRobot);
+    	super.setLayout(i_eRobot);
 
     	ToggleButton btnLight = (ToggleButton) findViewById(R.id.btnLight);
     	btnLight.setOnClickListener(new OnClickListener() {

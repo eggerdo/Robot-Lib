@@ -38,7 +38,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-public class RoombaRobot extends BluetoothRobot {
+public class RoombaUI extends BluetoothRobot {
 	
 	private static String TAG = "Roomba";
 
@@ -50,8 +50,6 @@ public class RoombaRobot extends BluetoothRobot {
 	private Roomba m_oRoomba;
 
 	private RoombaSensorGatherer m_oSensorGatherer;
-
-	private RemoteControlHelper m_oRemoteCtrl;
 
 	private boolean m_bMainBrushEnabled = false;
 	private boolean m_bSideBrushEnabled = false;
@@ -69,13 +67,11 @@ public class RoombaRobot extends BluetoothRobot {
 
 	private double m_dblSpeed;
 
-	private ZmqRemoteControlSender m_oZmqRemoteListener;
-
-	public RoombaRobot(BaseActivity i_oOwner) {
+	public RoombaUI(BaseActivity i_oOwner) {
 		super(i_oOwner);
 	}
 	
-	public RoombaRobot() {
+	public RoombaUI() {
 		super();
 	}
 
@@ -93,7 +89,7 @@ public class RoombaRobot extends BluetoothRobot {
 		m_oSensorGatherer = new RoombaSensorGatherer(m_oActivity, m_oRoomba);
 		m_dblSpeed = m_oRoomba.getBaseSpeed();
 
-    	m_oZmqRemoteListener = new ZmqRemoteControlSender(getRobot().getID()) {
+		m_oZmqRemoteSender = new ZmqRemoteControlSender(getRobot().getID()) {
 			
 			@Override
 			public void enableControl(boolean i_bEnable) {
@@ -105,7 +101,7 @@ public class RoombaRobot extends BluetoothRobot {
 		};
 		
 		m_oRemoteCtrl = new ZmqRemoteControlHelper(m_oActivity);
-		m_oRemoteCtrl.setDriveControlListener(m_oZmqRemoteListener);
+		m_oRemoteCtrl.setDriveControlListener(m_oZmqRemoteSender);
         
     	updateButtons(false);
     	updateControlButtons(false);
@@ -249,7 +245,7 @@ public class RoombaRobot extends BluetoothRobot {
 	}
 
 	public static void connectToRoomba(final BaseActivity m_oOwner, Roomba i_oRoomba, BluetoothDevice i_oDevice, final IConnectListener i_oConnectListener) {
-		RoombaRobot m_oRobot = new RoombaRobot(m_oOwner) {
+		RoombaUI m_oRobot = new RoombaUI(m_oOwner) {
 			public void onConnect() {
 				i_oConnectListener.onConnect(true);
 			};
@@ -277,7 +273,7 @@ public class RoombaRobot extends BluetoothRobot {
 	}
 
 	@Override
-	protected void setProperties(RobotType i_eRobot) {
+	protected void setLayout(RobotType i_eRobot) {
         m_oActivity.setContentView(R.layout.robot_roomba_main);
         
         m_spSensors = (Spinner) m_oActivity.findViewById(R.id.spSensors);

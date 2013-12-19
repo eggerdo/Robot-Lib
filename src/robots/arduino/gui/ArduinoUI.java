@@ -23,8 +23,6 @@ import android.widget.Button;
 public class ArduinoUI extends BluetoothRobot {
 
 	private IArduino mArduino;
-	private ZmqRemoteControlSender m_oZmqRemoteSender;
-	private ZmqRemoteControlHelper m_oRemoteCtrl;
 	private ArduinoSensorGatherer mSensorGatherer;
 	private Button btnSensorRequest;
 	
@@ -109,7 +107,7 @@ public class ArduinoUI extends BluetoothRobot {
 	}
 
 	@Override
-	protected void setProperties(RobotType i_eRobot) {
+	protected void setLayout(RobotType i_eRobot) {
         m_oActivity.setContentView(R.layout.arduino_main);
         
         btnSensorRequest = (Button) findViewById(R.id.btnSensorRequest);

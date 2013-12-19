@@ -19,6 +19,7 @@ import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMsg;
 
 import robots.ctrl.control.RemoteControlHelper;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 public class ZmqRemoteControlHelper extends RemoteControlHelper {
@@ -196,6 +197,5 @@ public class ZmqRemoteControlHelper extends RemoteControlHelper {
 			m_oReceiver = null;
 		}
 	}
-
 
 }

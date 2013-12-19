@@ -14,7 +14,7 @@
 * @project:		Robot-Lib
 * @company:		Distributed Organisms B.V.
 */
-package robots.ctrl;
+package robots.ctrl.control;
 
 import org.dobots.lib.comm.Move;
 import org.dobots.lib.comm.msg.RoboCommands;
@@ -24,8 +24,6 @@ import org.dobots.lib.comm.msg.RoboCommands.CameraCommandType;
 import org.dobots.lib.comm.msg.RoboCommands.ControlCommand;
 import org.dobots.lib.comm.msg.RoboCommands.DriveCommand;
 
-import robots.ctrl.control.ICameraControlListener;
-import robots.ctrl.control.IDriveControlListener;
 
 public abstract class RemoteControlSender implements IDriveControlListener, ICameraControlListener {
 

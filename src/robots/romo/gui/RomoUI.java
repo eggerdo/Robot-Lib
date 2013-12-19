@@ -22,9 +22,6 @@ public class RomoUI extends RobotView {
 	
 	private ImageButton m_btnCameraToggle;
 
-	private ZmqRemoteControlSender m_oZmqRemoteSender;
-	private ZmqRemoteControlHelper m_oRemoteCtrl;
-	
 	private RomoSensorGatherer m_oSensorGatherer;
 
 	
@@ -58,7 +55,7 @@ public class RomoUI extends RobotView {
     }
     
 	@Override
-	protected void setProperties(RobotType i_eRobot) {
+	protected void setLayout(RobotType i_eRobot) {
 
 		setContentView(R.layout.robot_romo_main);
 
@@ -72,7 +69,7 @@ public class RomoUI extends RobotView {
 				
 				@Override
 				public void onClick(View v) {
-					m_oZmqRemoteSender.toggleCamera();
+					m_oRemoteCtrl.toggleCamera();
 				}
 			});
 		}

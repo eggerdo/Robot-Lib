@@ -37,11 +37,11 @@ public abstract class RoverBaseSensorGatherer extends SensorGatherer {
 	}
 
 	protected void startVideo() {
-		mVideoHelper.onStartVideo();
+		mVideoHelper.onStartVideoPlayback();
 	}
 
 	protected void stopVideo() {
-		mVideoHelper.onStopVideo();
+		mVideoHelper.onStopVideoPlayback();
 	}
 		
 	public void onConnect() {
