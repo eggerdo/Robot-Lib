@@ -4,7 +4,9 @@ package robots.rover.ac13.ctrl;
 // taken from Ucetra's library (which can be found at 
 // https://sourceforge.net/projects/ac13javalibrary/)
 
+import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -18,10 +20,15 @@ import robots.rover.base.ctrl.RoverBaseTypes;
 public class AC13Controller extends RoverBaseController {
 	
 	public static final String TAG = "AC13Ctrl";
+
+	// defines the start of an image
+	private static final byte[] VIDEO_START = new byte[] { 'M', 'O', '_', 'V' };
 	
 	// TCP/IP sockets
 	private Socket cSock;
 	private Socket vSock;
+	
+	private DataInputStream mVideoIn;
 
 	// Infrared on/off
 	boolean infrared;
@@ -34,11 +41,10 @@ public class AC13Controller extends RoverBaseController {
 	int maxTCPBuffer = 2048;
 	int maxImageBuffer = 131072;
 	byte[] imageBuffer = new byte[maxImageBuffer];
-	int imagePtr = 0;
+	int imagePtr = -1;
 	int tcpPtr = 0;
 	
 	public AC13Controller() {
-
 		m_strTargetHost = AC13RoverTypes.ADDRESS;
 		m_nTargetPort = AC13RoverTypes.PORT;
 		targetId = AC13RoverTypes.ID;
@@ -58,7 +64,7 @@ public class AC13Controller extends RoverBaseController {
 	public boolean startStreaming() {
 		if (!m_bStreaming) {
 			m_bStreaming = true;
-			Thread vThread = new Thread(new VideoThread());
+			Thread vThread = new Thread(new VideoThread(), "AC13Video");
 			vThread.start();
 			return true;
 		} else {
@@ -107,6 +113,8 @@ public class AC13Controller extends RoverBaseController {
 			vSock = new Socket();
 			vSock.connect(sockaddr, CONNECT_TIMEOUT);
 			writeCmd(4, imgid);
+			
+			mVideoIn = new DataInputStream(new BufferedInputStream(vSock.getInputStream()));
 
 			requestAllParameters();
 			
@@ -132,6 +140,8 @@ public class AC13Controller extends RoverBaseController {
 			cSock.close();
 			vSock.close();
 			
+			mVideoIn = null;
+			
 			m_bConnected = false;
 			
 		} catch (Exception e) {
@@ -142,6 +152,7 @@ public class AC13Controller extends RoverBaseController {
 	}
 
 	public void keepAlive() {
+		debug(TAG, "keepAlive");
 		writeCmd(1, null);
 	}
 
@@ -251,63 +262,86 @@ public class AC13Controller extends RoverBaseController {
 		return buffer;
 	}
 
-	private boolean imgStart(byte[] start) {
-		return (start[0] == 'M' && start[1] == 'O' && start[2] == '_' && start[3] == 'V');
-	}
-
 	private void receiveImage() {
-		debug("ReceiveImage", "Get image");
+		if (!m_bConnected) {
+			return;
+		}
+
 		int len = 0;
 		int newPtr = tcpPtr;
 		int imageLength = 0;
+		int newImagePtr = -1;
+		
 		try {
 			boolean fnew = false;
 			while (!fnew && newPtr < maxImageBuffer - maxTCPBuffer) {
-				len = vSock.getInputStream().read(imageBuffer, newPtr,
-						maxTCPBuffer);
-				// todo: check if this happens too often and exit
+				// read a chunk of the image
+				len = mVideoIn.read(imageBuffer, newPtr, maxTCPBuffer);
+				
+				// TODO: check if this happens too often and exit
 				if (len <= 0) {
 					m_bConnected = false;
+					return;
 				}
-
-				byte[] f4 = new byte[4];
-				for (int i = 0; i < 4; i++)
-					f4[i] = imageBuffer[newPtr + i];
-				if (imgStart(f4) && (imageLength > 0))
-					fnew = true;
+				
+				// an image can be split into several messages, so
+				// look for the beginning of an image, defined by VIDEO_START
+				newImagePtr = findArray(imageBuffer, VIDEO_START, newPtr, len);
+				
+				// if found ...
+				if (newImagePtr != -1) {
+					// ... check if it is the first image received so far
+					if (imagePtr == -1) {
+						// ... assign the pointer to imagePtr and read
+						// the next chunck
+						imagePtr = newImagePtr;
+						continue;
+					} else {
+						// a new image start was found
+						fnew = true;
+						// image length is the length of the date between 
+						// the newImagePtr and the imagePtr 
+						imageLength = newImagePtr - imagePtr;
+					}
+				}
+				
+				// if we are still reading the current image
 				if (!fnew) {
+					// increase the pointer by the number of bytes read this round
 					newPtr += len;
-					imageLength = newPtr - imagePtr;
 				} else {
-					debug(TAG, "Total image size is "
-							+ (imageLength - 36));
-
+					// otherwise copy the image from the buffer
+					
 					byte[] rgb = new byte[imageLength - 36];
-//					Log.w(TAG, String.format("imagelen: %d", rgb.length));
 					System.arraycopy(imageBuffer, imagePtr + 36, rgb, 0, rgb.length);
+					
 					if (rgb.length > 0) {
+						// and send it to the listener
 						if (oVideoListener != null) {
 							oVideoListener.onFrame(rgb, 0);
 						}
 					}
+					
+					// check for buffer overflow
 					if (newPtr > maxImageBuffer / 2) {
-						// copy first chunk of new arrived image to start of
-						// array
-						for (int i = 0; i < len; i++)
-							imageBuffer[i] = imageBuffer[newPtr + i];
+						// copy everything since the last image to the
+						// beginning of the buffer
+						int length = newPtr + len - imagePtr;
+//						for (int i = 0; i < length; i++)
+//							imageBuffer[i] = imageBuffer[imagePtr + i];
+						System.arraycopy(imageBuffer, imagePtr, imageBuffer, 0, length);
+						
+						// and reset the pointers
 						imagePtr = 0;
-						tcpPtr = len;
+						tcpPtr = length;
 					} else {
-						imagePtr = newPtr;
+						// otherwise update the pointers
+						imagePtr = newImagePtr;
 						tcpPtr = newPtr + len;
 					}
-					debug("Var", "imagePtr =" + imagePtr);
-					debug("Var", "tcpPtr =" + tcpPtr);
-					debug("Var", "imageLength =" + imageLength);
-					debug("Var", "newPtr =" + newPtr);
-					debug("Var", "len =" + len);
 				}
 			}
+			
 			// reset if ptr runs out of boundaries
 			if (newPtr >= maxImageBuffer - maxTCPBuffer) {
 				warn(TAG, "Out of index, should not happen!");
@@ -320,6 +354,212 @@ public class AC13Controller extends RoverBaseController {
 		}
 	}
 
+//	private boolean imgStart(byte[] start) {
+//		return (start[0] == 'M' && start[1] == 'O' && start[2] == '_' && start[3] == 'V');
+//	}
+//
+//	private void receiveImage() {
+//		debug("ReceiveImage", "Get image");
+//		int len = 0;
+//		int newPtr = tcpPtr;
+//		int imageLength = 0;
+//		try {
+//			boolean fnew = false;
+//			while (!fnew && newPtr < maxImageBuffer - maxTCPBuffer) {
+//				len = vSock.getInputStream().read(imageBuffer, newPtr,
+//						maxTCPBuffer);
+//				// todo: check if this happens too often and exit
+//				if (len <= 0) {
+//					m_bConnected = false;
+//				}
+//
+//				byte[] f4 = new byte[4];
+//				for (int i = 0; i < 4; i++)
+//					f4[i] = imageBuffer[newPtr + i];
+//				if (imgStart(f4) && (imageLength > 0))
+//					fnew = true;
+//				if (!fnew) {
+//					newPtr += len;
+//					imageLength = newPtr - imagePtr;
+//				} else {
+//					debug(TAG, "Total image size is "
+//							+ (imageLength - 36));
+//
+//					byte[] rgb = new byte[imageLength - 36];
+//					//                                    Log.w(TAG, String.format("imagelen: %d", rgb.length));
+//					System.arraycopy(imageBuffer, imagePtr + 36, rgb, 0, rgb.length);
+//					if (rgb.length > 0) {
+//						if (oVideoListener != null) {
+//							oVideoListener.onFrame(rgb, 0);
+//						}
+//					}
+//					if (newPtr > maxImageBuffer / 2) {
+//						// copy first chunk of new arrived image to start of
+//						// array
+//						for (int i = 0; i < len; i++)
+//							imageBuffer[i] = imageBuffer[newPtr + i];
+//						imagePtr = 0;
+//						tcpPtr = len;
+//					} else {
+//						imagePtr = newPtr;
+//						tcpPtr = newPtr + len;
+//					}
+////					debug("Var", "imagePtr =" + imagePtr);
+////					debug("Var", "tcpPtr =" + tcpPtr);
+////					debug("Var", "imageLength =" + imageLength);
+////					debug("Var", "newPtr =" + newPtr);
+////					debug("Var", "len =" + len);
+//				}
+//			}
+//			// reset if ptr runs out of boundaries
+//			if (newPtr >= maxImageBuffer - maxTCPBuffer) {
+//				warn(TAG, "Out of index, should not happen!");
+//				imagePtr = 0;
+//				tcpPtr = 0;
+//			}
+//		} catch (Exception eg) {
+//			error(TAG, "General input stream error", eg);
+//			eg.printStackTrace();
+//		}
+//	}
+	
+//	private int[] findAll(byte[] array, byte[] subArray) {
+//		ArrayList<Integer> list = new ArrayList<Integer>();
+//		int index = -1;
+//		do {
+//			index = findArray(array, subArray, index + 1);
+//			if (index != -1) {
+//				list.add(index);
+//			}
+//		} while (index != -1);
+//		// needs commons-lang3 -> http://commons.apache.org/proper/commons-lang/
+//		return ArrayUtils.toPrimitive(list.toArray(new Integer[list.size()]));
+//	}
+//	
+//	private int findArray(byte[] array, byte[] subArray)
+//    {
+//    	return findArray(array, subArray, 0);
+//    }
+//    
+//	private int findArray(byte[] array, byte[] subArray, int start)
+//    {
+//        if (array == null || subArray == null || subArray.length > array.length || start > array.length - 1)
+//        {
+//            return -1;
+//        }
+//         
+//        int index = -1; // assume not found
+//         
+//        for (int i = start; i < array.length; i++)
+//        {
+//            // Check if the next element of array is same as the first element of subarray
+//            if (array[i] == subArray[0])
+//            {
+//                //check subsequent elements of subarray against the subsequent elements of array
+//                for (int j = 0; j < subArray.length; j++)
+//                {
+//                    //if found, set the index
+//                    if (i + j < array.length && subArray[j] == array[i + j])
+//                    {
+//                        index = i;
+//                    }
+//                    else
+//                    {
+//                        index = -1;
+//                        break;
+//                    }
+//                }
+//                
+//                if (index != -1) {
+//                	return index;
+//                }
+//            }
+//        }
+//         
+//        return index;
+//         
+//    }
+    
+	/**
+	 * searches for the subArray in the array. the search starts at index start, and only checks for
+	 * length bytes in the array, even if the array is longer. returns the index where the subArray
+	 * starts.
+	 * @param array		array to search in
+	 * @param subArray  subarray to be searched
+	 * @param start		start index for search
+	 * @param length	maximum number of bytes to check in the array
+	 * @return			index where the subArray was found
+	 */
+	private int findArray(byte[] array, byte[] subArray, int start, int length)
+    {
+        if (array == null || subArray == null || subArray.length > array.length || start > array.length - 1)
+        {
+            return -1;
+        }
+         
+        int index = -1; // assume not found
+        int end = Math.min(start + length, array.length); 
+        
+        for (int i = start; i < end; i++)
+        {
+            // Check if the next element of array is same as the first element of subarray
+            if (array[i] == subArray[0])
+            {
+                //check subsequent elements of subarray against the subsequent elements of array
+                for (int j = 0; j < subArray.length; j++)
+                {
+                    //if found, set the index
+                    if (i + j < array.length && subArray[j] == array[i + j])
+                    {
+                        index = i;
+                    }
+                    else
+                    {
+                        index = -1;
+                        break;
+                    }
+                }
+                
+                if (index != -1) {
+                	return index;
+                }
+            }
+        }
+         
+        return index;
+         
+    }
+	
+//    public int findArray(byte[] array, byte[] subArray)
+//    {
+//        if (array == null || subArray == null || subArray.length > array.length)
+//        {
+//            return -1;
+//        }
+//         
+//        StringBuilder sb = new StringBuilder();
+//        for (int i = 0; i < array.length; i++)
+//        {
+//            sb.append(array[i]);
+//        }
+//         
+//        StringBuilder sbSub = new StringBuilder();
+//        for (int i = 0; i < subArray.length; i++)
+//        {
+//            sbSub.append(subArray[i]);
+//        }
+//         
+//        int index = sb.toString().indexOf(sbSub.toString());
+//        if (index >= 0)
+//        {
+//            return index;
+//        }
+//        else
+//        {
+//            return -1;
+//        }
+//    }
+    
 	private void writeCmd(int index, byte[] extra_input) {
 		int len = 0;
 		switch (index) {
@@ -440,8 +680,8 @@ public class AC13Controller extends RoverBaseController {
 			break;
 		}
 
-		String str = new String(buffer, 0, len);
-		debug(TAG, String.format("Write i=%d, str=%s", index, str));
+//		String str = new String(buffer, 0, len);
+//		debug(TAG, String.format("Write i=%d, str=%s", index, str));
 		if (index != 4) {
 			try {
 				cSock.getOutputStream().write(buffer, 0, len);

@@ -1,6 +1,6 @@
 package robots.ctrl.control;
 
-import org.dobots.lib.comm.Move;
+import org.dobots.comm.Move;
 import org.dobots.utilities.DoBotsThread;
 
 import android.util.Log;

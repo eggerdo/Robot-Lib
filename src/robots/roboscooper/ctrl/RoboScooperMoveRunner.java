@@ -1,6 +1,6 @@
 package robots.roboscooper.ctrl;
 
-import org.dobots.lib.comm.Move;
+import org.dobots.comm.Move;
 
 import android.util.Log;
 

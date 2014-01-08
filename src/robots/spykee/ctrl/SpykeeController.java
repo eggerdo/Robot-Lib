@@ -119,11 +119,11 @@ public class SpykeeController extends Loggable {
 	public void close() {
 		try {
 			mConnected = false;
-			if (mSocket != null) {
+			if (mOutput != null) {
 				mOutput.close();
 				mInput.close();
 				mSocket.close();
-				mSocket = null;
+				mOutput = null;
 			}
 			
 			if (mNetworkThread != null) {
@@ -301,7 +301,9 @@ public class SpykeeController extends Loggable {
 
 	private void stopMotorAfterDelay(long delayMillis) {
 		mStopMotorTime = SystemClock.uptimeMillis() + delayMillis;
-		mHandler.postDelayed(mMotorStopper, delayMillis);
+		if (mHandler != null) {
+			mHandler.postDelayed(mMotorStopper, delayMillis);
+		}
 	}
 
 	private class MotorStopper implements Runnable {
@@ -332,10 +334,12 @@ public class SpykeeController extends Loggable {
 	private void setDockingState(DockState i_eState) {
 		mDockState = i_eState;
 
-		// inform the UI about the docking state change
-		Message msg = mHandler.obtainMessage(SpykeeMessageTypes.DOCKINGSTATE_RECEIVED);
-		msg.obj = i_eState;
-		mHandler.sendMessage(msg);
+		if (mHandler != null) {
+			// inform the UI about the docking state change
+			Message msg = mHandler.obtainMessage(SpykeeMessageTypes.DOCKINGSTATE_RECEIVED);
+			msg.obj = i_eState;
+			mHandler.sendMessage(msg);
+		}
 	}
 
 	public void dock() {
@@ -502,9 +506,11 @@ public class SpykeeController extends Loggable {
 					case SpykeeTypes.SPYKEE_BATTERY_LEVEL:
 						num += readBytes(bytes, 5, len);
 						int level = bytes[5] & 0xff;
-						msg = mHandler.obtainMessage(SpykeeMessageTypes.BATTERY_LEVEL_RECEIVED);
-						msg.arg1 = level;
-						mHandler.sendMessage(msg);
+						if (mHandler != null) {
+							msg = mHandler.obtainMessage(SpykeeMessageTypes.BATTERY_LEVEL_RECEIVED);
+							msg.arg1 = level;
+							mHandler.sendMessage(msg);
+						}
 						break;
 					case SpykeeTypes.SPYKEE_VIDEO_FRAME:
 						// Avoid an extra data copy by reading directly into
@@ -532,8 +538,10 @@ public class SpykeeController extends Loggable {
 						num += readBytes(frame, 0, len);
 //						writeNextAudioFile(frame, len);
 						//showBuffer("audio", frame, len);
-						msg = mHandler.obtainMessage(SpykeeMessageTypes.AUDIO_RECEIVED);
-						mHandler.sendMessage(msg);
+						if (mHandler != null) {
+							msg = mHandler.obtainMessage(SpykeeMessageTypes.AUDIO_RECEIVED);
+							mHandler.sendMessage(msg);
+						}
 						break;
 					case SpykeeTypes.SPYKEE_DOCK:
 						num += readBytes(bytes, 5, len);
@@ -550,8 +558,10 @@ public class SpykeeController extends Loggable {
 						showBuffer("recv", bytes, num);
 					}
 				} else if (num == 0) {
-					msg = mHandler.obtainMessage(MessageTypes.STATE_RECEIVEERROR);
-					mHandler.sendMessage(msg);
+					if (mHandler != null) {
+						msg = mHandler.obtainMessage(MessageTypes.STATE_RECEIVEERROR);
+						mHandler.sendMessage(msg);
+					}
 				} else {
 					error(TAG, "unexpected data, num: " + num);
 					showBuffer("recv", bytes, num);

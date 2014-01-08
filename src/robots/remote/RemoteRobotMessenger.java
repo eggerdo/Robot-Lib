@@ -2,8 +2,8 @@ package robots.remote;
 
 import java.util.concurrent.TimeoutException;
 
-import org.dobots.lib.comm.msg.RoboCommands;
-import org.dobots.lib.comm.msg.RoboCommands.ControlCommand;
+import org.dobots.comm.msg.RoboCommands;
+import org.dobots.comm.msg.RoboCommands.ControlCommand;
 import org.dobots.utilities.ThreadMessenger;
 import org.dobots.utilities.Utils;
 import org.json.JSONException;

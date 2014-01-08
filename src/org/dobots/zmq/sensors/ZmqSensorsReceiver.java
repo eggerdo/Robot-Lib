@@ -1,6 +1,6 @@
 package org.dobots.zmq.sensors;
 
-import org.dobots.lib.comm.msg.ISensorDataListener;
+import org.dobots.comm.msg.ISensorDataListener;
 import org.dobots.utilities.Utils;
 import org.dobots.zmq.ZmqHandler;
 import org.dobots.zmq.ZmqReceiveThread;

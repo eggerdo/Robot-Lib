@@ -34,8 +34,8 @@ public abstract class RoverBaseUI extends WifiRobot {
 	protected static final int DIALOG_CONNECTION_SETTINGS_ID = DIALOG_VIDEO_SETTINGS_ID + 1;
 	
 	protected static final int CONNECTION_SETTINGS_ID = CONNECT_ID + 1;
-	protected static final int ACCEL_ID = CONNECTION_SETTINGS_ID + 1;
-	protected static final int VIDEO_ID = ACCEL_ID + 1;
+//	protected static final int ACCEL_ID = CONNECTION_SETTINGS_ID + 1;
+	protected static final int VIDEO_ID = CONNECTION_SETTINGS_ID + 1;
 	protected static final int VIDEO_SETTINGS_ID = VIDEO_ID + 1;
 
 	protected static final int REMOTE_CTRL_GRP = GENERAL_GRP + 1;
@@ -125,7 +125,7 @@ public abstract class RoverBaseUI extends WifiRobot {
 		
 		menu.add(GENERAL_GRP, CONNECTION_SETTINGS_ID, CONNECTION_SETTINGS_ID, "Connection Settings");
 
-		menu.add(REMOTE_CTRL_GRP, ACCEL_ID, ACCEL_ID, "Accelerometer");
+//		menu.add(REMOTE_CTRL_GRP, ACCEL_ID, ACCEL_ID, "Accelerometer");
 		
 		menu.add(SENSOR_GRP, VIDEO_ID, VIDEO_ID, "Video");
 
@@ -146,7 +146,7 @@ public abstract class RoverBaseUI extends WifiRobot {
     	menu.setGroupVisible(SENSOR_GRP, connected);
     	menu.setGroupVisible(VIDEO_GRP, connected && streaming);
     	
-    	Utils.updateOnOffMenuItem(menu.findItem(ACCEL_ID), m_bAccelerometer);
+//    	Utils.updateOnOffMenuItem(menu.findItem(ACCEL_ID), m_bAccelerometer);
     	Utils.updateOnOffMenuItem(menu.findItem(VIDEO_ID), streaming);
     	
 		return true;

@@ -76,7 +76,7 @@ public class SpyTankUI extends WifiRobot {
     	m_oSpyTank.setConnection(m_strAddress, m_nCommandPort, m_nMediaPort);
     	
     	if (m_oSpyTank.isConnected()) {
-    		updateButtons(true);
+			onConnect();
     	} else {
     		connectToRobot();
     	}

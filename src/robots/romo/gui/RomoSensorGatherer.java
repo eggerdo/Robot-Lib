@@ -5,6 +5,7 @@ import org.dobots.utilities.BaseActivity;
 import org.dobots.zmq.ZmqHandler;
 import org.dobots.zmq.video.ZmqVideoReceiver;
 import org.dobots.zmq.video.gui.VideoHelper;
+import org.dobots.zmq.video.gui.VideoSurfaceView.DisplayMode;
 import org.zeromq.ZMQ;
 
 import robots.gui.SensorGatherer;
@@ -22,6 +23,7 @@ public class RomoSensorGatherer extends SensorGatherer {
 		mRobotID = i_strRobotID;
 
 		mVideoHelper = new VideoHelper(i_oActivity, (ViewGroup)m_oActivity.findViewById(R.id.layCameraContainer));
+		mVideoHelper.setDisplayMode(DisplayMode.SCALED);
 	}
 	
 	protected void startVideo() {

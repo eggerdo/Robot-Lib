@@ -81,12 +81,13 @@ public class PirateDottyUI extends BluetoothRobot implements ICameraControlListe
 
     	m_oZmqRemoteSender = new ZmqRemoteControlSender(m_oPirateDotty.getID());
 		m_oRemoteCtrl.setDriveControlListener(m_oZmqRemoteSender);
+		m_oRemoteCtrl.setCameraControlListener(m_oZmqRemoteSender);
 
         m_oSensorGatherer = new PirateDottySensorGatherer(this, m_oPirateDotty);
         m_oSensorGatherer.stopVideoPlayback();
 
         if (m_oPirateDotty.isConnected()) {
-			updateButtons(true);
+			onConnect();
 		} else {
 			connectToRobot();
 		}
@@ -95,7 +96,10 @@ public class PirateDottyUI extends BluetoothRobot implements ICameraControlListe
 	@Override
 	public void onDestroy() {
 		m_oRemoteCtrl.destroy();
-		m_oZmqRemoteSender.close();
+		
+		if (m_oZmqRemoteSender != null) {
+			m_oZmqRemoteSender.close();
+		}
 		
 		if (m_bOwnsRobot) {
 			RobotInventory.getInstance().removeRobot(m_strRobotID);

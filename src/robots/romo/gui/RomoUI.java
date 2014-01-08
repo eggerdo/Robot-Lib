@@ -49,6 +49,7 @@ public class RomoUI extends RobotView {
     public void onRobotCtrlReady() {
     	m_oZmqRemoteSender = new ZmqRemoteControlSender(getRobot().getID());
 		m_oRemoteCtrl.setDriveControlListener(m_oZmqRemoteSender);
+		m_oRemoteCtrl.setCameraControlListener(m_oZmqRemoteSender);
 
 		m_oSensorGatherer = new RomoSensorGatherer(this, getRobot().getID());
 		m_oSensorGatherer.startVideo();

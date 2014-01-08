@@ -2,7 +2,7 @@ package robots.arduino.ctrl;
 
 import java.io.IOException;
 
-import org.dobots.lib.comm.msg.ISensorDataListener;
+import org.dobots.comm.msg.ISensorDataListener;
 import org.dobots.utilities.log.Loggable;
 import org.json.JSONException;
 import org.json.JSONObject;

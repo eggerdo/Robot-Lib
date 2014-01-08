@@ -5,7 +5,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.UUID;
 
-import org.dobots.lib.comm.msg.SensorMessageArray;
+import org.dobots.comm.msg.SensorMessageArray;
 import org.dobots.utilities.Utils;
 import org.json.JSONException;
 

@@ -16,7 +16,7 @@
 */
 package org.dobots.zmq;
 
-import org.dobots.lib.comm.msg.RoboCommands.BaseCommand;
+import org.dobots.comm.msg.RoboCommands.BaseCommand;
 import org.zeromq.ZMQ;
 
 import robots.ctrl.control.RemoteControlSender;

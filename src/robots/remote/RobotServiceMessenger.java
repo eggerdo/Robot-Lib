@@ -2,9 +2,9 @@ package robots.remote;
 
 import java.util.ArrayList;
 
-import org.dobots.lib.comm.msg.RoboCommands;
-import org.dobots.lib.comm.msg.RoboCommands.BaseCommand;
-import org.dobots.lib.comm.msg.RoboCommands.ControlCommand;
+import org.dobots.comm.msg.RoboCommands;
+import org.dobots.comm.msg.RoboCommands.BaseCommand;
+import org.dobots.comm.msg.RoboCommands.ControlCommand;
 import org.dobots.utilities.ThreadMessenger;
 import org.dobots.zmq.ZmqHandler;
 import org.dobots.zmq.ZmqUtils;

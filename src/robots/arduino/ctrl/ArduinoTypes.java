@@ -2,7 +2,7 @@ package robots.arduino.ctrl;
 
 import java.util.UUID;
 
-import org.dobots.lib.comm.DoBotsMessageEncoder;
+import org.dobots.comm.DoBotsMessageEncoder;
 
 public class ArduinoTypes extends DoBotsMessageEncoder {
 	

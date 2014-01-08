@@ -26,7 +26,7 @@ public class Romo extends DifferentialRobot implements IRomo, ICameraControlList
 
 	private ZmqRemoteControlHelper m_oRemoteHelper;
 
-	private boolean m_bInverted;
+	private boolean m_bInverted = true;
 	
 	private CameraPreview mCamera;
 

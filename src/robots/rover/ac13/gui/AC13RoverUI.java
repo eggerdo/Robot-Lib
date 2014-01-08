@@ -37,8 +37,13 @@ public class AC13RoverUI extends RoverBaseUI {
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
-
+    }
+    
+    @Override
+    public void onRobotCtrlReady() {
 		m_oSensorGatherer = new AC13RoverSensorGatherer(this, getRover());
+		
+    	super.onRobotCtrlReady();
     }
 
 	@Override

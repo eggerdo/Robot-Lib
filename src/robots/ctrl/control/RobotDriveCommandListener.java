@@ -1,7 +1,7 @@
 package robots.ctrl.control;
 
 
-import org.dobots.lib.comm.Move;
+import org.dobots.comm.Move;
 
 import robots.ctrl.IRobotDevice;
 import android.util.Log;

@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.dobots.R;
-import org.dobots.lib.comm.msg.ISensorDataListener;
-import org.dobots.lib.comm.msg.SensorMessageObj;
+import org.dobots.comm.msg.ISensorDataListener;
+import org.dobots.comm.msg.SensorMessageObj;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
 import org.dobots.zmq.ZmqHandler;

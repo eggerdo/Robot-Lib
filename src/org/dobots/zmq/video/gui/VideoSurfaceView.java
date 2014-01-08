@@ -158,6 +158,10 @@ public class VideoSurfaceView extends SurfaceView implements IVideoListener, IRa
 						rotation = ExifUtils.getExifRotation(rgb);
 					}
 					Bitmap frame = BitmapFactory.decodeStream(stream);
+					
+					if (frame == null) {
+						continue;
+					}
 
 					// update the size based on the display mode and the bitmap dimensions
 					setSize(frame, rotation);

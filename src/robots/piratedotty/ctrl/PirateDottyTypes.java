@@ -2,7 +2,7 @@ package robots.piratedotty.ctrl;
 
 import java.util.UUID;
 
-import org.dobots.lib.comm.DoBotsMessageEncoder;
+import org.dobots.comm.DoBotsMessageEncoder;
 
 public class PirateDottyTypes extends DoBotsMessageEncoder {
 	

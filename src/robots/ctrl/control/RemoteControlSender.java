@@ -16,13 +16,13 @@
 */
 package robots.ctrl.control;
 
-import org.dobots.lib.comm.Move;
-import org.dobots.lib.comm.msg.RoboCommands;
-import org.dobots.lib.comm.msg.RoboCommands.BaseCommand;
-import org.dobots.lib.comm.msg.RoboCommands.CameraCommand;
-import org.dobots.lib.comm.msg.RoboCommands.CameraCommandType;
-import org.dobots.lib.comm.msg.RoboCommands.ControlCommand;
-import org.dobots.lib.comm.msg.RoboCommands.DriveCommand;
+import org.dobots.comm.Move;
+import org.dobots.comm.msg.RoboCommands;
+import org.dobots.comm.msg.RoboCommands.BaseCommand;
+import org.dobots.comm.msg.RoboCommands.CameraCommand;
+import org.dobots.comm.msg.RoboCommands.CameraCommandType;
+import org.dobots.comm.msg.RoboCommands.ControlCommand;
+import org.dobots.comm.msg.RoboCommands.DriveCommand;
 
 
 public abstract class RemoteControlSender implements IDriveControlListener, ICameraControlListener {

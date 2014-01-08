@@ -1,7 +1,7 @@
 package robots.arduino.ctrl;
 
-import org.dobots.lib.comm.msg.ISensorDataListener;
-import org.dobots.lib.comm.msg.SensorMessageObj;
+import org.dobots.comm.msg.ISensorDataListener;
+import org.dobots.comm.msg.SensorMessageObj;
 import org.dobots.zmq.ZmqRemoteControlHelper;
 import org.dobots.zmq.sensors.ZmqSensorsSender;
 

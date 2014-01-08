@@ -7,7 +7,7 @@ import java.util.concurrent.Executors;
 
 import javax.security.auth.login.LoginException;
 
-import org.dobots.lib.comm.Move;
+import org.dobots.comm.Move;
 import org.dobots.utilities.Utils;
 import org.dobots.zmq.ZmqRemoteControlHelper;
 import org.dobots.zmq.video.ZmqVideoSender;

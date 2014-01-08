@@ -144,7 +144,7 @@ public class SpykeeUI extends WifiRobot {
         loadSettings();
         
         if (m_oSpykee.isConnected()) {
-			updateButtons(true);
+			onConnect();
 		} else {
 			if (checkConnectionSettings()) {
 				connectToRobot();
@@ -263,9 +263,9 @@ public class SpykeeUI extends WifiRobot {
     public void onStop() {
     	
 		// first disable video and audio ...
-    	if (m_oSpykee.isStreaming()) {
-    		m_oSpykee.stopVideo();
-    	}
+//    	if (m_oSpykee.isStreaming()) {
+//    		m_oSpykee.stopVideo();
+//    	}
     	
 //    	if (m_oSpykee.isAudioEnabled()) {
 //    		m_oSpykee.setAudioEnabled(false);

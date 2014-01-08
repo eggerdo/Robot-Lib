@@ -16,6 +16,8 @@ import robots.gui.comm.IRobotConnection;
 
 public class PirateDotty extends DifferentialRobot implements IPirateDotty, ICameraControlListener {
 
+	private static final String TAG = "PirateDotty";
+	
 	private PirateDottyController m_oController;
 
 	private double m_dblBaseSpeed = 100.0;
@@ -50,6 +52,7 @@ public class PirateDotty extends DifferentialRobot implements IPirateDotty, ICam
 	}
 
 	public void startCamera(Context context) {
+		debug(TAG, "startCamera...");
 		mCamera = CameraPreview.createCameraWithoutSurface(context);
 		mCamera.setPreviewSize(320, 240);
 		mCamera.setFrameListener(new CameraPreviewCallback() {
@@ -92,6 +95,7 @@ public class PirateDotty extends DifferentialRobot implements IPirateDotty, ICam
 	}
 
 	public void setConnection(IRobotConnection i_oConnection) {
+		debug(TAG, "setConnection(%s)", i_oConnection.getAddress());
 		m_oController.setConnection(i_oConnection);
 	}
 	
@@ -101,11 +105,13 @@ public class PirateDotty extends DifferentialRobot implements IPirateDotty, ICam
 
 	@Override
 	public void connect() {
+		debug(TAG, "connect...");
 		m_oController.connect();
 	}
 
 	@Override
 	public void disconnect() {
+		debug(TAG, "disconnect...");
 		if (m_oController.isConnected()) {
 			m_oController.disconnect();
 		}
@@ -247,16 +253,19 @@ public class PirateDotty extends DifferentialRobot implements IPirateDotty, ICam
 
 	@Override
 	public void startVideo() {
+		debug(TAG, "startVideo...");
 		mCamera.startCamera();
 	}
 
 	@Override
 	public void stopVideo() {
+		debug(TAG, "stopVideo...");
 		mCamera.stopCamera();
 	}
 
 	@Override
 	public void toggleCamera() {
+		debug(TAG, "toggleCamera...");
 		// toggle camera only works if it is executed by the UI thread
 		// so we check if the calling thread is the main thread, otherwise
 		// we call the function again inside the main thread.
