@@ -324,16 +324,6 @@ public class Dotty extends DifferentialRobot {
 	}
 
 	@Override
-	public void moveLeft() {
-		// not available
-	}
-
-	@Override
-	public void moveRight() {
-		// not available
-	}
-
-	@Override
 	public boolean toggleInvertDrive() {
 		// TODO Auto-generated method stub
 		return false;

@@ -228,16 +228,6 @@ public class SpyTank extends DifferentialRobot implements ISpyTank, ICameraContr
 	}
 
 	@Override
-	public void moveLeft() {
-		// not available
-	}
-
-	@Override
-	public void moveRight() {
-		// not available
-	}
-
-	@Override
 	public void toggleCamera() {
 		// not available
 	}

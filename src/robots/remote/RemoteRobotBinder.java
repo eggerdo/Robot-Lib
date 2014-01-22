@@ -223,18 +223,4 @@ public abstract class RemoteRobotBinder implements IRobotDevice {
 		}	
 	}
 
-	@Override
-	public void moveLeft() {
-		if (mBound) {
-			mRobot.moveLeft();		
-		}
-	}
-
-	@Override
-	public void moveRight() {
-		if (mBound) {
-			mRobot.moveRight();		
-		}
-	}
-
 }

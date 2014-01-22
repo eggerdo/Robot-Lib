@@ -47,7 +47,5 @@ public interface IRobotDevice {
 	public void moveBackward();
 	public void rotateCounterClockwise();
 	public void rotateClockwise();
-	public void moveLeft();
-	public void moveRight();
 	
 }

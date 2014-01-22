@@ -287,13 +287,13 @@ public class Spykee extends DifferentialRobot implements ISpykee, IMoveRepeaterL
 	}
 
 	@Override
-	public void onDoMove(Move i_eMove, double i_dblSpeed, int i_nRadius) {
+	public void onDoMove(Move i_eMove, double i_dblSpeed, double i_dblRadius) {
 		switch(i_eMove) {
 		case BACKWARD:
-			executeMoveBackward(i_dblSpeed, i_nRadius);
+			executeMoveBackward(i_dblSpeed, i_dblRadius);
 			break;
 		case FORWARD:
-			executeMoveForward(i_dblSpeed, i_nRadius);
+			executeMoveForward(i_dblSpeed, i_dblRadius);
 			break;
 		default:
 			error(TAG, "Move not available");
@@ -301,18 +301,18 @@ public class Spykee extends DifferentialRobot implements ISpykee, IMoveRepeaterL
 		}
 	}
 
-	private void executeMoveForward(double i_dblSpeed, int i_nRadius) {
-		debug(TAG, String.format("fwd (s=%f, r=%d)", i_dblSpeed, i_nRadius));
+	private void executeMoveForward(double i_dblSpeed, double i_dblRadius) {
+		debug(TAG, String.format("fwd (s=%f, r=%d)", i_dblSpeed, i_dblRadius));
 		
-		DriveVelocityLR oVelocity = calculateVelocity(i_dblSpeed, i_nRadius);
+		DriveVelocityLR oVelocity = calculateVelocity(i_dblSpeed, i_dblRadius);
 
 		m_oController.moveForward(oVelocity.left * m_nInvertFactor, oVelocity.right * m_nInvertFactor);
 	}
 
-	private void executeMoveBackward(double i_dblSpeed, int i_nRadius) {
-		debug(TAG, String.format("fwd (s=%f, r=%d)", i_dblSpeed, i_nRadius));
+	private void executeMoveBackward(double i_dblSpeed, double i_dblRadius) {
+		debug(TAG, String.format("fwd (s=%f, r=%d)", i_dblSpeed, i_dblRadius));
 		
-		DriveVelocityLR oVelocity = calculateVelocity(i_dblSpeed, i_nRadius);
+		DriveVelocityLR oVelocity = calculateVelocity(i_dblSpeed, i_dblRadius);
 
 		m_oController.moveBackward(oVelocity.left * m_nInvertFactor, oVelocity.right * m_nInvertFactor);
 	}
@@ -335,16 +335,6 @@ public class Spykee extends DifferentialRobot implements ISpykee, IMoveRepeaterL
 	@Override
 	public void rotateClockwise() {
 		rotateClockwise(m_dblBaseSpeed);
-	}
-
-	@Override
-	public void moveLeft() {
-		// NOT AVAILABLE
-	}
-
-	@Override
-	public void moveRight() {
-		// NOT AVAILABLE
 	}
 	
 	@Override

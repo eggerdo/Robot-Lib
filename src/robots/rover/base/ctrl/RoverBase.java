@@ -236,13 +236,13 @@ public abstract class RoverBase extends DifferentialRobot implements IMoveRepeat
 	}
 
 	@Override
-	public void onDoMove(Move i_eMove, double i_dblSpeed, int i_nRadius) {
+	public void onDoMove(Move i_eMove, double i_dblSpeed, double i_dblRadius) {
 		switch(i_eMove) {
 		case BACKWARD:
-			executeMoveBackward(i_dblSpeed, i_nRadius);
+			executeMoveBackward(i_dblSpeed, i_dblRadius);
 			break;
 		case FORWARD:
-			executeMoveForward(i_dblSpeed, i_nRadius);
+			executeMoveForward(i_dblSpeed, i_dblRadius);
 			break;
 		default:
 			error(TAG, "Move not available");
@@ -250,14 +250,14 @@ public abstract class RoverBase extends DifferentialRobot implements IMoveRepeat
 		}
 	}
 
-	private void executeMoveForward(double i_dblSpeed, int i_nRadius) {
-		DriveVelocityLR oVelocity = calculateVelocity(i_dblSpeed, i_nRadius);
+	private void executeMoveForward(double i_dblSpeed, double i_dblRadius) {
+		DriveVelocityLR oVelocity = calculateVelocity(i_dblSpeed, i_dblRadius);
 		
 		m_oController.moveForward(oVelocity.left, oVelocity.right);
 	}
 
-	private void executeMoveBackward(double i_dblSpeed, int i_nRadius) {
-		DriveVelocityLR oVelocity = calculateVelocity(i_dblSpeed, i_nRadius);
+	private void executeMoveBackward(double i_dblSpeed, double i_dblRadius) {
+		DriveVelocityLR oVelocity = calculateVelocity(i_dblSpeed, i_dblRadius);
 		
 		m_oController.moveBackward(oVelocity.left, oVelocity.right);
 	}
@@ -293,16 +293,6 @@ public abstract class RoverBase extends DifferentialRobot implements IMoveRepeat
 	@Override
 	public void rotateClockwise() {
 		rotateClockwise(m_dblBaseSpeed);
-	}
-
-	@Override
-	public void moveLeft() {
-		// not available
-	}
-
-	@Override
-	public void moveRight() {
-		// not available
 	}
 
 	public void setResolution(VideoResolution i_eResolution) {

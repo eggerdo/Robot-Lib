@@ -22,11 +22,11 @@ public abstract class DifferentialRobot extends BaseRobot {
 		m_nMaxRadius = i_nMaxRadius;
 	}
 
-	private int capRadius(int i_nRadius) {
-		i_nRadius = Math.min(i_nRadius, m_nMaxRadius);
-		i_nRadius = Math.max(i_nRadius, -m_nMaxRadius);
+	private double capRadius(double i_dblRadius) {
+		i_dblRadius = Math.min(i_dblRadius, m_nMaxRadius);
+		i_dblRadius = Math.max(i_dblRadius, -m_nMaxRadius);
 
-		return i_nRadius;
+		return i_dblRadius;
 	}
 	
 	protected int calculateVelocity(double i_dblSpeed) {
@@ -36,17 +36,17 @@ public abstract class DifferentialRobot extends BaseRobot {
 
 	// radius has to be != 0 because 0 can't have a sign and thus we can't determine 
 	// if the robot is supposed to drive left or right
-	protected DriveVelocityLR calculateVelocity(double i_dblSpeed, int i_nRadius) {
-		if (i_nRadius == 0) {
+	protected DriveVelocityLR calculateVelocity(double i_dblSpeed, double i_dblRadius) {
+		if (i_dblRadius == 0) {
 			error("DifferentialRobot", "radius is 0");
 			return new DriveVelocityLR();
 		}
 		
 		int nBaseVelocity = calculateVelocity(i_dblSpeed);
-		int nRadius = capRadius(i_nRadius);
+		double nRadius = capRadius(i_dblRadius);
 		int nVelocity1, nVelocity2;
 		
-		int nAbsRadius = Math.abs(nRadius);
+		double nAbsRadius = Math.abs(nRadius);
 		
 		nVelocity1 = (int) Math.round(nBaseVelocity * (nAbsRadius + m_dblAxleWidth) / (nAbsRadius + m_dblAxleWidth / 2.0));
 		nVelocity2 = (int) Math.round(nBaseVelocity * nAbsRadius / (nAbsRadius + m_dblAxleWidth / 2.0));

@@ -2,6 +2,7 @@ package robots.ctrl;
 
 
 import robots.RobotType;
+import robots.parrot.ardrone2.ctrl.ArDrone2;
 import robots.parrot.ctrl.Parrot;
 import robots.piratedotty.ctrl.PirateDotty;
 import robots.replicator.ctrl.Replicator;
@@ -30,8 +31,8 @@ public class RobotDeviceFactory {
 			case RBT_SPYTANK:
 				oRobot = new SpyTank();
 				break;
-			case RBT_PARROT:
-				oRobot = new Parrot();
+			case RBT_ARDRONE2:
+				oRobot = new ArDrone2();
 				break;
 			case RBT_REPLICATOR:
 				oRobot = new Replicator();

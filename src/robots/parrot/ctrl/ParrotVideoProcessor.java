@@ -1,7 +1,12 @@
 package robots.parrot.ctrl;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
+import org.dobots.zmq.video.FpsCounter;
+import org.dobots.zmq.video.IFpsListener;
 
 import robots.gui.comm.IConnectListener;
 import android.graphics.Bitmap;
@@ -36,7 +41,7 @@ public class ParrotVideoProcessor extends Thread {
 		m_oActivity = i_oActivity;
 		m_oImage = i_oImage;
 		
-		m_bmpVideo = Bitmap.createBitmap(ParrotTypes.VIDEO_WIDTH, ParrotTypes.VIDEO_HEIGHT, Bitmap.Config.RGB_565); //ARGB_8888
+		m_bmpVideo = Bitmap.createBitmap(ParrotTypes.VIDEO_WIDTH, ParrotTypes.VIDEO_HEIGHT, Bitmap.Config.ARGB_8888); //ARGB_8888
 //		m_oImage.getLayoutParams().height = ParrotTypes.VIDEO_HEIGHT;
 //		m_oImage.getLayoutParams().width = ParrotTypes.VIDEO_WIDTH;
 		m_oImage.setImageBitmap(m_bmpVideo);
@@ -48,7 +53,7 @@ public class ParrotVideoProcessor extends Thread {
 	
 	public void connect() {
 
-		String strVideoAddr = String.format("http://%s:%d", ParrotTypes.PARROT_IP, ParrotTypes.VIDEO_PORT);
+		String strVideoAddr = String.format("http://%s:%d", ParrotTypes.PARROT_IP, ParrotTypes.MEDIA_PORT);
 		
         if (nativeOpenFromURL(strVideoAddr, ParrotTypes.VIDEO_CODEC) != ParrotTypes.SUCCESS)
         {
@@ -81,6 +86,14 @@ public class ParrotVideoProcessor extends Thread {
 		
 	}
 	
+	FpsCounter counter = new FpsCounter(new IFpsListener() {
+		
+		@Override
+		public void onFPS(int i_nFPS) {
+			Log.d("FPS", "fps: " + i_nFPS);
+		}
+	});
+
 	public void run() {
         Log.d(TAG, "entering run()");
         
@@ -114,65 +127,67 @@ public class ParrotVideoProcessor extends Thread {
     		        m_bVideoConnected = true;
     			}
 
-    			nResult = nativeUpdateBitmap();
-    			if (nResult == ParrotTypes.SUCCESS) {
-					m_nErrorCount = 0;
-					
-    				m_oUiHandler.post(new Runnable() {
-						
-						@Override
-						public void run() {
-							// image must be updated by GUI thread (main thread)
-							m_oImage.invalidate();
-						}
-					});
-    			} else if (nResult == ParrotTypes.CODEC_DIMENSION_ERROR) {
-
-    				// NOTE: I have spent several days trying to find out why the ffmpeg library
-    				// suddenly crashes after some time but without success. I tried recompiling
-    				// the library without success. The only thing I found out is that it always
-    				// happens after receiving some erroneous frames which result in codec dimensions
-    				// that don't correspond with the 640x360. To avoid crashes of the whole app because
-    				// of that I now close the library if the codec dimension error is detected and
-    				// then reconnect to continue displaying the video which seems to work so far.
-    				m_nErrorCount++;
-    				if (m_nErrorCount >= 3) {
-	                	nativeClose();
-	                	
-	                	Utils.waitSomeTime(200);
-	                	
-	                	connect();
-	                	
-	                	m_nErrorCount = 0;
-    				}
-    			} else if (nResult == ParrotTypes.BITMAP_LOCKPIXELS_FAILED) {
-    				m_nErrorCount++;
-    				if (m_nErrorCount >= 3) {
-    					m_bmpVideo = null;
-    					mPause = true;
-
-    					m_oUiHandler.post(new Runnable() {
-							
-							@Override
-							public void run() {
-		    					m_bmpVideo = Bitmap.createBitmap(ParrotTypes.VIDEO_WIDTH, ParrotTypes.VIDEO_HEIGHT, Bitmap.Config.RGB_565); //ARGB_8888
-//		    					m_oImage.getLayoutParams().height = ParrotTypes.VIDEO_HEIGHT;
-//		    					m_oImage.getLayoutParams().width = ParrotTypes.VIDEO_WIDTH;
-		    					m_oImage.setImageBitmap(m_bmpVideo);
-		    					
-		    					nativeClose();
-			                	
-			                	Utils.waitSomeTime(200);
-			                	
-			                	connect();
-			                	
-			                	m_nErrorCount = 0;
-			                	
-		    					mPause = false;
-							}
-						});
-    				}
-                }
+    			counter.tick();
+    			nResult = nativeGetAsJpeg();
+//    			nResult = nativeUpdateBitmap();
+//    			if (nResult == ParrotTypes.SUCCESS) {
+//					m_nErrorCount = 0;
+//					
+//    				m_oUiHandler.post(new Runnable() {
+//						
+//						@Override
+//						public void run() {
+//							// image must be updated by GUI thread (main thread)
+//							m_oImage.invalidate();
+//						}
+//					});
+//    			} else if (nResult == ParrotTypes.CODEC_DIMENSION_ERROR) {
+//
+//    				// NOTE: I have spent several days trying to find out why the ffmpeg library
+//    				// suddenly crashes after some time but without success. I tried recompiling
+//    				// the library without success. The only thing I found out is that it always
+//    				// happens after receiving some erroneous frames which result in codec dimensions
+//    				// that don't correspond with the 640x360. To avoid crashes of the whole app because
+//    				// of that I now close the library if the codec dimension error is detected and
+//    				// then reconnect to continue displaying the video which seems to work so far.
+//    				m_nErrorCount++;
+//    				if (m_nErrorCount >= 3) {
+//	                	nativeClose();
+//	                	
+//	                	Utils.waitSomeTime(200);
+//	                	
+//	                	connect();
+//	                	
+//	                	m_nErrorCount = 0;
+//    				}
+//    			} else if (nResult == ParrotTypes.BITMAP_LOCKPIXELS_FAILED) {
+//    				m_nErrorCount++;
+//    				if (m_nErrorCount >= 3) {
+//    					m_bmpVideo = null;
+//    					mPause = true;
+//
+//    					m_oUiHandler.post(new Runnable() {
+//							
+//							@Override
+//							public void run() {
+//		    					m_bmpVideo = Bitmap.createBitmap(ParrotTypes.VIDEO_WIDTH, ParrotTypes.VIDEO_HEIGHT, Bitmap.Config.ARGB_8888); //ARGB_8888
+////		    					m_oImage.getLayoutParams().height = ParrotTypes.VIDEO_HEIGHT;
+////		    					m_oImage.getLayoutParams().width = ParrotTypes.VIDEO_WIDTH;
+//		    					m_oImage.setImageBitmap(m_bmpVideo);
+//		    					
+//		    					nativeClose();
+//			                	
+//			                	Utils.waitSomeTime(200);
+//			                	
+//			                	connect();
+//			                	
+//			                	m_nErrorCount = 0;
+//			                	
+//		    					mPause = false;
+//							}
+//						});
+//    				}
+//                }
             } else if (nResult == ParrotTypes.READ_FRAME_FAILED) {
 
 				m_nErrorCount++;
@@ -218,5 +233,7 @@ public class ParrotVideoProcessor extends Thread {
     private native void nativeCloseVideo();
     private native int nativeDecodeFrame(); //never touch the bitmap here
     private native int nativeUpdateBitmap();
+    private native int compress(OutputStream os);
+    private native int nativeGetAsJpeg();
 
 }

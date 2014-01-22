@@ -41,8 +41,8 @@ public class MoveRepeater extends DoBotsThread {
 		return m_bRepeat;
 	}
 	
-	public void startMove(Move i_eMove, double i_dblSpeed, int i_nRadius, boolean i_bRepeat) {
-		startMove(new MoveRunner(i_eMove, i_dblSpeed, i_nRadius), i_bRepeat);
+	public void startMove(Move i_eMove, double i_dblSpeed, double i_dblRadius, boolean i_bRepeat) {
+		startMove(new MoveRunner(i_eMove, i_dblSpeed, i_dblRadius), i_bRepeat);
 	}
 
 	public void startMove(Move i_eMove, double i_dblSpeed, boolean i_bRepeat) {
@@ -70,14 +70,14 @@ public class MoveRepeater extends DoBotsThread {
 		
 		private Move eMove;
 		private double dblSpeed;
-		private int nRadius;
+		private double dblRadius;
 		
-		public MoveRunner(Move i_eMove, double i_dblSpeed, int i_nRadius) {
+		public MoveRunner(Move i_eMove, double i_dblSpeed, double i_dblRadius) {
 			super();
 			
 			eMove = i_eMove;
 			dblSpeed = i_dblSpeed;
-			nRadius = i_nRadius;
+			dblRadius = i_dblRadius;
 		}
 		
 		@Override
@@ -85,10 +85,10 @@ public class MoveRepeater extends DoBotsThread {
 			synchronized (m_oMoveMutex) {
 				Log.d(TAG, eMove.toString());
 				if (m_oRobot != null) {
-					if (nRadius == 0) {
+					if (dblRadius == 0) {
 						m_oRobot.onDoMove(eMove, dblSpeed);
 					} else {
-						m_oRobot.onDoMove(eMove, dblSpeed, nRadius);
+						m_oRobot.onDoMove(eMove, dblSpeed, dblRadius);
 					}
 				} else {
 					Log.e(TAG, "fatal, no move listener assigned!");

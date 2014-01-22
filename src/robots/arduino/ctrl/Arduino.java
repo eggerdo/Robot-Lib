@@ -193,18 +193,6 @@ public class Arduino extends DifferentialRobot implements IArduino, ISensorDataL
 	}
 
 	@Override
-	public void moveLeft() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void moveRight() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void requestSensorData() {
 		m_oController.requestSensorData();
 	}

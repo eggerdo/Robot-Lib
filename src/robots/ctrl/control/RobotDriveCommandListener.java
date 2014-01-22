@@ -2,11 +2,12 @@ package robots.ctrl.control;
 
 
 import org.dobots.comm.Move;
+import org.dobots.utilities.log.Loggable;
 
 import robots.ctrl.IRobotDevice;
 import android.util.Log;
 
-public class RobotDriveCommandListener implements IDriveControlListener {
+public class RobotDriveCommandListener extends Loggable implements IDriveControlListener {
 	
 	private static final String TAG = "RobotRemote";
 
@@ -16,44 +17,50 @@ public class RobotDriveCommandListener implements IDriveControlListener {
 		m_oRobot = i_oRobot;
 	}
 	
+	protected double checkSpeed(double i_dblSpeed) {
+		if (i_dblSpeed == -1) {
+			return m_oRobot.getBaseSpeed();
+		} else {
+			return i_dblSpeed;
+		}
+	}
+	
 	// called by RemoteControlHelper when the joystick is used (if no other RemoteControlListener
 	// was assigned)
 	@Override
 	public void onMove(Move i_oMove, double i_dblSpeed, double i_dblAngle) {
 
-		if (i_dblSpeed == -1) {
-			i_dblSpeed = m_oRobot.getBaseSpeed();
-		}
+		i_dblSpeed = checkSpeed(i_dblSpeed);
 		
 		// execute this move
 		switch(i_oMove) {
 		case NONE:
 			m_oRobot.moveStop();
-			Log.i(TAG, "stop()");
+			debug(TAG, "stop()");
 			break;
 		case BACKWARD:
 			m_oRobot.moveBackward(i_dblSpeed, i_dblAngle);
-			Log.i(TAG, String.format("bwd(s=%f, a=%f)", i_dblSpeed, i_dblAngle));
+			debug(TAG, "bwd(s=%f, a=%f)", i_dblSpeed, i_dblAngle);
 			break;
 		case STRAIGHT_BACKWARD:
 			m_oRobot.moveBackward(i_dblSpeed);
-			Log.i(TAG, String.format("bwd(s=%f)", i_dblSpeed));
+			debug(TAG, "bwd(s=%f)", i_dblSpeed);
 			break;
 		case FORWARD:
 			m_oRobot.moveForward(i_dblSpeed, i_dblAngle);
-			Log.i(TAG, String.format("fwd(s=%f, a=%f)", i_dblSpeed, i_dblAngle));
+			debug(TAG, "fwd(s=%f, a=%f)", i_dblSpeed, i_dblAngle);
 			break;
 		case STRAIGHT_FORWARD:
 			m_oRobot.moveForward(i_dblSpeed);
-			Log.i(TAG, String.format("fwd(s=%f)", i_dblSpeed));
+			debug(TAG, "fwd(s=%f)", i_dblSpeed);
 			break;
 		case ROTATE_LEFT:
 			m_oRobot.rotateCounterClockwise(i_dblSpeed);
-			Log.i(TAG, String.format("c cw(s=%f)", i_dblSpeed));
+			debug(TAG, "c cw(s=%f)", i_dblSpeed);
 			break;
 		case ROTATE_RIGHT:
 			m_oRobot.rotateClockwise(i_dblSpeed);
-			Log.i(TAG, String.format("cw(s=%f)", i_dblSpeed));
+			debug(TAG, "cw(s=%f)", i_dblSpeed);
 			break;
 		}
 	}
@@ -67,25 +74,25 @@ public class RobotDriveCommandListener implements IDriveControlListener {
 		switch(i_oMove) {
 		case NONE:
 			m_oRobot.moveStop();
-			Log.i(TAG, "stop()");
+			debug(TAG, "stop()");
 			break;
 		case STRAIGHT_BACKWARD:
 		case BACKWARD:
 			m_oRobot.moveBackward();
-			Log.i(TAG, "bwd()");
+			debug(TAG, "bwd()");
 			break;
 		case STRAIGHT_FORWARD:
 		case FORWARD:
 			m_oRobot.moveForward();
-			Log.i(TAG, "fwd()");
+			debug(TAG, "fwd()");
 			break;
 		case ROTATE_LEFT:
 			m_oRobot.rotateCounterClockwise();
-			Log.i(TAG, "c cw()");
+			debug(TAG, "c cw()");
 			break;
 		case ROTATE_RIGHT:
 			m_oRobot.rotateClockwise();
-			Log.i(TAG, "cw()");
+			debug(TAG, "cw()");
 			break;
 		}
 	}

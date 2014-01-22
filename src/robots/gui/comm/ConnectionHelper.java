@@ -10,8 +10,8 @@ import robots.gui.comm.bluetooth.IBluetoothConnectionListener;
 import robots.gui.comm.wifi.WifiConnectionHelper;
 import robots.nxt.ctrl.Nxt;
 import robots.nxt.gui.NxtUI;
+import robots.parrot.ardrone2.gui.ArDrone2UI;
 import robots.parrot.ctrl.Parrot;
-import robots.parrot.gui.ParrotUI;
 import robots.rover.ac13.ctrl.AC13Rover;
 import robots.rover.ac13.gui.AC13RoverUI;
 import android.bluetooth.BluetoothDevice;
@@ -29,7 +29,7 @@ public class ConnectionHelper {
 		case RBT_ROBOSCOOPER:
 		case RBT_ROBO40:
 			return establishBluetoothConnection(i_oActivity, i_oRobot, i_oListener);
-		case RBT_PARROT:
+		case RBT_ARDRONE2:
 		case RBT_SPYKEE:
 		case RBT_AC13ROVER:
 		case RBT_ROVER2:
@@ -116,8 +116,8 @@ public class ConnectionHelper {
 	private static void connectToWifiRobot(BaseActivity context, IRobotDevice oRobot,
 			IConnectListener oListener) throws Exception {
 		switch (oRobot.getType()) {
-		case RBT_PARROT:
-			ParrotUI.connectToARDrone(context, (Parrot)oRobot, oListener);
+		case RBT_ARDRONE2:
+			ArDrone2UI.connectToARDrone(context, (Parrot)oRobot, oListener);
 //		case RBT_SPYKEE:
 //			SpykeeRobot.connectToSpykee(context, (Spykee)oRobot, oListener);
 		case RBT_AC13ROVER:

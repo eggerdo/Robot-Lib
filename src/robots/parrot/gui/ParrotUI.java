@@ -4,19 +4,28 @@ import org.dobots.R;
 import org.dobots.comm.Move;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
+import org.dobots.zmq.ZmqRemoteControlSender;
 
 import robots.RobotType;
 import robots.ctrl.control.IDriveControlListener;
+import robots.ctrl.control.HolonomicRemoteControlHelper;
 import robots.ctrl.control.RemoteControlHelper;
 import robots.ctrl.control.RobotDriveCommandListener;
 import robots.gui.SensorGatherer;
 import robots.gui.WifiRobot;
 import robots.gui.comm.IConnectListener;
-import robots.parrot.ctrl.Parrot;
+import robots.parrot.ctrl.IParrot;
+import robots.parrot.ctrl.ParrotTypes;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -25,27 +34,29 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TableRow;
 import android.widget.ToggleButton;
 
 import com.codeminders.ardrone.ARDrone.VideoChannel;
 
-public class ParrotUI extends WifiRobot implements IDriveControlListener {
+public abstract class ParrotUI extends WifiRobot implements IDriveControlListener {
 
 	private static String TAG = "Parrot";
+
+	private static final int DIALOG_CONNECTION_SETTINGS_ID = 1;
 	
-	private static final int VIDEO_ID = CONNECT_ID + 1;
+	private static final int CONNECTION_SETTINGS_ID = CONNECT_ID + 1;
+	private static final int VIDEO_ID = CONNECTION_SETTINGS_ID + 1;
 	private static final int VIDEO_SCALE_ID = VIDEO_ID + 1;
 	
 	private static final int SENSOR_GRP = GENERAL_GRP + 1;
 	private static final int VIDEO_GRP = SENSOR_GRP + 1;
 
-	private boolean connected;
-	
-	private Parrot m_oParrot;
+	private IParrot m_oParrot;
 
 	private ParrotSensorGatherer m_oSensorGatherer;
 
-	private RemoteControlHelper m_oRemoteCtrl;
+	protected RemoteControlHelper m_oRemoteCtrl;
 	
 //	private Button m_btnCalibrate;
 	
@@ -62,15 +73,21 @@ public class ParrotUI extends WifiRobot implements IDriveControlListener {
 	private ToggleButton m_btnSensors;
 	
 //	private boolean m_bSensorsEnabled = false;
-	private boolean m_bControl = false;
 
 	private Button m_btnSetAltitude;
 
 	private EditText m_edtAltitude;
 
-    private EditText edtKp, edtKd, edtKi;
+//    private EditText edtKp, edtKd, edtKi;
 
-	private RobotDriveCommandListener m_oRobotRemoteListener;
+//	private RobotDriveCommandListener m_oRobotRemoteListener;
+
+	// command and media port are hardcoded in the javadrone-api library. adjust
+	// library if it is necessary to have them configurable
+	private int m_nCommandPort;
+	private int m_nMediaPort;
+
+	private AlertDialog m_dlgSettingsDialog;
 
 //	private Button m_btnEmergency;
 
@@ -90,41 +107,48 @@ public class ParrotUI extends WifiRobot implements IDriveControlListener {
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
 
-    	m_oParrot = (Parrot) getRobot();
-    	m_oParrot.setHandler(m_oUiHandler);
-
-		m_oSensorGatherer = new ParrotSensorGatherer(this, m_oParrot);
-		m_dblSpeed = m_oParrot.getBaseSpeed();
-
-		m_oRobotRemoteListener = new RobotDriveCommandListener(m_oParrot);
-		m_oRemoteCtrl = new RemoteControlHelper(m_oActivity);
-		m_oRemoteCtrl.setDriveControlListener(m_oRobotRemoteListener);
+		m_oRemoteCtrl = new HolonomicRemoteControlHelper(m_oActivity);
         m_oRemoteCtrl.setJoystickControlAvailable(false);
 
+        checkConnectionSettings();
+        
         updateButtons(false);
-
-		if (m_oParrot.isConnected()) {
-			updateButtons(true);
-			// inform the sensor gatherer that we are connected so that
-			// the video can be started
-			m_oSensorGatherer.onConnect();
-		} else {
-	        connectToRobot();
-		}
     }
 
     @Override
     public void onRobotCtrlReady() {
+
+    	m_oParrot = (IParrot) getRobot();
+    	m_oParrot.setHandler(m_oUiHandler);
+    	m_oParrot.setConnection(m_strAddress);
     	
+		m_dblSpeed = m_oParrot.getBaseSpeed();
+    	
+    	m_oSensorGatherer = createSensorGatherer(m_oActivity, m_oParrot);
+
+//		m_oRobotRemoteListener = new RobotDriveCommandListener(m_oParrot);
+		m_oZmqRemoteSender = new ZmqRemoteControlSender(m_oParrot.getID());
+		m_oRemoteCtrl.setDriveControlListener(m_oZmqRemoteSender);
+
+		if (m_oParrot.isConnected()) {
+			onConnect();
+		} else {
+	        connectToRobot();
+		}
+		
     }
     
+    protected abstract ParrotSensorGatherer createSensorGatherer(BaseActivity i_oActivity, IParrot i_oParrot);
+
     @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		
-		menu.add(SENSOR_GRP, VIDEO_ID, 2, "Video");
 
-		menu.add(VIDEO_GRP, VIDEO_SCALE_ID, 3, "Scale Video");
+		menu.add(GENERAL_GRP, CONNECTION_SETTINGS_ID, CONNECTION_SETTINGS_ID, "Connection Settings");
+		
+		menu.add(SENSOR_GRP, VIDEO_ID, 2, "Video ON");
+
+		menu.add(VIDEO_GRP, VIDEO_SCALE_ID, 3, "Scale Video ON");
 		
 		return true;
 	}
@@ -132,8 +156,15 @@ public class ParrotUI extends WifiRobot implements IDriveControlListener {
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		switch (item.getItemId()) {
+		case CONNECTION_SETTINGS_ID:
+			showDialog(DIALOG_CONNECTION_SETTINGS_ID);
+			break;
 		case VIDEO_ID:
-			m_oSensorGatherer.setVideoEnabled(!m_oSensorGatherer.isVideoEnabled());
+			if (m_oParrot.isStreaming()) {
+				m_oParrot.stopVideo();
+			} else {
+				m_oParrot.startVideo();
+			}
 			return true;
 		case VIDEO_SCALE_ID:
 			m_oSensorGatherer.setVideoScaled(!m_oSensorGatherer.isVideoScaled());
@@ -144,7 +175,6 @@ public class ParrotUI extends WifiRobot implements IDriveControlListener {
 	
 	public void disconnect() {
 		m_oParrot.disconnect();
-		m_oSensorGatherer.disconnectVideo();
 	}
 
     @Override
@@ -154,7 +184,7 @@ public class ParrotUI extends WifiRobot implements IDriveControlListener {
     	menu.setGroupVisible(SENSOR_GRP, m_oParrot.isConnected());
     	menu.setGroupVisible(VIDEO_GRP, m_oParrot.isConnected() && m_oParrot.isARDrone1());
 
-    	Utils.updateOnOffMenuItem(menu.findItem(VIDEO_ID), m_oSensorGatherer.isVideoEnabled());
+    	Utils.updateOnOffMenuItem(menu.findItem(VIDEO_ID), m_oParrot.isStreaming());
     	Utils.updateOnOffMenuItem(menu.findItem(VIDEO_SCALE_ID), m_oSensorGatherer.isVideoScaled());
     	
     	return true;
@@ -170,26 +200,6 @@ public class ParrotUI extends WifiRobot implements IDriveControlListener {
 		});
 	}
 
-	public static void connectToARDrone(final BaseActivity m_oOwner, Parrot i_oParrot, final IConnectListener i_oConnectListener) {
-		ParrotUI m_oRobot = new ParrotUI(m_oOwner) {
-			public void onConnect() {
-				i_oConnectListener.onConnect(true);
-			};
-			public void onDisconnect() {
-				i_oConnectListener.onConnect(false);
-			};
-		};
-		
-		m_oRobot.showConnectingDialog();
-		
-		if (i_oParrot.isConnected()) {
-			i_oParrot.disconnect();
-		}
-
-		i_oParrot.setHandler(m_oRobot.getUIHandler());
-		i_oParrot.connect();
-	}
-
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -197,20 +207,16 @@ public class ParrotUI extends WifiRobot implements IDriveControlListener {
 
 	@Override
 	protected void onConnect() {
-		connected = true;
 		m_oSensorGatherer.onConnect();
 
 		updateButtons(true);
-//		m_oRemoteCtrl.updateButtons(true);
 	}
 	
 	@Override
 	protected void onDisconnect() {
-		connected = false;
 		m_oSensorGatherer.onDisconnect();
 		
 		updateButtons(false);
-//		m_oRemoteCtrl.updateButtons(false);
 	}
 	
 	@Override
@@ -224,9 +230,9 @@ public class ParrotUI extends WifiRobot implements IDriveControlListener {
 
         m_edtAltitude = (EditText) findViewById(R.id.edtAltitude);
         
-        edtKp = (EditText) findViewById(R.id.edtKp);
-        edtKd = (EditText) findViewById(R.id.edtKd);
-        edtKi = (EditText) findViewById(R.id.edtKi);
+//        edtKp = (EditText) findViewById(R.id.edtKp);
+//        edtKd = (EditText) findViewById(R.id.edtKd);
+//        edtKi = (EditText) findViewById(R.id.edtKi);
         
         Button btnStopAltitudeCtrl = (Button) findViewById(R.id.btnStopAltitudeCtrl);
         btnStopAltitudeCtrl.setOnClickListener(new OnClickListener() {
@@ -242,10 +248,11 @@ public class ParrotUI extends WifiRobot implements IDriveControlListener {
 			
 			@Override
 			public void onClick(View v) {
-				double altitude = (new Double(m_edtAltitude.getText().toString())).doubleValue();
-				m_oParrot.Kp = (new Double(edtKp.getText().toString())).doubleValue();
-				m_oParrot.Kd = (new Double(edtKd.getText().toString())).doubleValue();
-				m_oParrot.Ki = (new Double(edtKi.getText().toString())).doubleValue();
+//				double altitude = (new Double(m_edtAltitude.getText().toString())).doubleValue();
+				double altitude = Double.valueOf(m_edtAltitude.getText().toString());
+//				m_oParrot.Kp = (new Double(edtKp.getText().toString())).doubleValue();
+//				m_oParrot.Kd = (new Double(edtKd.getText().toString())).doubleValue();
+//				m_oParrot.Ki = (new Double(edtKi.getText().toString())).doubleValue();
 				m_oParrot.setAltitude(altitude);
 			}
 		});
@@ -438,5 +445,97 @@ public class ParrotUI extends WifiRobot implements IDriveControlListener {
 	public void toggleInvertDrive() {
 		// not available
 	}
-	
+
+    /**
+     * This is called when a dialog is created for the first time.  The given
+     * "id" is the same value that is passed to showDialog().
+     */
+    @Override
+    protected Dialog onCreateDialog(int id) {
+    	switch (id) {
+    	case DIALOG_CONNECTION_SETTINGS_ID:
+    		return createConnectionSettingsDialog();
+    	}
+    	return null;
+    }
+
+    private Dialog createConnectionSettingsDialog() {
+    	LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    	View layout = inflater.inflate(R.layout.connection_settings, null);
+    	builder.setTitle("Connection Settings");
+    	builder.setView(layout);
+    	builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface arg0, int arg1) {
+				adjustConnectionSettings();
+			}
+		});
+    	m_dlgSettingsDialog = builder.create();
+    	return m_dlgSettingsDialog;
+    }
+    
+    /**
+     * This is called each time a dialog is shown.
+     */
+    @Override
+    protected void onPrepareDialog(int id, Dialog dialog) {
+    	switch(id) {
+    	case DIALOG_CONNECTION_SETTINGS_ID:
+    		prepareConnectionSettingsDialog(dialog);
+    		break;
+    	}
+    }
+
+    protected void prepareConnectionSettingsDialog(Dialog dialog) {
+		EditText editText;
+		
+		editText = (EditText) dialog.findViewById(R.id.txtAddress);
+		editText.setText(m_strAddress);
+		
+		editText = (EditText) dialog.findViewById(R.id.txtPort);
+		editText.setText(Integer.toString(m_nCommandPort));
+		editText.setEnabled(false);
+		
+		TableRow trMediaPort = (TableRow) dialog.findViewById(R.id.trMediaPort);
+		trMediaPort.setVisibility(View.VISIBLE);
+
+		editText = (EditText) dialog.findViewById(R.id.txtMediaPort);
+		editText.setText(Integer.toString(m_nMediaPort));
+		editText.setEnabled(false);
+    }
+
+	protected void checkConnectionSettings() {
+		SharedPreferences prefs = m_oActivity.getPreferences(Activity.MODE_PRIVATE);
+		m_strAddress = prefs.getString(ParrotTypes.PREFS_ADDRESS, ParrotTypes.PARROT_IP);
+		m_nCommandPort = prefs.getInt(ParrotTypes.PREFS_COMMANDPORT, ParrotTypes.COMMAND_PORT);
+		m_nMediaPort = prefs.getInt(ParrotTypes.PREFS_MEDIAPORT, ParrotTypes.MEDIA_PORT);
+	}
+
+	protected void adjustConnectionSettings() {
+
+    	EditText editText;
+    	
+    	editText = (EditText) m_dlgSettingsDialog.findViewById(R.id.txtAddress);
+		m_strAddress = editText.getText().toString();
+		
+//		editText = (EditText) m_dlgSettingsDialog.findViewById(R.id.txtPort);
+//		m_nCommandPort = Integer.valueOf(editText.getText().toString());
+//
+//		editText = (EditText) m_dlgSettingsDialog.findViewById(R.id.txtMediaPort);
+//		m_nMediaPort = Integer.valueOf(editText.getText().toString());
+
+//		m_oParrot.setConnection(m_strAddress, m_nCommandPort, m_nMediaPort);
+		m_oParrot.setConnection(m_strAddress);
+		
+		connect();
+		
+		SharedPreferences prefs = m_oActivity.getPreferences(Activity.MODE_PRIVATE);
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putString(ParrotTypes.PREFS_ADDRESS, m_strAddress);
+		editor.putInt(ParrotTypes.PREFS_COMMANDPORT, m_nCommandPort);
+		editor.putInt(ParrotTypes.PREFS_MEDIAPORT, m_nMediaPort);
+		editor.commit();
+		
+	}
+
 }

@@ -68,7 +68,7 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 	private double updateFrequency = 5.0; // Hz
 	private int threshold = 20;
 	
-	private BaseActivity m_oActivity;
+	protected BaseActivity m_oActivity;
 	
 	// flag if remote control
 	private boolean m_bControl;
@@ -80,16 +80,16 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 	// flag if fwdleft, fwdright, etc. buttons are available
 	private boolean m_bAdvancedControl = true;
 
-	private ToggleButton m_btnControl;
-	private ImageButton m_btnFwd;
-	private ImageButton m_btnFwdLeft;
-	private ImageButton m_btnFwdRight;
-	private ImageButton m_btnBwd;
-	private ImageButton m_btnBwdLeft;
-	private ImageButton m_btnBwdRight;
-	private ImageButton m_btnLeft;
-	private ImageButton m_btnRight;
-	private ImageButton m_btnStop;
+	protected ToggleButton m_btnControl;
+	protected ImageButton m_btnFwd;
+	protected ImageButton m_btnFwdLeft;
+	protected ImageButton m_btnFwdRight;
+	protected ImageButton m_btnBwd;
+	protected ImageButton m_btnBwdLeft;
+	protected ImageButton m_btnBwdRight;
+	protected ImageButton m_btnLeft;
+	protected ImageButton m_btnRight;
+	protected ImageButton m_btnStop;
 	
 	private LockableScrollView m_oScrollView;
 	private LinearLayout m_oBasicControl;
@@ -97,10 +97,16 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 	
 	private Joystick m_oJoystick;
 	
-	private int mAlpha = 128;
+	protected int mAlpha = 128;
 	private boolean mTransparent = false;
+	
+	// this is the radius used by the keypad for moves: fwdLeft, fwdRight, bwdLeft and bwdRight
+	protected int mKeypadRadius = 80;
 
-	private class RemoteControlTouchListener implements OnTouchListener {
+	// sliding over remote control buttons for scrolling will trigger touch
+	// events and thus moves. How to prevent that while still having events
+	// for onPress and onRelease?
+	protected class RemoteControlTouchListener implements OnTouchListener {
 
 		private Move mMove;
 		private double mRadius = 0;
@@ -226,7 +232,7 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 		return m_btnControl != null;
 	}
 	
-	private void setProperties() {
+	protected void setProperties() {
 		if (m_oActivity == null) 
 			return;
 		
@@ -259,7 +265,7 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 		m_btnFwdLeft = (ImageButton) m_oActivity.findViewById(R.id.btnFwdLeft);
 		if (m_btnFwdLeft != null) {
 			m_btnFwdLeft.getBackground().setAlpha(mAlpha);
-			m_btnFwdLeft.setOnTouchListener(new RemoteControlTouchListener(Move.FORWARD, 80));
+			m_btnFwdLeft.setOnTouchListener(new RemoteControlTouchListener(Move.FORWARD, mKeypadRadius));
 		}
 		
 		m_btnFwd = (ImageButton) m_oActivity.findViewById(R.id.btnFwd);
@@ -271,7 +277,7 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 		m_btnFwdRight = (ImageButton) m_oActivity.findViewById(R.id.btnFwdRight);
 		if (m_btnFwdRight != null) {
 			m_btnFwdRight.getBackground().setAlpha(mAlpha);
-			m_btnFwdRight.setOnTouchListener(new RemoteControlTouchListener(Move.FORWARD, -80));
+			m_btnFwdRight.setOnTouchListener(new RemoteControlTouchListener(Move.FORWARD, -mKeypadRadius));
 		}
 
 		m_btnLeft = (ImageButton) m_oActivity.findViewById(R.id.btnLeft);
@@ -295,7 +301,7 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 		m_btnBwdLeft = (ImageButton) m_oActivity.findViewById(R.id.btnBwdLeft);
 		if (m_btnBwdLeft != null) {
 			m_btnBwdLeft.getBackground().setAlpha(mAlpha);
-			m_btnBwdLeft.setOnTouchListener(new RemoteControlTouchListener(Move.BACKWARD, 80));
+			m_btnBwdLeft.setOnTouchListener(new RemoteControlTouchListener(Move.BACKWARD, mKeypadRadius));
 		}
 		
 		m_btnBwd = (ImageButton) m_oActivity.findViewById(R.id.btnBwd);
@@ -307,7 +313,7 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 		m_btnBwdRight = (ImageButton) m_oActivity.findViewById(R.id.btnBwdRight);
 		if (m_btnBwdRight != null) {
 			m_btnBwdRight.getBackground().setAlpha(mAlpha);
-			m_btnBwdRight.setOnTouchListener(new RemoteControlTouchListener(Move.BACKWARD, -80));
+			m_btnBwdRight.setOnTouchListener(new RemoteControlTouchListener(Move.BACKWARD, -mKeypadRadius));
 		}
 		
 		adjustTransparency();

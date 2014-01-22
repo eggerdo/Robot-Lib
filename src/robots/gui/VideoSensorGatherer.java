@@ -17,12 +17,15 @@ public class VideoSensorGatherer extends SensorGatherer {
 	
 	protected ZmqVideoReceiver m_oVideoDisplayer;
 	protected VideoHelper mVideoHelper;
+	
+	protected ViewGroup m_layCameraContainer;
 
 	public VideoSensorGatherer(BaseActivity i_oActivity, IRobotDevice i_oRobot, String i_strThreadName) {
 		super(i_oActivity, i_strThreadName);
 		mRobot = i_oRobot;
 		
-		mVideoHelper = new VideoHelper(i_oActivity, (ViewGroup)m_oActivity.findViewById(R.id.layCameraContainer));
+		m_layCameraContainer = (ViewGroup)m_oActivity.findViewById(R.id.layCameraContainer);
+		mVideoHelper = new VideoHelper(i_oActivity, m_layCameraContainer);
 //        mVideoHelper.setDisplayMode(DisplayMode.NORMAL);
 	}
 
@@ -32,14 +35,18 @@ public class VideoSensorGatherer extends SensorGatherer {
 
 	// only starts playing the video. the robot sends video in any case.
 	public void startVideoPlayback() {
-		mVideoHelper.onStartVideoPlayback();                
-		setVideoListening(true);
+		mVideoHelper.onStartVideoPlayback();    
+		
+		setupVideoDisplay();
 	}
 	
 	// only stops playing the video. the robot sends video in any case.
 	public void stopVideoPlayback() {
 		mVideoHelper.onStopVideoPlayback();
-		setVideoListening(false);
+		
+		if (m_oVideoDisplayer != null) {
+			m_oVideoDisplayer.close();
+		}
 	}
 	
 	public boolean isPlaybackStopped() {
@@ -54,16 +61,6 @@ public class VideoSensorGatherer extends SensorGatherer {
 		stopVideoPlayback();
 	}
 
-	private void setVideoListening(boolean i_bListening) {
-		if (i_bListening) {
-			setupVideoDisplay();
-		} else {
-			if (m_oVideoDisplayer != null) {
-				m_oVideoDisplayer.close();
-			}
-		}
-	}
-
 	private void setupVideoDisplay() {
 
 		ZMQ.Socket oVideoRecvSocket = ZmqHandler.getInstance().obtainVideoRecvSocket();
@@ -76,6 +73,18 @@ public class VideoSensorGatherer extends SensorGatherer {
 		m_oVideoDisplayer.start();
 	}
 
+	public void setVideoScaled(boolean scaled) {
+		if (scaled) {
+			mVideoHelper.setDisplayMode(DisplayMode.SCALED_WIDTH);
+		} else {
+			mVideoHelper.setDisplayMode(DisplayMode.NORMAL);
+		}
+	}
+	
+	public boolean isVideoScaled() {
+		return mVideoHelper.getDisplayMode() == DisplayMode.SCALED_WIDTH;
+	}
+	
 	@Override
 	public void shutDown() {
 		if (m_oVideoDisplayer != null) {

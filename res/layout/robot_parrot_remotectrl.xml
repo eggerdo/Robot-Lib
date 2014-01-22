@@ -3,305 +3,322 @@
     android:id="@+id/layRemoteControl"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
-
-    <FrameLayout
-	    android:layout_width="match_parent"
-	    android:layout_height="match_parent"
-	    android:layout_gravity="center"
-	    android:orientation="vertical" >
-	            
-	    <LinearLayout
-	        android:id="@+id/layBasicControl"
-	        android:layout_width="match_parent"
-	        android:layout_height="match_parent"
-	        android:orientation="horizontal" >
-	        
-		    <View
-		        android:layout_width ="0dp"
-		        android:layout_height="match_parent"
-		        android:layout_weight="1" />
-		
-			<TableLayout
-			    android:layout_width="match_parent"
-			    android:layout_height="wrap_content" >
-			
-			    <View
-			        android:layout_height="0dip"
-			        android:layout_weight="1" />
-				
-				<TableRow
-				    android:id="@+id/tableRow1"
-				    android:layout_width="wrap_content"
-				    android:layout_height="10dp" >
-				    
-				    <ImageButton
-				        android:id="@+id/btnFwdLeft"
-				        android:layout_width="0dp"
-				        android:layout_height="match_parent"
-				        android:layout_weight="1"
-				        android:layout_margin="5dp"
-				        android:src="@drawable/arrow_fwdleft"
-				    	android:scaleType="centerInside" />
-				
-				    <ImageButton
-				        android:id="@+id/btnFwd"
-				        android:layout_width="0dp"
-				        android:layout_height="match_parent"
-				        android:layout_weight="1"
-				        android:layout_margin="5dp"
-				        android:src="@drawable/arrow_fwd"
-				    	android:scaleType="centerInside" />
-				
-				    <ImageButton
-				        android:id="@+id/btnFwdRight"
-				        android:layout_width="0dp"
-				        android:layout_height="match_parent"
-				        android:layout_weight="1"
-				        android:layout_margin="5dp"
-				        android:src="@drawable/arrow_fwdright"
-				    	android:scaleType="centerInside" />
-				
-				</TableRow>
-				
-				<TableRow
-				    android:id="@+id/tableRow2"
-				    android:layout_width="wrap_content"
-				    android:layout_height="10dp" >
-				
-				    <ImageButton
-				        android:id="@+id/btnLeft"
-				        android:layout_width="0dp"
-				        android:layout_height="match_parent"
-				        android:layout_weight="1"
-				        android:layout_margin="5dp"
-				        android:src="@drawable/arrow_left"
-				    	android:scaleType="centerInside" />
-				
-				    <ImageButton
-				        android:id="@+id/btnStop"
-				        android:layout_width="0dp"
-				        android:layout_height="match_parent"
-				        android:layout_weight="1"
-				        android:layout_margin="5dp"
-				        android:src="@drawable/arrow_stop"
-				    	android:scaleType="centerInside" />
-				
-				    <ImageButton
-				        android:id="@+id/btnRight"
-				        android:layout_width="0dp"
-				        android:layout_height="match_parent"
-				        android:layout_weight="1"
-				        android:layout_margin="5dp"
-				        android:src="@drawable/arrow_right"
-				    	android:scaleType="centerInside" />
-				
-				</TableRow>
-				
-				<TableRow
-				    android:id="@+id/tableRow3"
-				    android:layout_width="wrap_content"
-				    android:layout_height="10dp" >
-				
-				    <ImageButton
-				        android:id="@+id/btnBwdLeft"
-				        android:layout_width="0dp"
-				        android:layout_height="match_parent"
-				        android:layout_weight="1"
-				        android:layout_margin="5dp"
-				        android:src="@drawable/arrow_bwdleft"
-				    	android:scaleType="centerInside" />
-				
-				    <ImageButton
-				        android:id="@+id/btnBwd"
-				        android:layout_width="0dp"
-				        android:layout_height="match_parent"
-				        android:layout_weight="1"
-				        android:layout_margin="5dp"
-				        android:src="@drawable/arrow_bwd"
-				    	android:scaleType="centerInside" />
-				
-				    <ImageButton
-				        android:id="@+id/btnBwdRight"
-				        android:layout_width="0dp"
-				        android:layout_height="match_parent"
-				        android:layout_weight="1"
-				        android:layout_margin="5dp"
-				        android:src="@drawable/arrow_bwdright"
-				    	android:scaleType="centerInside" />
-				</TableRow>
-			
-			    <TableRow
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content" >
-			
-			        <Button
-			            android:id="@+id/btnRotateLeft"
-			            android:layout_width="0dp"
-			            android:layout_height="wrap_content"
-			            android:layout_weight="1"
-			            android:text="@string/ardrone_rotleft" />
-			
-			        <LinearLayout
-			            android:layout_width="0dp"
-			            android:layout_height="wrap_content"
-			            android:layout_weight="1" >
-			        </LinearLayout>
-			
-			        <Button
-			            android:id="@+id/btnRotateRight"
-			            android:layout_width="0dp"
-			            android:layout_height="wrap_content"
-			            android:layout_weight="1"
-			            android:text="@string/ardrone_rotright" />
-			    </TableRow>
-			
-			    <View android:layout_height="20dip" />
-			
-			    <TableRow
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content" >
-			
-			        <Button
-			            android:id="@+id/btnTakeOff"
-			            android:layout_width="0dp"
-			            android:layout_height="wrap_content"
-			            android:layout_weight="1"
-			            android:text="@string/ardrone_takeoff" />
-			
-			        <LinearLayout
-			            android:layout_width="0dp"
-			            android:layout_height="wrap_content"
-			            android:layout_weight="1" >
-			        </LinearLayout>
-			
-			        <Button
-			            android:id="@+id/btnLand"
-			            android:layout_width="0dp"
-			            android:layout_height="wrap_content"
-			            android:layout_weight="1"
-			            android:text="@string/ardrone_land" />
-			    </TableRow>
-			
-			    <TableRow
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content" >
-			
-			        <Button
-			            android:id="@+id/btnUp"
-			            android:layout_width="0dp"
-			            android:layout_height="wrap_content"
-			            android:layout_weight="1"
-			            android:text="@string/ardrone_up" />
-			
-			        <LinearLayout
-			            android:layout_width="0dp"
-			            android:layout_height="wrap_content"
-			            android:layout_weight="1" >
-			        </LinearLayout>
-			
-			        <Button
-			            android:id="@+id/btnDown"
-			            android:layout_width="0dp"
-			            android:layout_height="wrap_content"
-			            android:layout_weight="1"
-			            android:text="@string/ardrone_down" />
-			    </TableRow>
-			
-			    <View android:layout_height="20dip" />
-			
-			    <TableRow
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content" >
-			
-			        <Button
-			            android:id="@+id/btnSetAltitude"
-			            android:layout_width="0dp"
-			            android:layout_height="wrap_content"
-			            android:layout_weight="1"
-			            android:text="Set Altitude" />
-			
-			        <EditText
-			            android:id="@+id/edtAltitude"
-			            android:layout_width="0dp"
-			            android:layout_height="wrap_content"
-			            android:layout_weight="2"
-			            android:ems="10"
-			            android:inputType="numberDecimal"
-			            android:text="0.2" >
-			
-			            <requestFocus />
-			        </EditText>
-			    </TableRow>
-			
-			    <TableRow
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:visibility="gone" >
-			
-			        <EditText
-			            android:id="@+id/edtKp"
-			            android:layout_width="0dp"
-			            android:layout_height="wrap_content"
-			            android:layout_weight="2"
-			            android:ems="10"
-			            android:inputType="numberDecimal"
-			            android:text="0.03" />
-			
-			        <EditText
-			            android:id="@+id/edtKd"
-			            android:layout_width="0dp"
-			            android:layout_height="wrap_content"
-			            android:layout_weight="2"
-			            android:ems="10"
-			            android:inputType="numberDecimal"
-			            android:text="0" />
-			
-			        <EditText
-			            android:id="@+id/edtKi"
-			            android:layout_width="0dp"
-			            android:layout_height="wrap_content"
-			            android:layout_weight="2"
-			            android:ems="10"
-			            android:inputType="numberDecimal"
-			            android:text="0.1" />
-			    </TableRow>
-			
-			    <LinearLayout
-			        android:layout_width="wrap_content"
-			        android:layout_height="match_parent"
-			        android:visibility="gone" >
-			
-			        <Button
-			            android:id="@+id/btnStopAltitudeCtrl"
-			            android:layout_width="wrap_content"
-			            android:layout_height="wrap_content"
-			            android:text="Stop" />
-			    </LinearLayout>
-			
-			    <View
-			        android:layout_height="0dip"
-			        android:layout_weight="1"
-			        android:minHeight="20dp" />
-
-			</TableLayout>
-			  
-		    <View
-		        android:layout_width ="0dp"
-		        android:layout_height="match_parent"
-		        android:layout_weight="1" />
-	        
-	    </LinearLayout>
-	
-	    <include 
-	        layout="@layout/joystick_remote"
-	        android:visibility="invisible"
-	        />
-	    
-    </FrameLayout>
+    android:layout_gravity="center"
+    android:orientation="horizontal" >
 
     <View
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
+
+    <TableLayout
         android:layout_width="match_parent"
-        android:layout_height="10dip" />
-    
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp" >
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:id="@+id/btnTakeOff"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/ardrone_takeoff" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" >
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnLand"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/ardrone_land" />
+        </TableRow>
+
+        <View android:layout_height="20dip" />
+        
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0" />
+            
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="6"
+		        android:layout_marginLeft="20dp"
+		        android:layout_marginRight="20dp"
+                android:orientation="horizontal" >
+
+                <LinearLayout
+                    android:id="@+id/layBasicControl"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+
+                    <TableLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" >
+
+                        <TableRow android:id="@+id/tableRow1" >
+
+                            <ImageButton
+                                android:id="@+id/btnFwdLeft"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="5dp"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="centerInside"
+                                android:src="@drawable/arrow_fwdleft" />
+
+                            <ImageButton
+                                android:id="@+id/btnFwd"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="5dp"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="centerInside"
+                                android:src="@drawable/arrow_fwd" />
+
+                            <ImageButton
+                                android:id="@+id/btnFwdRight"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="5dp"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="centerInside"
+                                android:src="@drawable/arrow_fwdright" />
+
+                        </TableRow>
+
+                        <TableRow
+                            android:id="@+id/tableRow2"
+                            android:layout_width="match_parent" >
+
+                            <ImageButton
+                                android:id="@+id/btnLeft"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_margin="5dp"
+                                android:adjustViewBounds="true"
+                                android:scaleType="centerInside"
+                                android:src="@drawable/arrow_left" />
+
+                            <ImageButton
+                                android:id="@+id/btnStop"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_margin="5dp"
+                                android:adjustViewBounds="true"
+                                android:scaleType="centerInside"
+                                android:src="@drawable/arrow_stop" />
+
+                            <ImageButton
+                                android:id="@+id/btnRight"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_margin="5dp"
+                                android:adjustViewBounds="true"
+                                android:scaleType="centerInside"
+                                android:src="@drawable/arrow_right" />
+
+                        </TableRow>
+
+                        <TableRow
+                            android:id="@+id/tableRow3"
+                            android:layout_width="match_parent" >
+
+                            <ImageButton
+                                android:id="@+id/btnBwdLeft"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="5dp"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="centerInside"
+                                android:src="@drawable/arrow_bwdleft" />
+
+                            <ImageButton
+                                android:id="@+id/btnBwd"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="5dp"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="centerInside"
+                                android:src="@drawable/arrow_bwd" />
+
+                            <ImageButton
+                                android:id="@+id/btnBwdRight"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="5dp"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="centerInside"
+                                android:src="@drawable/arrow_bwdright" />
+                        </TableRow>
+                    </TableLayout>
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1" />
+                </LinearLayout>
+
+                <include
+                    layout="@layout/joystick_remote"
+                    android:visibility="invisible" />
+            </FrameLayout>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0" />
+        </TableRow>
+
+        <View android:layout_height="20dip" />
+        
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:id="@+id/btnRotateLeft"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/ardrone_rotleft" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" >
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnRotateRight"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/ardrone_rotright" />
+        </TableRow>
+
+        <View android:layout_height="20dip" />
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:id="@+id/btnUp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/ardrone_up" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" >
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnDown"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/ardrone_down" />
+        </TableRow>
+
+        <View android:layout_height="20dip"
+            android:visibility="gone" />
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone" >
+
+            <Button
+                android:id="@+id/btnSetAltitude"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Set Altitude" />
+
+            <EditText
+                android:id="@+id/edtAltitude"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:inputType="numberDecimal"
+                android:text="0.2" >
+            </EditText>
+
+            <Button
+                android:id="@+id/btnStopAltitudeCtrl"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Stop" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone" >
+
+            <EditText
+                android:id="@+id/edtKp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:ems="10"
+                android:inputType="numberDecimal"
+                android:text="0.03" />
+
+            <EditText
+                android:id="@+id/edtKd"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:ems="10"
+                android:inputType="numberDecimal"
+                android:text="0" />
+
+            <EditText
+                android:id="@+id/edtKi"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:ems="10"
+                android:inputType="numberDecimal"
+                android:text="0.1" />
+        </TableRow>
+
+    </TableLayout>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
+
 </LinearLayout>

@@ -109,8 +109,7 @@
     <string name="ardrone_ctrlstate">Control State</string>
     <string name="ardrone_sensors">Sensors</string>
     <string name="ardrone_camera">Camera:</string>
-    <string name="ardrone_title">AR Drone</string>
-    <string name="ardrone_commands">AR Drone Commands</string>
+    <string name="ardrone_title">AR.Drone</string>
     <string name="ardrone_up">Up</string>
     <string name="ardrone_down">Down</string>
     <string name="ardrone_rotleft">Rotate Left</string>

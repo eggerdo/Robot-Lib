@@ -242,16 +242,6 @@ public class RemoteRobotMessenger implements IRobotDevice {
 	public void rotateClockwise() {
 		sendRPC("rotateClockwise");
 	}
-
-	@Override
-	public void moveLeft() {
-		sendRPC("moveLeft");
-	}
-
-	@Override
-	public void moveRight() {
-		sendRPC("moveRight");
-	}
 	
 	protected synchronized Object sendRPCandWaitForReply(String command) throws TimeoutException {
 		synchronized (mWaitForReply) {

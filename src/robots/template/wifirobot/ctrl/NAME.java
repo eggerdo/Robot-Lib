@@ -140,16 +140,4 @@ public class NAME extends DifferentialRobot {
 
 	}
 
-	@Override
-	public void moveLeft() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void moveRight() {
-		// TODO Auto-generated method stub
-
-	}
-
 }

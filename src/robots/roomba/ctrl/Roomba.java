@@ -578,16 +578,6 @@ public class Roomba extends BaseRobot {
 	}
 
 	@Override
-	public void moveLeft() {
-		// not available
-	}
-
-	@Override
-	public void moveRight() {
-		// not available
-	}
-
-	@Override
 	public boolean toggleInvertDrive() {
 		// TODO Auto-generated method stub
 		return false;

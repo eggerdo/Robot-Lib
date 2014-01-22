@@ -103,18 +103,6 @@ public class SpykeeSensorGatherer extends VideoSensorGatherer {
 		}
 	}
 	
-	public void setVideoScaled(boolean scaled) {
-		if (scaled) {
-			mVideoHelper.setDisplayMode(DisplayMode.SCALED_WIDTH);
-		} else {
-			mVideoHelper.setDisplayMode(DisplayMode.NORMAL);
-		}
-	}
-	
-	public boolean isVideoScaled() {
-		return mVideoHelper.getDisplayMode() == DisplayMode.SCALED_WIDTH;
-	}
-	
 	private static final String PREFS_SCALEVIDEO = "scale_video";
 	private static final boolean DEF_SCALEVIDEO = true;
 

@@ -231,16 +231,6 @@ public class PirateDotty extends DifferentialRobot implements IPirateDotty, ICam
 	}
 
 	@Override
-	public void moveLeft() {
-		// not available
-	}
-
-	@Override
-	public void moveRight() {
-		// not available
-	}
-
-	@Override
 	public boolean toggleInvertDrive() {
 		m_nInverted *= -1;
 		return true;

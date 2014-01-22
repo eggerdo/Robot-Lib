@@ -2,13 +2,18 @@ package robots.parrot.ctrl;
 
 public class ParrotTypes {
 
+	public static final String PREFS_ADDRESS 		= "parrot_address";
+	public static final String PREFS_COMMANDPORT 	= "parrot_commandport";
+	public static final String PREFS_MEDIAPORT 		= "parrot_mediaport";
+
 	public static final String SSID_FILTER 				= "ardrone";
 
     public static final long CONNECTION_TIMEOUT 		= 10000;
 
     public static final String PARROT_IP				= "192.168.1.1";
-	public static final int PORT 						= 80;
-    public static final int VIDEO_PORT 					= 5555;
+//	public static final int PORT 						= 80;
+    public static final int COMMAND_PORT				= 5554;
+    public static final int MEDIA_PORT 					= 5555;
     
     public static final String VIDEO_CODEC 				= "h264";
     public final static int VIDEO_WIDTH 				= 640;

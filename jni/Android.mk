@@ -11,10 +11,12 @@ LOCAL_PRELINK_MODULE := true
 include $(PREBUILT_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
-LOCAL_MODULE    := avjni
-LOCAL_SRC_FILES := avjni.c
+LOCAL_MODULE    := ardrone2
+LOCAL_SRC_FILES := ardrone2.c
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/$(LIBS_PATH)/include
+#LOCAL_C_INCLUDES += /data/ws_android/libjpeg-turbo
 LOCAL_LDLIBS := -L$(NDK_PLATFORMS_ROOT)/$(TARGET_PLATFORM)/arch-arm/usr/lib -L$(LOCAL_PATH) -L$(LOCAL_PATH)/$(LIBS_PATH)
-LOCAL_LDLIBS += -llog -ljnigraphics -lz -ldl -lgcc $(LOCAL_PATH)/$(LIBS_PATH)/libffmpeg.so
+LOCAL_LDLIBS += -llog -ljnigraphics -lz -ldl -lgcc $(LOCAL_PATH)/$(LIBS_PATH)/libffmpeg.so 
+#LOCAL_LDLIBS += /data/ws_android/libjpeg-turbo/libs/armeabi/libjpeg.so
 LOCAL_SHARED_LIBRARY := ffmpeg-prebuilt
 include $(BUILD_SHARED_LIBRARY)

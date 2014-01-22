@@ -54,7 +54,7 @@ public class RobotViewFactory {
 			return Rover2UI.class;
 		case RBT_SPYTANK:
 			return SpyTankUI.class;
-		case RBT_PARROT:
+		case RBT_ARDRONE2:
 			return ParrotUI.class;
 		case RBT_REPLICATOR:
 			return ReplicatorUI.class;

@@ -1,5 +1,10 @@
 steps to compile ffmpeg for android to use with swarm control app
 
+be sure to have the NDK defined in PATH in your bashrc file:
+
+	NDK=/path/to/your/ndk/location    
+	export PATH=$PATH:$NDK
+
 1. Extract ffmpeg-1.0.7z here
 2. Execute the script ffmpeg-1.0/build.sh
-3. Call ndk-build
+3. Call ndk-build APP_PLATFORM=android-8

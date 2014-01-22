@@ -243,16 +243,6 @@ public class Romo extends DifferentialRobot implements IRomo, ICameraControlList
 	}
 
 	@Override
-	public void moveLeft() {
-		assert false : "not available";
-	}
-
-	@Override
-	public void moveRight() {
-		assert false : "not available";
-	}
-
-	@Override
 	public void toggleCamera() {
 		// toggle camera only works if it is executed by the UI thread
 		// so we check if the calling thread is the main thread, otherwise

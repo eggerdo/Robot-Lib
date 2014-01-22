@@ -62,8 +62,8 @@ public class SpykeeUI extends WifiRobot {
 	private static final int SETTINGS_ID = CONNECT_ID + 1;
 	private static final int INVERT_ID = SETTINGS_ID + 1;
 	private static final int ACCEL_ID = INVERT_ID + 1;
-//	private static final int VIDEO_ID = ACCEL_ID + 1;
-	private static final int VIDEO_SCALE_ID = ACCEL_ID + 1;
+	private static final int VIDEO_ID = ACCEL_ID + 1;
+	private static final int VIDEO_SCALE_ID = VIDEO_ID + 1;
 //	private static final int AUDIO_ID = VIDEO_ID + 1;
 	
 	private static final int REMOTE_CTRL_GRP = GENERAL_GRP + 1;
@@ -282,7 +282,7 @@ public class SpykeeUI extends WifiRobot {
 		menu.add(REMOTE_CTRL_GRP, INVERT_ID, 3, "Invert Driving ON");
 		menu.add(REMOTE_CTRL_GRP, ACCEL_ID, 4, "Accelerometer");
 		
-//		menu.add(SENSOR_GRP, VIDEO_ID, 6, "Video");
+		menu.add(SENSOR_GRP, VIDEO_ID, 6, "Video ON");
 //		menu.add(SENSOR_GRP, AUDIO_ID, 7, "Audio");
 
 		menu.add(VIDEO_GRP, VIDEO_SCALE_ID, 8, "Scale Video OFF");
@@ -302,7 +302,7 @@ public class SpykeeUI extends WifiRobot {
     	
     	Utils.updateOnOffMenuItem(menu.findItem(ACCEL_ID), m_bAccelerometer);
     	Utils.updateOnOffMenuItem(menu.findItem(INVERT_ID), m_oSpykee.isInverted());
-//    	Utils.updateOnOffMenuItem(menu.findItem(VIDEO_ID), m_oSpykee.isStreaming());
+    	Utils.updateOnOffMenuItem(menu.findItem(VIDEO_ID), m_oSpykee.isStreaming());
     	Utils.updateOnOffMenuItem(menu.findItem(VIDEO_SCALE_ID), m_oSensorGatherer.isVideoScaled());
 //    	Utils.updateOnOffMenuItem(menu.findItem(AUDIO_ID), m_oSpykee.isAudioEnabled());
     	
@@ -327,13 +327,13 @@ public class SpykeeUI extends WifiRobot {
 				m_oSpykee.moveStop();
 			}
 			break;
-//		case VIDEO_ID:
-//			if (m_oSensorGatherer.isStopped()) {
-//				m_oSensorGatherer.startVideo();
-//			} else {
-//				m_oSensorGatherer.stopVideo();
-//			}
-//			break;
+		case VIDEO_ID:
+			if (m_oSpykee.isStreaming()){
+				m_oSpykee.stopVideo();
+			} else {
+				m_oSpykee.startVideo();
+			}
+			break;
 		case VIDEO_SCALE_ID:
 			m_oSensorGatherer.setVideoScaled(!m_oSensorGatherer.isVideoScaled());
 			break;

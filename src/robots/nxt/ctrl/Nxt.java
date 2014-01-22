@@ -659,16 +659,6 @@ public class Nxt extends DifferentialRobot {
 	}
 
 	@Override
-	public void moveLeft() {
-		// not available
-	}
-
-	@Override
-	public void moveRight() {
-		// not available
-	}
-
-	@Override
 	public boolean toggleInvertDrive() {
 		return false;
 	}

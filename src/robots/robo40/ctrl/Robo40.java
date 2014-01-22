@@ -319,16 +319,6 @@ public class Robo40 extends DifferentialRobot {
 		return m_dblBaseSpeed;
 	}
 
-	@Override
-	public void moveLeft() {
-		// not available
-	}
-
-	@Override
-	public void moveRight() {
-		// not available
-	}
-
 	public void setMotor(int id, int direction, int value) {
 		m_oController.setMotor(id, direction, value);
 	}

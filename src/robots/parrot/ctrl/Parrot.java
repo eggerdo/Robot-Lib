@@ -6,14 +6,21 @@ import java.util.concurrent.TimeoutException;
 
 import org.dobots.comm.Move;
 import org.dobots.utilities.Utils;
+import org.dobots.zmq.ZmqRemoteControlHelper;
+import org.dobots.zmq.video.IRawVideoListener;
+import org.dobots.zmq.video.ZmqVideoSender;
 
 import robots.RobotType;
 import robots.ctrl.BaseRobot;
+import robots.ctrl.control.HolonomicRobotDriveCommandListener;
+import robots.ctrl.control.ICameraControlListener;
 import robots.ctrl.control.IMoveRepeaterListener;
 import robots.ctrl.control.MoveRepeater;
+import robots.ctrl.control.RobotDriveCommandListener;
 import robots.gui.MessageTypes;
 import robots.gui.comm.IConnectListener;
 import android.os.SystemClock;
+import android.widget.ImageView;
 
 import com.codeminders.ardrone.ARDrone;
 import com.codeminders.ardrone.ARDrone.VideoChannel;
@@ -24,12 +31,17 @@ import com.codeminders.ardrone.NavData.CtrlState;
 import com.codeminders.ardrone.NavData.FlyingState;
 import com.codeminders.ardrone.NavDataListener;
 
-public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavDataListener, IConnectListener, IMoveRepeaterListener {
+public abstract class Parrot extends BaseRobot implements IParrot, DroneStatusChangeListener, NavDataListener, IConnectListener, IMoveRepeaterListener, DroneVideoListener, IRawVideoListener, ICameraControlListener {
 
 	private static String TAG = "Parrot";
 
-	private ARDrone m_oController;
+	protected ARDrone m_oController;
 
+	protected String m_strAddress;
+	private int m_nCommandPort = 5556;
+	private int m_nNavDataPort = 5554;
+	private int m_nMediaPort = 5555;
+	
 	private boolean m_bConnected = false;
 
 	private double m_dblBaseSpeed = 40.0;
@@ -44,15 +56,26 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 	
 	private MoveRepeater m_oRepeater;
 	
+	private boolean m_bStreaming = true;
+
+	private ZmqVideoSender m_oVideoSender;
+
+	private RobotDriveCommandListener m_oRemoteListener;
+
+	private ZmqRemoteControlHelper m_oRemoteHelper;
+
 	public Parrot() {
 		m_oInstance = this;
 		
 		m_oRepeater = new MoveRepeater(this, 100);
-	}
 
-	@Override
-	public RobotType getType() {
-		return RobotType.RBT_PARROT;
+		m_oVideoSender = new ZmqVideoSender(getID());
+
+		m_oRemoteListener = new ParrotDriveCommandListener(this);
+		m_oRemoteHelper = new ZmqRemoteControlHelper(this);
+		m_oRemoteHelper.setDriveControlListener(m_oRemoteListener);
+		m_oRemoteHelper.setCameraControlListener(this);
+		m_oRemoteHelper.startReceiver(getID());
 	}
 
 	@Override
@@ -67,14 +90,14 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 			disconnect();
 		}
 	}
-
 	
 	private class DroneStarter implements Runnable {
 
 		@Override
 		public void run() {
 			try {
-				m_oController = new ARDrone(InetAddress.getByName(ParrotTypes.PARROT_IP), 10000, 60000);
+				debug(TAG, "connecting...");
+				m_oController = new ARDrone(InetAddress.getByName(m_strAddress), m_nCommandPort, m_nNavDataPort, m_nMediaPort, 10000, 60000);
 				m_oController.connect();
 				m_oController.clearEmergencySignal();
 				m_oController.waitForReady(ParrotTypes.CONNECTION_TIMEOUT);
@@ -85,9 +108,16 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 				
 				m_bConnected = true;
 				Utils.sendMessage(m_oUiHandler, MessageTypes.STATE_CONNECTED, null);
+				
+				if (m_bStreaming) {
+					startVideo();
+				}
+				
 				return;
 			} catch (Exception e) {
 				try {
+					e.printStackTrace();
+					error(TAG, "... failed");
 					m_oController.clearEmergencySignal();
 					m_oController.clearImageListeners();
 					m_oController.clearNavDataListeners();
@@ -103,11 +133,14 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 		
 	}
 	
-	private DroneStarter m_oDroneStarter = new DroneStarter();
-
 	@Override
 	public void connect() {
 		new Thread(new DroneStarter()).start();
+	}
+
+	@Override
+	public void setConnection(String address) {
+		m_strAddress = address;
 	}
 
 	public void setVideoListener(DroneVideoListener i_oListener) {
@@ -168,6 +201,8 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 	@Override
 	public void disconnect() {
 		try {
+			stopVideo();
+			
 			if (m_oController != null) {
 				m_oController.disconnect();
 			}
@@ -201,11 +236,13 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 	}
 
 	public void switchCamera() {
+		debug(TAG, "switchCamera()");
+		
 		switch (m_eVideoChannel) {
 		case HORIZONTAL_ONLY:
 			setVideoChannel(VideoChannel.VERTICAL_ONLY);
 			break;
-		case VERTICAL_ONLY:
+		default:
 			setVideoChannel(VideoChannel.HORIZONTAL_ONLY);
 			break;
 		}
@@ -219,6 +256,8 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 	
 	public void takeOff() {
 		try {
+			debug(TAG, "takeOff()");
+			
 			m_oRepeater.stopMove();
 			
 			synchronized (m_oRepeater.getMutex()) {
@@ -236,6 +275,8 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 
 	public void land() {
 		try {
+			debug(TAG, "land()");
+			
 			m_oRepeater.stopMove();
 			
 			synchronized (m_oRepeater.getMutex()) {
@@ -252,11 +293,15 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 	private AltitudeControl ctrl;
 
 	public void stopAltitudeControl() {
+		debug(TAG, "stopAltitudeControl()");
+		
 		ctrl.bRun = false;
 		hover();
 	}
 
 	public void setAltitude(double i_dblSetpoint) {
+		debug(TAG, "setAltitude(%3f)", i_dblSetpoint);
+		
 		m_oRepeater.stopMove();
 		
 		ctrl = new AltitudeControl(i_dblSetpoint);
@@ -373,15 +418,17 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 	}
 
 	public void increaseAltitude(double i_dblSpeed) {
+		debug(TAG, "increaseAltitude(%3f)", i_dblSpeed);
 		m_oRepeater.startMove(Move.UP, i_dblSpeed, true);
 	}
 
 	private void executeMoveUp(double i_dblSpeed) {
-		try {
-			m_oController.move(0f, 0f, (float) i_dblSpeed / 100f, 0f);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		executeMove(0, 0, i_dblSpeed / 100.0, 0);
+//		try {
+//			m_oController.move(0f, 0f, (float) i_dblSpeed / 100f, 0f);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	// Decrease Altitude ------------------------------------------------------
@@ -392,20 +439,23 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 	}
 
 	public void decreaseAltitude(double i_dblSpeed) {
+		debug(TAG, "decreaseAltitude(%3f)", i_dblSpeed);
 		m_oRepeater.startMove(Move.DOWN, i_dblSpeed, true);
 	}
 
 	public void executeMoveDown(double i_dblSpeed) {
-		try {
-			m_oController.move(0f, 0f, -(float) i_dblSpeed / 100f, 0f);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		executeMove(0, 0, - i_dblSpeed / 100.0, 0);
+//		try {
+//			m_oController.move(0f, 0f, -(float) i_dblSpeed / 100f, 0f);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	// Hover ------------------------------------------------------
 
 	public void hover() {
+		debug(TAG, "hover()");
 		try {
 			m_oController.hover();
 		} catch (IOException e) {
@@ -418,11 +468,11 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 		// nothing to do
 	}
 
-	private int capRadius(int io_nRadius) {
+	private double capRadius(double i_dblRadius) {
 		// io_nRadius = Math.min(io_nRadius, DottyTypes.MAX_RADIUS);
 		// io_nRadius = Math.max(io_nRadius, -DottyTypes.MAX_RADIUS);
 
-		return io_nRadius;
+		return i_dblRadius;
 	}
 
 
@@ -454,26 +504,29 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 			executeRotateClockwise(i_dblSpeed);
 			break;
 		default:
-			error(TAG, "Move not available");
+			error(TAG, "Move not available: %s", i_eMove.toString());
 			return;
 		}
 	}
 
 	@Override
-	public void onDoMove(Move i_eMove, double i_dblSpeed, int i_nRadius) {
+	public void onDoMove(Move i_eMove, double i_dblSpeed, double i_dblRadius) {
 		switch(i_eMove) {
 		case BACKWARD:
-			executeMoveBackward(i_dblSpeed, i_nRadius);
+			executeMoveBackward(i_dblSpeed, i_dblRadius);
 			break;
 		case FORWARD:
-			executeMoveForward(i_dblSpeed, i_nRadius);
+			executeMoveForward(i_dblSpeed, i_dblRadius);
 			break;
-		case LEFT:
-			executeMoveLeft(i_dblSpeed, i_nRadius);
-			break;
-		case RIGHT:
-			executeMoveRight(i_dblSpeed, i_nRadius);
-			break;
+//		case LEFT:
+//			executeMoveLeft(i_dblSpeed, i_nRadius);
+//			break;
+//		case RIGHT:
+//			executeMoveRight(i_dblSpeed, i_nRadius);
+//			break;
+		default:
+			error(TAG, "Move not available: %s", i_eMove.toString());
+			return;
 		}
 	}
 
@@ -487,33 +540,52 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 
 	@Override
 	public void moveForward(double i_dblSpeed) {
+		debug(TAG, "moveForward(%3f)", i_dblSpeed);
 		m_oRepeater.startMove(Move.FORWARD, i_dblSpeed, true);
 	}
 
 	private void executeMoveForward(double i_dblSpeed) {
 		i_dblSpeed = capSpeed(i_dblSpeed);
-		try {
-			m_oController.move(0f, -(float) i_dblSpeed / 100f, 0f, 0f);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		executeMove(0, - i_dblSpeed / 100.0, 0, 0);
+//		try {
+//			m_oController.move(0f, -(float) i_dblSpeed / 100f, 0f, 0f);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 
+	// radius for a holonomic robot doesn't make sense. why make an arc if you
+	// can go in a direct line
 	@Override
 	public void moveForward(double i_dblSpeed, int i_nRadius) {
-		m_oRepeater.startMove(Move.FORWARD, i_dblSpeed, i_nRadius, true);
+		i_dblSpeed = capSpeed(i_dblSpeed);
+//		i_nRadius = capRadius(i_nRadius);
+		
+//		debug(TAG, "moveForward(%3f, %d)", i_dblSpeed, i_nRadius);
+//		m_oRepeater.startMove(Move.FORWARD, i_dblSpeed, i_nRadius, true);
 	}
 
 	@Override
 	public void moveForward(double i_dblSpeed, double i_dblAngle) {
-		// TODO Auto-generated method stub
+		i_dblSpeed = capSpeed(i_dblSpeed);
+
+		debug(TAG, "moveForward(%3f, %3f)", i_dblSpeed, i_dblAngle);
+		// the angle is relative to the straight forward line, with a positive value
+		// meaning left and a negative value for right.
+		// we use angle instead of radius
+		m_oRepeater.startMove(Move.FORWARD, i_dblSpeed, i_dblAngle, true);
 	}
 	
-	private void executeMoveForward(double i_dblSpeed, int i_nRadius) {
+	private void executeMoveForward(double i_dblSpeed, double i_dblAngle) {
 		i_dblSpeed = capSpeed(i_dblSpeed);
-		i_nRadius = capRadius(i_nRadius);
+//		i_dblRadius = capRadius(i_dblRadius);
 
-		// TODO implement movement in two directions at the same time
+		// calculate the speed settings for left / right and forward based
+		// on the angle
+		double i_dblFwdSpeed = Math.cos(i_dblAngle) * i_dblSpeed;
+		double i_dblLeftRightSpeed = Math.sin(i_dblAngle) * i_dblSpeed;
+
+		executeMove(- i_dblLeftRightSpeed / 100.0, - i_dblFwdSpeed / 100.0, 0, 0);
 	}
 	
 	// Move Backward ------------------------------------------------------
@@ -524,38 +596,51 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 //		moveBackward(m_dblBaseSpeed);
 	}
 
+	// radius for a holonomic robot doesn't make sense. why make an arc if you
+	// can go in a direct line
 	@Override
 	public void moveBackward(double i_dblSpeed) {
+		debug(TAG, "moveBackward(%3f)", i_dblSpeed);
 		m_oRepeater.startMove(Move.BACKWARD, i_dblSpeed, true);
 	}
 
 	public void executeMoveBackward(double i_dblSpeed) {
 		i_dblSpeed = capSpeed(i_dblSpeed);
-		try {
-			m_oController.move(0f, (float) i_dblSpeed / 100f, 0f, 0f);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		executeMove(0, i_dblSpeed / 100.0, 0, 0);
+//		try {
+//			m_oController.move(0f, (float) i_dblSpeed / 100f, 0f, 0f);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	@Override
 	public void moveBackward(double i_dblSpeed, int i_nRadius) {
 		i_dblSpeed = capSpeed(i_dblSpeed);
-		i_nRadius = capRadius(i_nRadius);
-		
-		m_oRepeater.startMove(Move.BACKWARD, i_dblSpeed, i_nRadius, true);
+//		i_nRadius = capRadius(i_nRadius);
+
+//		debug(TAG, "moveBackward(%3f, %d)", i_dblSpeed, i_nRadius);
+//		m_oRepeater.startMove(Move.BACKWARD, i_dblSpeed, i_nRadius, true);
 	}
 
 	@Override
 	public void moveBackward(double i_dblSpeed, double i_dblAngle) {
-		// TODO Auto-generated method stub
+
+		debug(TAG, "moveBackward(%3f, %3f)", i_dblSpeed, i_dblAngle);
+		// the angle is relative to the straight backward line, with a positive value
+		// meaning left and a negative value for right.
+		// we use angle instead of radius
+		m_oRepeater.startMove(Move.BACKWARD, i_dblSpeed, i_dblAngle, true);
 	}
 
-	private void executeMoveBackward(double i_dblSpeed, int i_nRadius) {
+	private void executeMoveBackward(double i_dblSpeed, double i_dblAngle) {
 		i_dblSpeed = capSpeed(i_dblSpeed);
-		i_nRadius = capRadius(i_nRadius);
+//		i_nRadius = capRadius(i_nRadius);
 
-		// TODO implement movement in two directions at the same time
+		double i_dblFwdSpeed = Math.cos(i_dblAngle) * i_dblSpeed;
+		double i_dblLeftRightSpeed = Math.sin(i_dblAngle) * i_dblSpeed;
+
+		executeMove(- i_dblLeftRightSpeed / 100.0, i_dblFwdSpeed / 100.0, 0, 0);
 	}
 	
 
@@ -567,31 +652,35 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 	}
 
 	public void moveLeft(double i_dblSpeed) {
+		debug(TAG, "moveLeft(%3f)", i_dblSpeed);
 		m_oRepeater.startMove(Move.LEFT, i_dblSpeed, true);
 	}
 
 	public void executeMoveLeft(double i_dblSpeed) {
 		i_dblSpeed = capSpeed(i_dblSpeed);
-		try {
-			m_oController.move(-(float) i_dblSpeed / 100f, 0f, 0f, 0f);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		executeMove(- i_dblSpeed / 100.0, 0, 0, 0);
+//		try {
+//			m_oController.move(-(float) i_dblSpeed / 100f, 0f, 0f, 0f);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 	
-	public void moveLeft(double i_dblSpeed, int i_nRadius) {
-		i_dblSpeed = capSpeed(i_dblSpeed);
-		i_nRadius = capRadius(i_nRadius);
-
-		m_oRepeater.startMove(Move.LEFT, i_dblSpeed, i_nRadius, true);
-	}
-
-	private void executeMoveLeft(double i_dblSpeed, int i_nRadius) {
-		i_dblSpeed = capSpeed(i_dblSpeed);
-		i_nRadius = capRadius(i_nRadius);
-
-		// TODO implement movement in two directions at the same time
-	}
+	// can be done with move fwd / move backward
+//	public void moveLeft(double i_dblSpeed, int i_nRadius) {
+//		i_dblSpeed = capSpeed(i_dblSpeed);
+//		i_nRadius = capRadius(i_nRadius);
+//
+//		debug(TAG, "moveLeft(%3f, %d)", i_dblSpeed, i_nRadius);
+//		m_oRepeater.startMove(Move.LEFT, i_dblSpeed, i_nRadius, true);
+//	}
+//
+//	private void executeMoveLeft(double i_dblSpeed, int i_nRadius) {
+//		i_dblSpeed = capSpeed(i_dblSpeed);
+//		i_nRadius = capRadius(i_nRadius);
+//
+//		// TODO implement movement in two directions at the same time
+//	}
 	
 
 	// Move Right ------------------------------------------------------
@@ -602,31 +691,35 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 	}
 
 	public void moveRight(double i_dblSpeed) {
+		debug(TAG, "moveRight(%3f)", i_dblSpeed);
 		m_oRepeater.startMove(Move.RIGHT, i_dblSpeed, true);
 	}
 
 	public void executeMoveRight(double i_dblSpeed) {
 		i_dblSpeed = capSpeed(i_dblSpeed);
-		try {
-			m_oController.move((float) i_dblSpeed / 100f, 0f, 0f, 0f);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void moveRight(double i_dblSpeed, int i_nRadius) {
-		i_dblSpeed = capSpeed(i_dblSpeed);
-		i_nRadius = capRadius(i_nRadius);
-
-		m_oRepeater.startMove(Move.RIGHT, i_dblSpeed, i_nRadius, true);
+		executeMove(i_dblSpeed / 100.0, 0, 0, 0);
+//		try {
+//			m_oController.move((float) i_dblSpeed / 100f, 0f, 0f, 0f);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 
-	private void executeMoveRight(double i_dblSpeed, int i_nRadius) {
-		i_dblSpeed = capSpeed(i_dblSpeed);
-		i_nRadius = capRadius(i_nRadius);
-
-		// TODO implement movement in two directions at the same time
-	}
+	// can be done with move fwd / move backward
+//	public void moveRight(double i_dblSpeed, int i_nRadius) {
+//		i_dblSpeed = capSpeed(i_dblSpeed);
+//		i_nRadius = capRadius(i_nRadius);
+//
+//		debug(TAG, "moveRight(%3f, %d)", i_dblSpeed, i_nRadius);
+//		m_oRepeater.startMove(Move.RIGHT, i_dblSpeed, i_nRadius, true);
+//	}
+//
+//	private void executeMoveRight(double i_dblSpeed, int i_nRadius) {
+//		i_dblSpeed = capSpeed(i_dblSpeed);
+//		i_nRadius = capRadius(i_nRadius);
+//
+//		// TODO implement movement in two directions at the same time
+//	}
 	
 	
 	// Rotate Right / Clockwise -----------------------------------------
@@ -639,17 +732,18 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 
 	@Override
 	public void rotateClockwise(double i_dblSpeed) {
+		debug(TAG, "rotateClockwise(%3f)", i_dblSpeed);
 		m_oRepeater.startMove(Move.ROTATE_RIGHT, i_dblSpeed, true);
 	}
 
 	public void executeRotateClockwise(double i_dblSpeed) {
 		i_dblSpeed = capSpeed(i_dblSpeed);
-
-		try {
-			m_oController.move(0, 0, 0, (float) i_dblSpeed / 100f);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		executeMove(0, 0, 0, i_dblSpeed / 100.0);
+//		try {
+//			m_oController.move(0, 0, 0, (float) i_dblSpeed / 100f);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	// Rotate Left / Counterclockwise ------------------------------------
@@ -662,23 +756,26 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 
 	@Override
 	public void rotateCounterClockwise(double i_dblSpeed) {
+		debug(TAG, "rotateCounterClockwise(%3f)", i_dblSpeed);
 		m_oRepeater.startMove(Move.ROTATE_LEFT, i_dblSpeed, true);
 	}
 
 	public void executeRotateCounterClockwise(double i_dblSpeed) {
 		i_dblSpeed = capSpeed(i_dblSpeed);
+		executeMove(0, 0, 0, - i_dblSpeed / 100.0);
 
-		try {
-			m_oController.move(0, 0, 0, -(float) i_dblSpeed / 100f);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			m_oController.move(0, 0, 0, -(float) i_dblSpeed / 100f);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	// Move Stop ------------------------------------------------------
 
 	@Override
 	public void moveStop() {
+		debug(TAG, "moveStop()");
 		m_oRepeater.stopMove();
 		hover();
 	}
@@ -688,6 +785,7 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 	// Note: the move is repeated until moveStop() is called!
 	public void move(double i_dblLeftRightTilt, double i_dblFrontBackTilt,
 			double i_dblVerticalSpeed, double i_dblAngularSpeed) {
+		debug(TAG, "move(%3f, %3f, %3f, %3f)", i_dblLeftRightTilt, i_dblFrontBackTilt, i_dblVerticalSpeed, i_dblAngularSpeed);
 		m_oRepeater.startMove(new GeneralMoveRunner(i_dblLeftRightTilt, i_dblFrontBackTilt, i_dblVerticalSpeed, i_dblAngularSpeed), true);
 	}
 	
@@ -759,8 +857,102 @@ public class Parrot extends BaseRobot implements DroneStatusChangeListener, NavD
 
 	@Override
 	public boolean toggleInvertDrive() {
-		// TODO Auto-generated method stub
+		// not applicable
 		return false;
 	}
 
+	@Override
+	public boolean isStreaming() {
+		return m_bStreaming;
+	}
+
+	public abstract void startVideo();
+	public abstract void stopVideo();
+
+	@Override
+	public void onFrame(byte[] rgb, int rotation) {
+		m_oVideoSender.onFrame(rgb, rotation);
+	}
+
+	@Override
+	public void frameReceived(int startX, int startY, int w, int h,
+			int[] rgbArray, int offset, int scansize) {
+		m_oVideoSender.onFrame(int2byte(rgbArray), 0);
+	}
+	
+	public static byte[] int2byte(int[]src) {
+	    int srcLength = src.length;
+	    byte[]dst = new byte[srcLength << 2];
+	    
+	    for (int i=0; i<srcLength; i++) {
+	        int x = src[i];
+	        int j = i << 2;
+	        dst[j++] = (byte) ((x >>> 0) & 0xff);           
+	        dst[j++] = (byte) ((x >>> 8) & 0xff);
+	        dst[j++] = (byte) ((x >>> 16) & 0xff);
+	        dst[j++] = (byte) ((x >>> 24) & 0xff);
+	    }
+	    return dst;
+	}
+
+	@Override
+	public void toggleCamera() {
+		switchCamera();
+	}
+
+	@Override
+	public void cameraUp() {
+		// NOT AVAILABLE
+	}
+
+	@Override
+	public void cameraDown() {
+		// NOT AVAILABLE		
+	}
+
+	@Override
+	public void cameraStop() {
+		// NOT AVAILABLE
+	}
+
+//	@Override
+//    public void frameReceived(final int startX, final int startY, final int w, final int h, final
+//            int[] rgbArray, final int offset, final int scansize) {
+//		
+//		(new VideoDisplayer(startX, startY, w, h, rgbArray, offset, scansize)).execute();
+//	}
+//	
+//	private class VideoDisplayer extends AsyncTask<Void, Integer, Void> {
+//        
+//        public Bitmap b;
+//        public int[] rgbArray;
+//        public int offset;
+//        public int scansize;
+//        public int w;
+//        public int h;
+//        public byte[] rgbJpeg;
+//        
+//        public VideoDisplayer(int x, int y, int width, int height, int[] arr, int off, int scan) {
+//            // do stuff
+//            rgbArray = arr;
+//            offset = off;
+//            scansize = scan;
+//            w = width;
+//            h = height;
+//        }
+//        
+//        @Override
+//        protected Void doInBackground(Void... params) {
+//        	ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//            b =  Bitmap.createBitmap(rgbArray, offset, scansize, w, h, Bitmap.Config.RGB_565);
+//            b.compress(CompressFormat.JPEG, 90, bos);
+//            rgbJpeg = bos.toByteArray();
+//            return null;
+//        }
+//        
+//        @Override
+//        protected void onPostExecute(Void param) {
+//        	m_oVideoSender.onFrame(rgbJpeg, 0);
+//        }
+//    }
 }

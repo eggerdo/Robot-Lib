@@ -267,28 +267,6 @@ public class RoboScooper extends BaseRobot {
 		moveBackward(m_dblBaseSpeed);
 	}
 
-	// Move Left ---------------------------------------------------
-
-	public void moveLeft(double i_dblSpeed) {
-		// NOT AVAILABLE
-	}
-
-	@Override
-	public void moveLeft() {
-		// NOT AVAILABLE
-	}
-
-	// Move Right ---------------------------------------------------
-
-	public void moveRight(double i_dblSpeed) {
-		// NOT AVAILABLE
-	}
-
-	@Override
-	public void moveRight() {
-		// NOT AVAILABLE
-	}
-
 	// Rotate Right / Clockwise --------------------------------------
 
 	@Override
