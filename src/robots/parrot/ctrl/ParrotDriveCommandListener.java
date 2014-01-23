@@ -7,7 +7,7 @@ import robots.ctrl.control.HolonomicRobotDriveCommandListener;
 public class ParrotDriveCommandListener extends
 		HolonomicRobotDriveCommandListener {
 
-	private static final String TAG = ParrotDriveCommandListener.class.getName();
+	private static final String TAG = ParrotDriveCommandListener.class.getSimpleName();
 	
 	IParrot mParrot;
 	

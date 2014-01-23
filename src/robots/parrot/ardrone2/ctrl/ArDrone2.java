@@ -1,5 +1,8 @@
 package robots.parrot.ardrone2.ctrl;
 
+import org.dobots.zmq.video.IRawVideoListener;
+import org.dobots.zmq.video.ZmqVideoSender;
+
 import robots.RobotType;
 import robots.parrot.ctrl.Parrot;
 import android.widget.ImageView;
@@ -20,7 +23,7 @@ public class ArDrone2 extends Parrot implements IArDrone2 {
 		debug(TAG, "startVideo()");
 		m_oVideoRenderer = new ArDrone2VideoRenderer();
 		m_oVideoRenderer.setConnection(m_strAddress);
-		m_oVideoRenderer.setVideoListener(this);
+		m_oVideoRenderer.setVideoListener(m_oVideoSender);
 		m_oVideoRenderer.connect();
 	}
 

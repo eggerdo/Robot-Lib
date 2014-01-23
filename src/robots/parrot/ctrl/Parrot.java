@@ -7,12 +7,9 @@ import java.util.concurrent.TimeoutException;
 import org.dobots.comm.Move;
 import org.dobots.utilities.Utils;
 import org.dobots.zmq.ZmqRemoteControlHelper;
-import org.dobots.zmq.video.IRawVideoListener;
 import org.dobots.zmq.video.ZmqVideoSender;
 
-import robots.RobotType;
 import robots.ctrl.BaseRobot;
-import robots.ctrl.control.HolonomicRobotDriveCommandListener;
 import robots.ctrl.control.ICameraControlListener;
 import robots.ctrl.control.IMoveRepeaterListener;
 import robots.ctrl.control.MoveRepeater;
@@ -20,7 +17,6 @@ import robots.ctrl.control.RobotDriveCommandListener;
 import robots.gui.MessageTypes;
 import robots.gui.comm.IConnectListener;
 import android.os.SystemClock;
-import android.widget.ImageView;
 
 import com.codeminders.ardrone.ARDrone;
 import com.codeminders.ardrone.ARDrone.VideoChannel;
@@ -31,9 +27,9 @@ import com.codeminders.ardrone.NavData.CtrlState;
 import com.codeminders.ardrone.NavData.FlyingState;
 import com.codeminders.ardrone.NavDataListener;
 
-public abstract class Parrot extends BaseRobot implements IParrot, DroneStatusChangeListener, NavDataListener, IConnectListener, IMoveRepeaterListener, DroneVideoListener, IRawVideoListener, ICameraControlListener {
+public abstract class Parrot extends BaseRobot implements IParrot, DroneStatusChangeListener, NavDataListener, IConnectListener, IMoveRepeaterListener, ICameraControlListener {
 
-	private static String TAG = "Parrot";
+	private static String TAG = Parrot.class.getSimpleName();
 
 	protected ARDrone m_oController;
 
@@ -58,24 +54,24 @@ public abstract class Parrot extends BaseRobot implements IParrot, DroneStatusCh
 	
 	private boolean m_bStreaming = true;
 
-	private ZmqVideoSender m_oVideoSender;
-
 	private RobotDriveCommandListener m_oRemoteListener;
 
 	private ZmqRemoteControlHelper m_oRemoteHelper;
+
+	protected ZmqVideoSender m_oVideoSender;
 
 	public Parrot() {
 		m_oInstance = this;
 		
 		m_oRepeater = new MoveRepeater(this, 100);
 
-		m_oVideoSender = new ZmqVideoSender(getID());
-
 		m_oRemoteListener = new ParrotDriveCommandListener(this);
 		m_oRemoteHelper = new ZmqRemoteControlHelper(this);
 		m_oRemoteHelper.setDriveControlListener(m_oRemoteListener);
 		m_oRemoteHelper.setCameraControlListener(this);
 		m_oRemoteHelper.startReceiver(getID());
+
+		m_oVideoSender = new ZmqVideoSender(getID());
 	}
 
 	@Override
@@ -98,7 +94,9 @@ public abstract class Parrot extends BaseRobot implements IParrot, DroneStatusCh
 			try {
 				debug(TAG, "connecting...");
 				m_oController = new ARDrone(InetAddress.getByName(m_strAddress), m_nCommandPort, m_nNavDataPort, m_nMediaPort, 10000, 60000);
+//				m_oController = new ARDrone(InetAddress.getByName(m_strAddress), 10000, 60000);
 				m_oController.connect();
+//				m_oController.connectVideoArDrone1();
 				m_oController.clearEmergencySignal();
 				m_oController.waitForReady(ParrotTypes.CONNECTION_TIMEOUT);
 				m_oController.playLED(1, 10, 4);
@@ -424,11 +422,6 @@ public abstract class Parrot extends BaseRobot implements IParrot, DroneStatusCh
 
 	private void executeMoveUp(double i_dblSpeed) {
 		executeMove(0, 0, i_dblSpeed / 100.0, 0);
-//		try {
-//			m_oController.move(0f, 0f, (float) i_dblSpeed / 100f, 0f);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
 	}
 
 	// Decrease Altitude ------------------------------------------------------
@@ -445,11 +438,6 @@ public abstract class Parrot extends BaseRobot implements IParrot, DroneStatusCh
 
 	public void executeMoveDown(double i_dblSpeed) {
 		executeMove(0, 0, - i_dblSpeed / 100.0, 0);
-//		try {
-//			m_oController.move(0f, 0f, -(float) i_dblSpeed / 100f, 0f);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
 	}
 
 	// Hover ------------------------------------------------------
@@ -547,11 +535,6 @@ public abstract class Parrot extends BaseRobot implements IParrot, DroneStatusCh
 	private void executeMoveForward(double i_dblSpeed) {
 		i_dblSpeed = capSpeed(i_dblSpeed);
 		executeMove(0, - i_dblSpeed / 100.0, 0, 0);
-//		try {
-//			m_oController.move(0f, -(float) i_dblSpeed / 100f, 0f, 0f);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
 	}
 
 	// radius for a holonomic robot doesn't make sense. why make an arc if you
@@ -607,11 +590,6 @@ public abstract class Parrot extends BaseRobot implements IParrot, DroneStatusCh
 	public void executeMoveBackward(double i_dblSpeed) {
 		i_dblSpeed = capSpeed(i_dblSpeed);
 		executeMove(0, i_dblSpeed / 100.0, 0, 0);
-//		try {
-//			m_oController.move(0f, (float) i_dblSpeed / 100f, 0f, 0f);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
 	}
 
 	@Override
@@ -659,11 +637,6 @@ public abstract class Parrot extends BaseRobot implements IParrot, DroneStatusCh
 	public void executeMoveLeft(double i_dblSpeed) {
 		i_dblSpeed = capSpeed(i_dblSpeed);
 		executeMove(- i_dblSpeed / 100.0, 0, 0, 0);
-//		try {
-//			m_oController.move(-(float) i_dblSpeed / 100f, 0f, 0f, 0f);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
 	}
 	
 	// can be done with move fwd / move backward
@@ -698,11 +671,6 @@ public abstract class Parrot extends BaseRobot implements IParrot, DroneStatusCh
 	public void executeMoveRight(double i_dblSpeed) {
 		i_dblSpeed = capSpeed(i_dblSpeed);
 		executeMove(i_dblSpeed / 100.0, 0, 0, 0);
-//		try {
-//			m_oController.move((float) i_dblSpeed / 100f, 0f, 0f, 0f);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
 	}
 
 	// can be done with move fwd / move backward
@@ -739,11 +707,6 @@ public abstract class Parrot extends BaseRobot implements IParrot, DroneStatusCh
 	public void executeRotateClockwise(double i_dblSpeed) {
 		i_dblSpeed = capSpeed(i_dblSpeed);
 		executeMove(0, 0, 0, i_dblSpeed / 100.0);
-//		try {
-//			m_oController.move(0, 0, 0, (float) i_dblSpeed / 100f);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
 	}
 
 	// Rotate Left / Counterclockwise ------------------------------------
@@ -763,12 +726,6 @@ public abstract class Parrot extends BaseRobot implements IParrot, DroneStatusCh
 	public void executeRotateCounterClockwise(double i_dblSpeed) {
 		i_dblSpeed = capSpeed(i_dblSpeed);
 		executeMove(0, 0, 0, - i_dblSpeed / 100.0);
-
-//		try {
-//			m_oController.move(0, 0, 0, -(float) i_dblSpeed / 100f);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
 	}
 
 	// Move Stop ------------------------------------------------------
@@ -869,31 +826,10 @@ public abstract class Parrot extends BaseRobot implements IParrot, DroneStatusCh
 	public abstract void startVideo();
 	public abstract void stopVideo();
 
-	@Override
-	public void onFrame(byte[] rgb, int rotation) {
-		m_oVideoSender.onFrame(rgb, rotation);
-	}
-
-	@Override
-	public void frameReceived(int startX, int startY, int w, int h,
-			int[] rgbArray, int offset, int scansize) {
-		m_oVideoSender.onFrame(int2byte(rgbArray), 0);
-	}
-	
-	public static byte[] int2byte(int[]src) {
-	    int srcLength = src.length;
-	    byte[]dst = new byte[srcLength << 2];
-	    
-	    for (int i=0; i<srcLength; i++) {
-	        int x = src[i];
-	        int j = i << 2;
-	        dst[j++] = (byte) ((x >>> 0) & 0xff);           
-	        dst[j++] = (byte) ((x >>> 8) & 0xff);
-	        dst[j++] = (byte) ((x >>> 16) & 0xff);
-	        dst[j++] = (byte) ((x >>> 24) & 0xff);
-	    }
-	    return dst;
-	}
+//	@Override
+//	public void onFrame(byte[] rgb, int rotation) {
+//		m_oVideoSender.onFrame(rgb, rotation);
+//	}
 
 	@Override
 	public void toggleCamera() {

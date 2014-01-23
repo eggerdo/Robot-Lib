@@ -1,4 +1,4 @@
-package robots.parrot.ardrone2.gui;
+package robots.parrot.ardrone1.gui;
 
 import org.dobots.utilities.BaseActivity;
 
@@ -7,24 +7,24 @@ import robots.parrot.ctrl.IParrot;
 import robots.parrot.gui.ParrotSensorGatherer;
 import robots.parrot.gui.ParrotUI;
 
-public class ArDrone2UI extends ParrotUI {
+public class ArDrone1UI extends ParrotUI {
 
-	public ArDrone2UI() {
+	public ArDrone1UI() {
 		super();
 	}
 
-	public ArDrone2UI(BaseActivity i_oOwner) {
+	public ArDrone1UI(BaseActivity i_oOwner) {
 		super(i_oOwner);
 	}
 	
 	@Override
-	protected ParrotSensorGatherer createSensorGatherer(BaseActivity i_oActivity,
-			IParrot i_oParrot) {
-		return new ArDrone2SensorGatherer(i_oActivity, i_oParrot);
+	protected ParrotSensorGatherer createSensorGatherer(
+			BaseActivity i_oActivity, IParrot i_oParrot) {
+		return new ParrotSensorGatherer(i_oActivity, i_oParrot);
 	}
-	
+
 	public static void connectToARDrone(final BaseActivity m_oOwner, IParrot i_oParrot, final IConnectListener i_oConnectListener) {
-		ArDrone2UI m_oRobot = new ArDrone2UI(m_oOwner) {
+		ArDrone1UI m_oRobot = new ArDrone1UI(m_oOwner) {
 			public void onConnect() {
 				i_oConnectListener.onConnect(true);
 			};

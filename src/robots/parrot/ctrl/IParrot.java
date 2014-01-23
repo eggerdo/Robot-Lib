@@ -2,9 +2,9 @@ package robots.parrot.ctrl;
 
 import robots.ctrl.ICameraRobot;
 import robots.ctrl.IHolonomicRobotDevice;
-import android.widget.ImageView;
 
 import com.codeminders.ardrone.ARDrone.VideoChannel;
+import com.codeminders.ardrone.DroneVideoListener;
 import com.codeminders.ardrone.NavDataListener;
 
 public interface IParrot extends ICameraRobot, IHolonomicRobotDevice {
@@ -14,8 +14,8 @@ public interface IParrot extends ICameraRobot, IHolonomicRobotDevice {
 	public void setNavDataListener(NavDataListener i_oListener);
 	public void removeNavDataListener(NavDataListener i_oListener);
 	
-//	public void setVideoListener(DroneVideoListener i_oListener);
-//	public void removeVideoListener(DroneVideoListener i_oListener);
+	public void setVideoListener(DroneVideoListener i_oListener);
+	public void removeVideoListener(DroneVideoListener i_oListener);
 	
 	public boolean isARDrone1();
 

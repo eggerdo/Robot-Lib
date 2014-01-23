@@ -8,7 +8,7 @@ public class ParrotTypes {
 
 	public static final String SSID_FILTER 				= "ardrone";
 
-    public static final long CONNECTION_TIMEOUT 		= 10000;
+    public static final long CONNECTION_TIMEOUT 		= 1000;
 
     public static final String PARROT_IP				= "192.168.1.1";
 //	public static final int PORT 						= 80;

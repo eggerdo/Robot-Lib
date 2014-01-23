@@ -89,8 +89,8 @@ public class ParrotVideoProcessor extends Thread {
 	FpsCounter counter = new FpsCounter(new IFpsListener() {
 		
 		@Override
-		public void onFPS(int i_nFPS) {
-			Log.d("FPS", "fps: " + i_nFPS);
+		public void onFPS(double i_nFPS) {
+			Log.d("FPS", String.format("fps: %1f", i_nFPS));
 		}
 	});
 

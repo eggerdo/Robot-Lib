@@ -36,7 +36,7 @@ import android.widget.ImageView;
  */
 public class ArDrone2VideoRenderer extends Thread {
 
-	private static final String TAG = ArDrone2VideoRenderer.class.getName();
+	private static final String TAG = ArDrone2VideoRenderer.class.getSimpleName();
 
     private Bitmap mFrame;
     private boolean mRun = false;
@@ -133,16 +133,16 @@ public class ArDrone2VideoRenderer extends Thread {
 	FpsCounter counter = new FpsCounter(new IFpsListener() {
 		
 		@Override
-		public void onFPS(int i_nFPS) {
-			Log.d(TAG, "fps ffmpeg: " + i_nFPS);
+		public void onFPS(double i_nFPS) {
+			Log.d(TAG, String.format("fps ffmpeg: %1f", i_nFPS));
 		}
 	});
 	
 	FpsCounter counter2 = new FpsCounter(new IFpsListener() {
 		
 		@Override
-		public void onFPS(int i_nFPS) {
-			Log.d(TAG, "fps tojpg: " + i_nFPS);
+		public void onFPS(double i_nFPS) {
+			Log.d(TAG, String.format("fps tojpg: %1f", i_nFPS));
 		}
 	});
 	
