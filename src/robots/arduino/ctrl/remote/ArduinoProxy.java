@@ -4,11 +4,11 @@ import robots.RobotType;
 import robots.arduino.ctrl.IArduino;
 import robots.gui.RobotView;
 import robots.gui.comm.IRobotConnection;
-import robots.remote.RemoteRobotBinder;
+import robots.remote.RobotProxy;
 
-public class ArduinoRemoteBinder extends RemoteRobotBinder implements IArduino {
+public class ArduinoProxy extends RobotProxy implements IArduino {
 
-	public ArduinoRemoteBinder(RobotView activity, Class serviceClass) {
+	public ArduinoProxy(RobotView activity, Class serviceClass) {
 		super(activity, serviceClass);
 	}
 	

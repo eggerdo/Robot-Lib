@@ -25,10 +25,11 @@ public class FpsCounter {
 
         ++m_nFpsCounter;
         long now = System.currentTimeMillis();
-        if ((now - m_lLastTime) >= 1000)
+        long dt = now - m_lLastTime;
+        if (dt >= 1000)
         {
         	if (m_oListener != null) {
-        		m_oListener.onFPS(m_nFpsCounter);
+        		m_oListener.onFPS((double)m_nFpsCounter / dt * 1000);
         	}
             m_lLastTime = now;
             m_nFpsCounter = 0;

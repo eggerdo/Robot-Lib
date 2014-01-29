@@ -42,8 +42,8 @@ public class ZmqVideoReceiver extends ZmqReceiveThread {
 		mFpsInCounter.setListener(new IFpsListener() {
 			
 			@Override
-			public void onFPS(int i_nFPS) {
-				Log.w("ZmqVideoReceiver", String.format("FPS in: %d", i_nFPS));
+			public void onFPS(double i_nFPS) {
+				Log.w("ZmqVideoReceiver", String.format("FPS in: %.1f", i_nFPS));
 			}
 		});
 	}

@@ -2,12 +2,12 @@ package robots.spytank.ctrl.remote;
 
 import robots.RobotType;
 import robots.gui.RobotView;
-import robots.remote.RemoteRobotBinder;
+import robots.remote.RobotProxy;
 import robots.spytank.ctrl.ISpyTank;
 
-public class SpyTankRemoteBinder extends RemoteRobotBinder implements ISpyTank {
+public class SpyTankProxy extends RobotProxy implements ISpyTank {
 
-	public SpyTankRemoteBinder(RobotView activity, Class serviceClass) {
+	public SpyTankProxy(RobotView activity, Class serviceClass) {
 		super(activity, serviceClass);
 	}
 

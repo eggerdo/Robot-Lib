@@ -4,11 +4,11 @@ import robots.RobotType;
 import robots.gui.RobotView;
 import robots.gui.comm.IRobotConnection;
 import robots.piratedotty.ctrl.IPirateDotty;
-import robots.remote.RemoteRobotBinder;
+import robots.remote.RobotProxy;
 
-public class PirateDottyRemoteBinder extends RemoteRobotBinder implements IPirateDotty {
+public class PirateDottyProxy extends RobotProxy implements IPirateDotty {
 
-	public PirateDottyRemoteBinder(RobotView activity, Class serviceClass) {
+	public PirateDottyProxy(RobotView activity, Class serviceClass) {
 		super(activity, serviceClass);
 	}
 

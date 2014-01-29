@@ -211,13 +211,13 @@ public class VideoHelper implements IVideoListener, IFpsListener, IRawVideoListe
 	 * callback to update frames per second on display
 	 */
 	@Override
-	public void onFPS(final int i_nFPS) {
+	public void onFPS(final double i_nFPS) {
 		m_oActivity.runOnUiThread(new Runnable() {
 
 			@Override
 			public void run() {
 				if (!m_bVideoStopped && mDebug) {
-					m_lblFps.setText("FPS: " + String.valueOf(i_nFPS));
+					m_lblFps.setText(String.format("FPS: %1f", i_nFPS));
 				}
 			}
 		});

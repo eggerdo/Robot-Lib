@@ -2,14 +2,14 @@ package robots.spykee.ctrl.remote;
 
 import robots.RobotType;
 import robots.gui.RobotView;
-import robots.remote.RemoteRobotBinder;
+import robots.remote.RobotProxy;
 import robots.spykee.ctrl.ISpykee;
 import robots.spykee.ctrl.SpykeeController.DockState;
 import robots.spykee.ctrl.SpykeeTypes.SpykeeSound;
 
-public class SpykeeRemoteBinder extends RemoteRobotBinder implements ISpykee {
+public class SpykeeProxy extends RobotProxy implements ISpykee {
 
-	public SpykeeRemoteBinder(RobotView activity, Class serviceClass) {
+	public SpykeeProxy(RobotView activity, Class serviceClass) {
 		super(activity, serviceClass);
 	}
 

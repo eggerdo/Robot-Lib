@@ -187,8 +187,8 @@ public class VideoSurfaceView extends SurfaceView implements IVideoListener, IRa
 	FpsCounter counter = new FpsCounter(new IFpsListener() {
 		
 		@Override
-		public void onFPS(int i_nFPS) {
-			Log.d(TAG, String.format("fps dec: %d", i_nFPS));
+		public void onFPS(double i_nFPS) {
+			Log.d(TAG, String.format("fps dec: %.1f", i_nFPS));
 		}
 	});
 
@@ -315,7 +315,7 @@ public class VideoSurfaceView extends SurfaceView implements IVideoListener, IRa
 				canvas.scale((float) mDispWidth / mBmpWidth, (float) mDispHeight / mBmpHeight, centerX, centerY);
 				canvas.rotate(rotation, centerX, centerY);
 				
-				Log.d(TAG, "drawing video frame");
+//				Log.d(TAG, "drawing video frame");
 				canvas.drawColor(Color.BLACK);
 				canvas.drawBitmap(bmp, left, top, mPainter);
 			} finally {

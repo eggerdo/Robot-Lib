@@ -1,21 +1,21 @@
-package robots.rover.rover2.ctrl.remote;
+package robots.rover.ac13.ctrl.remote;
 
 import robots.RobotType;
 import robots.gui.RobotView;
-import robots.remote.RemoteRobotBinder;
+import robots.parrot.ctrl.remote.ParrotProxy;
+import robots.rover.ac13.ctrl.IAC13Rover;
 import robots.rover.base.ctrl.RoverBaseTypes.VideoResolution;
-import robots.rover.rover2.ctrl.IRover2;
 
-public class Rover2RemoteBinder extends RemoteRobotBinder implements IRover2 {
+public class AC13RoverProxy extends ParrotProxy implements IAC13Rover {
 
 	private static final String TAG = "RemoteRobot";
 
-	public Rover2RemoteBinder(RobotView activity, Class serviceClass) {
+	public AC13RoverProxy(RobotView activity, Class serviceClass) {
 		super(activity, serviceClass);
 	}
 	
-	private IRover2 getRover() {
-		return (IRover2)mRobot;
+	private IAC13Rover getRover() {
+		return (IAC13Rover)mRobot;
 	}
 
 	@Override
@@ -89,56 +89,6 @@ public class Rover2RemoteBinder extends RemoteRobotBinder implements IRover2 {
 		if (mBound) {
 			getRover().stopVideo();		
 		}
-	}
-
-	@Override
-	public void toggleLight() {
-		if (mBound) {
-			getRover().toggleLight();	
-		}	
-	}
-
-	@Override
-	public void enableLight() {
-		if (mBound) {
-			getRover().enableLight();	
-		}	
-	}
-
-	@Override
-	public void disableLight() {
-		if (mBound) {
-			getRover().disableLight();	
-		}	
-	}
-
-	@Override
-	public void cameraUp() {
-		if (mBound) {
-			getRover().cameraUp();		
-		}
-	}
-
-	@Override
-	public void cameraStop() {
-		if (mBound) {
-			getRover().cameraStop();	
-		}	
-	}
-
-	@Override
-	public void cameraDown() {
-		if (mBound) {
-			getRover().cameraDown();	
-		}	
-	}
-
-	@Override
-	public double getBatteryPower() {
-		if (mBound) {
-			return getRover().getBatteryPower();
-		}
-		return -1;
 	}
 
 }

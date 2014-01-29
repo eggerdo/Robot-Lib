@@ -7,6 +7,6 @@ public interface IFpsListener {
 	 * THIS FUNCTION IS NOT CALLED IN THE MAIN THREAD.
 	 * @param i_nFPS
 	 */
-	public void onFPS(int i_nFPS);
+	public void onFPS(double fps);
 }
 

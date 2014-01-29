@@ -11,9 +11,9 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
-public abstract class RemoteRobotBinder implements IRobotDevice {
+public abstract class RobotProxy implements IRobotDevice {
 
-	private static final String TAG = "RemoteRobotDirect";
+	private static final String TAG = RobotProxy.class.getSimpleName();
 
 	protected RobotView mRobotView;
 
@@ -21,7 +21,7 @@ public abstract class RemoteRobotBinder implements IRobotDevice {
 
 	protected IRobotDevice mRobot;
 
-	public RemoteRobotBinder(RobotView activity, Class serviceClass) {
+	public RobotProxy(RobotView activity, Class serviceClass) {
 		mRobotView = activity;
 
 		Intent intent = new Intent(activity, serviceClass);
