@@ -2,22 +2,6 @@
 
     <string name="app_name">RoboTalk-Lib</string>
     
-    
-    <!-- ZMQ -->
-    <string name="zmq_settings">ZMQ Settings</string>
-      
-    <!--  Settings --> 
-    <string name="menu_settings">Settings</string>
-    <string name="nick_name">Nickname</string>
-    <string name="address">Address</string>
-    <string name="command_port">Command Port</string>
-    <string name="video_port">Video Port</string>
-    <string name="event_port">Event Port</string>
-    <string name="port">Port</string>
-    <string name="media_port">Media Port</string>
-    <string name="local">Local</string> 
-    <string name="remote">Remote</string>
-          
     <!--  Remote Control -->
     <string name="control_fwd">Fwd</string>    
     <string name="control_left">Left</string>    

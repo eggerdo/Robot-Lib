@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.dobots.zmq.ZmqRemoteControlHelper;
 import org.dobots.zmq.video.IRawVideoListener;
 import org.dobots.zmq.video.ZmqVideoSender;
 
@@ -12,6 +11,7 @@ import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
 import robots.ctrl.control.ICameraControlListener;
 import robots.ctrl.control.RobotDriveCommandListener;
+import robots.ctrl.zmq.ZmqRemoteControlHelper;
 import android.os.Handler;
 import android.util.Log;
 

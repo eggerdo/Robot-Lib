@@ -3,11 +3,11 @@ package robots.roomba.gui;
 import org.dobots.R;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
-import org.dobots.zmq.ZmqRemoteControlHelper;
-import org.dobots.zmq.ZmqRemoteControlSender;
 
 import robots.RobotType;
 import robots.ctrl.control.RemoteControlHelper;
+import robots.ctrl.zmq.ZmqRemoteControlHelper;
+import robots.ctrl.zmq.ZmqRemoteControlSender;
 import robots.gui.BluetoothRobot;
 import robots.gui.MessageTypes;
 import robots.gui.RobotInventory;

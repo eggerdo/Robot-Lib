@@ -4,11 +4,11 @@ import org.dobots.utilities.AccelerometerManager;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.IAccelerometerListener;
 import org.dobots.utilities.ProgressDlg;
-import org.dobots.zmq.ZmqRemoteControlHelper;
-import org.dobots.zmq.ZmqRemoteControlSender;
 
 import robots.RobotType;
 import robots.ctrl.IRobotDevice;
+import robots.ctrl.zmq.ZmqRemoteControlHelper;
+import robots.ctrl.zmq.ZmqRemoteControlSender;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;

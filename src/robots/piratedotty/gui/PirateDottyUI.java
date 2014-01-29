@@ -5,11 +5,11 @@ import java.io.IOException;
 import org.dobots.R;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
-import org.dobots.zmq.ZmqRemoteControlHelper;
-import org.dobots.zmq.ZmqRemoteControlSender;
 
 import robots.RobotType;
 import robots.ctrl.control.ICameraControlListener;
+import robots.ctrl.zmq.ZmqRemoteControlHelper;
+import robots.ctrl.zmq.ZmqRemoteControlSender;
 import robots.gui.BluetoothRobot;
 import robots.gui.RobotInventory;
 import robots.gui.SensorGatherer;

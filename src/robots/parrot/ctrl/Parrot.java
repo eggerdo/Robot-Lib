@@ -6,7 +6,6 @@ import java.util.concurrent.TimeoutException;
 
 import org.dobots.comm.Move;
 import org.dobots.utilities.Utils;
-import org.dobots.zmq.ZmqRemoteControlHelper;
 import org.dobots.zmq.video.ZmqVideoSender;
 
 import robots.ctrl.BaseRobot;
@@ -14,6 +13,7 @@ import robots.ctrl.control.ICameraControlListener;
 import robots.ctrl.control.IMoveRepeaterListener;
 import robots.ctrl.control.MoveRepeater;
 import robots.ctrl.control.RobotDriveCommandListener;
+import robots.ctrl.zmq.ZmqRemoteControlHelper;
 import robots.gui.MessageTypes;
 import robots.gui.comm.IConnectListener;
 import android.os.SystemClock;

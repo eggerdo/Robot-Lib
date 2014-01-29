@@ -14,9 +14,11 @@
 * @project:		Robot-Lib
 * @company:		Distributed Organisms B.V.
 */
-package org.dobots.zmq;
+package robots.ctrl.zmq;
 
 import org.dobots.comm.msg.RoboCommands.BaseCommand;
+import org.dobots.zmq.ZmqHandler;
+import org.dobots.zmq.ZmqUtils;
 import org.zeromq.ZMQ;
 
 import robots.ctrl.control.RemoteControlSender;

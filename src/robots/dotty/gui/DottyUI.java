@@ -6,10 +6,10 @@ import java.util.Arrays;
 import org.dobots.R;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
-import org.dobots.zmq.ZmqRemoteControlHelper;
-import org.dobots.zmq.ZmqRemoteControlSender;
 
 import robots.RobotType;
+import robots.ctrl.zmq.ZmqRemoteControlHelper;
+import robots.ctrl.zmq.ZmqRemoteControlSender;
 import robots.dotty.ctrl.Dotty;
 import robots.dotty.ctrl.DottyTypes;
 import robots.dotty.ctrl.DottyTypes.EDottySensors;

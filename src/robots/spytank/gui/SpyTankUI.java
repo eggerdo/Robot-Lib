@@ -3,11 +3,11 @@ package robots.spytank.gui;
 import org.dobots.R;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
-import org.dobots.zmq.ZmqRemoteControlHelper;
-import org.dobots.zmq.ZmqRemoteControlSender;
 
 import robots.RobotType;
 import robots.ctrl.control.RemoteControlHelper;
+import robots.ctrl.zmq.ZmqRemoteControlHelper;
+import robots.ctrl.zmq.ZmqRemoteControlSender;
 import robots.gui.SensorGatherer;
 import robots.gui.WifiRobot;
 import robots.spytank.ctrl.ISpyTank;

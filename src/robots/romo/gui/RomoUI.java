@@ -1,10 +1,10 @@
 package robots.romo.gui;
 
 import org.dobots.R;
-import org.dobots.zmq.ZmqRemoteControlHelper;
-import org.dobots.zmq.ZmqRemoteControlSender;
 
 import robots.RobotType;
+import robots.ctrl.zmq.ZmqRemoteControlHelper;
+import robots.ctrl.zmq.ZmqRemoteControlSender;
 import robots.gui.RobotInventory;
 import robots.gui.RobotView;
 import robots.gui.SensorGatherer;

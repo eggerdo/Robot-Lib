@@ -3,7 +3,6 @@ package robots.piratedotty.ctrl;
 import org.dobots.utilities.Utils;
 import org.dobots.utilities.camera.CameraPreview;
 import org.dobots.utilities.camera.CameraPreview.CameraPreviewCallback;
-import org.dobots.zmq.ZmqRemoteControlHelper;
 import org.dobots.zmq.video.ZmqVideoSender;
 
 import android.content.Context;
@@ -12,6 +11,7 @@ import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
 import robots.ctrl.control.ICameraControlListener;
 import robots.ctrl.control.RobotDriveCommandListener;
+import robots.ctrl.zmq.ZmqRemoteControlHelper;
 import robots.gui.comm.IRobotConnection;
 
 public class PirateDotty extends DifferentialRobot implements IPirateDotty, ICameraControlListener {

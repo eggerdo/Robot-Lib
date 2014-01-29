@@ -1,4 +1,4 @@
-package org.dobots.zmq;
+package robots.ctrl.zmq;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -11,15 +11,15 @@ import org.dobots.comm.msg.RoboCommands.ControlCommand;
 import org.dobots.comm.msg.RoboCommands.DriveCommand;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
+import org.dobots.zmq.ZmqHandler;
+import org.dobots.zmq.ZmqReceiveThread;
 import org.dobots.zmq.comm.RobotMessage;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMQ.Context;
-import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMsg;
 
 import robots.ctrl.control.RemoteControlHelper;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 public class ZmqRemoteControlHelper extends RemoteControlHelper {
@@ -98,7 +98,7 @@ public class ZmqRemoteControlHelper extends RemoteControlHelper {
 	// over Zmq messages. 
 	class CommandReceiveThread extends ZmqReceiveThread {
 
-		public CommandReceiveThread(Context i_oContext, Socket i_oInSocket,	String i_strThreadName) {
+		public CommandReceiveThread(ZMQ.Context i_oContext, ZMQ.Socket i_oInSocket,	String i_strThreadName) {
 			super(i_oContext, i_oInSocket, i_strThreadName);
 		}
 

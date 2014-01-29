@@ -3,11 +3,11 @@ package robots.arduino.gui;
 import java.io.IOException;
 
 import org.dobots.R;
-import org.dobots.zmq.ZmqRemoteControlHelper;
-import org.dobots.zmq.ZmqRemoteControlSender;
 
 import robots.RobotType;
 import robots.arduino.ctrl.IArduino;
+import robots.ctrl.zmq.ZmqRemoteControlHelper;
+import robots.ctrl.zmq.ZmqRemoteControlSender;
 import robots.gui.BluetoothRobot;
 import robots.gui.RobotInventory;
 import robots.gui.SensorGatherer;
