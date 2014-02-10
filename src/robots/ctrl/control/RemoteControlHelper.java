@@ -19,7 +19,7 @@
 package robots.ctrl.control;
 
 import org.dobots.R;
-import org.dobots.lib.comm.Move;
+import org.dobots.comm.Move;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.IMenuListener;
 import org.dobots.utilities.LockableScrollView;

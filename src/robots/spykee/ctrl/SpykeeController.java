@@ -36,8 +36,6 @@ import org.dobots.communication.video.IRawVideoListener;
 import org.dobots.utilities.log.Loggable;
 
 import robots.gui.MessageTypes;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;

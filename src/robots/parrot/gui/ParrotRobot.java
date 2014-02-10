@@ -1,7 +1,7 @@
 package robots.parrot.gui;
 
 import org.dobots.R;
-import org.dobots.lib.comm.Move;
+import org.dobots.comm.Move;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
 

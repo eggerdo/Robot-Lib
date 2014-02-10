@@ -1,8 +1,8 @@
 package org.dobots.communication.sensors;
 
+import org.dobots.comm.msg.SensorMessageArray;
 import org.dobots.communication.msg.RobotMessage;
 import org.dobots.communication.zmq.ZmqReceiveThread;
-import org.dobots.lib.comm.msg.SensorMessageArray;
 import org.dobots.utilities.Utils;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMsg;

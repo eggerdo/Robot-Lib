@@ -4,8 +4,8 @@ import org.dobots.R;
 import org.dobots.communication.msg.VideoMessage;
 import org.dobots.communication.zmq.ZmqHandler;
 import org.dobots.utilities.BaseActivity;
-import org.dobots.utilities.CameraPreview.CameraPreviewCallback;
 import org.dobots.utilities.Utils;
+import org.dobots.utilities.camera.CameraPreview.CameraPreviewCallback;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMsg;
 

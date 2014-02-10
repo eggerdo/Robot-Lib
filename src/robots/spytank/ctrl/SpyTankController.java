@@ -6,7 +6,6 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.Socket;
 import java.net.URL;
 import java.util.Properties;
 import java.util.Timer;
@@ -15,8 +14,6 @@ import java.util.TimerTask;
 import org.dobots.communication.video.IRawVideoListener;
 
 import robots.ctrl.WifiRobotController;
-import robots.gui.comm.wifi.WifiConnection;
-import android.os.Handler;
 import android.util.Log;
 
 public class SpyTankController extends WifiRobotController {

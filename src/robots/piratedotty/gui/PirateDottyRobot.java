@@ -6,8 +6,8 @@ import org.dobots.R;
 import org.dobots.communication.control.ZmqRemoteControlHelper;
 import org.dobots.communication.control.ZmqRemoteControlSender;
 import org.dobots.utilities.BaseActivity;
-import org.dobots.utilities.CameraPreview;
 import org.dobots.utilities.Utils;
+import org.dobots.utilities.camera.CameraPreview;
 
 import robots.RobotType;
 import robots.ctrl.control.ICameraControlListener;

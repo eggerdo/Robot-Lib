@@ -4,8 +4,6 @@ import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.IActivityResultListener;
 
 import robots.gui.MessageTypes;
-import robots.gui.comm.bluetooth.IBluetoothConnectionListener;
-
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;

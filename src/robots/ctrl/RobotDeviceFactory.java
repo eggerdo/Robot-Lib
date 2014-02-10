@@ -2,14 +2,18 @@ package robots.ctrl;
 
 
 import robots.RobotType;
+import robots.dotty.ctrl.Dotty;
+import robots.nxt.ctrl.NXT;
 import robots.parrot.ctrl.Parrot;
 import robots.piratedotty.ctrl.PirateDotty;
 import robots.replicator.ctrl.Replicator;
+import robots.robo40.ctrl.Robo40;
 import robots.roboscooper.ctrl.RoboScooper;
 import robots.romo.ctrl.Romo;
 import robots.roomba.ctrl.Roomba;
 import robots.rover.ac13.ctrl.AC13Rover;
 import robots.rover.rover2.ctrl.Rover2;
+import robots.spykee.ctrl.Spykee;
 import robots.spytank.ctrl.SpyTank;
 
 public class RobotDeviceFactory {
@@ -44,6 +48,19 @@ public class RobotDeviceFactory {
 				break;
 			case RBT_ROBOSCOOPER:
 				oRobot = new RoboScooper();
+				break;
+			case RBT_DOTTY:
+				oRobot = new Dotty();
+				break;
+			case RBT_NXT:
+				oRobot = new NXT();
+				break;
+			case RBT_ROBO40:
+				oRobot = new Robo40();
+				break;
+			case RBT_SPYKEE:
+				oRobot = new Spykee();
+				break;
 			default: 		
 				throw new Exception();
 		}

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.concurrent.TimeoutException;
 
-import org.dobots.lib.comm.Move;
+import org.dobots.comm.Move;
 import org.dobots.utilities.Utils;
 
 import robots.RobotType;

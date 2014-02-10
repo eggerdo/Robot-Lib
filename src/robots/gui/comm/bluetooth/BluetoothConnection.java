@@ -12,7 +12,6 @@ import org.dobots.utilities.Utils;
 
 import robots.gui.MessageTypes;
 import robots.gui.comm.IRobotConnection;
-
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.os.Handler;

@@ -25,8 +25,6 @@ import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
 
 import robots.RobotType;
-import robots.ctrl.control.RemoteControlHelper;
-import robots.ctrl.control.RobotDriveCommandListener;
 import robots.gui.SensorGatherer;
 import robots.gui.WifiRobot;
 import robots.gui.comm.IConnectListener;

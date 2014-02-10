@@ -147,6 +147,5 @@ public class Rover2Robot extends RoverBaseRobot {
 		editor.putString(Rover2Types.PREFS_ROVER2_ADDRESS, m_strAddress);
 		editor.putInt(Rover2Types.PREFS_ROVER2_PORT, m_nPort);
 		editor.commit();
-		
 	}
 }

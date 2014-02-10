@@ -9,7 +9,6 @@ import org.dobots.utilities.Utils;
 import robots.RobotType;
 import robots.brainlink.ctrl.BrainlinkDevice;
 import robots.brainlink.ctrl.BrainlinkDevice.BrainlinkSensors;
-import robots.ctrl.control.RemoteControlHelper;
 import robots.ctrl.control.RobotDriveCommandListener;
 import robots.gui.BluetoothRobot;
 import robots.gui.SensorGatherer;

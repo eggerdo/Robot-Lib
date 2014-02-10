@@ -10,8 +10,6 @@ import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
 
 import robots.RobotType;
-import robots.ctrl.control.RemoteControlHelper;
-import robots.ctrl.control.RobotDriveCommandListener;
 import robots.dotty.ctrl.Dotty;
 import robots.dotty.ctrl.DottyTypes;
 import robots.dotty.ctrl.DottyTypes.EDottySensors;
