@@ -29,6 +29,10 @@ For a Wifi robot, let us show how this is done for the Replicator robot.
 
 * add functionality to the Robot class (which functions as entry points for a graphical user interface), the Controller class, which encapsulates all the primitives that are valid for this robot, and the SensorGatherer which establishes the way the sensor data is read out, for example the camera.
 
+## Project Dependencies
+
+This library requires the android library [DoBotsUtilities](https://github.com/eggerdo/DoBotsUtilities). Import it alongside the Robot-Lib project, then make sure that the references in the project's properties (Project > Properties > Android) are correct.
+
 
 ## Copyrights
 The copyrights (2013) belong to:
