@@ -17,10 +17,10 @@
 package robots.ctrl.control;
 
 import org.dobots.comm.Move;
+import org.dobots.comm.msg.RoboCommandTypes.CameraCommandType;
 import org.dobots.comm.msg.RoboCommands;
 import org.dobots.comm.msg.RoboCommands.BaseCommand;
 import org.dobots.comm.msg.RoboCommands.CameraCommand;
-import org.dobots.comm.msg.RoboCommands.CameraCommandType;
 import org.dobots.comm.msg.RoboCommands.ControlCommand;
 import org.dobots.comm.msg.RoboCommands.DriveCommand;
 
