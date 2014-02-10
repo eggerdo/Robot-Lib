@@ -1,4 +1,4 @@
-package org.dobots.communication.control;
+package robots.ctrl.zmq;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -9,11 +9,11 @@ import org.dobots.comm.msg.RoboCommands.BaseCommand;
 import org.dobots.comm.msg.RoboCommands.CameraCommand;
 import org.dobots.comm.msg.RoboCommands.ControlCommand;
 import org.dobots.comm.msg.RoboCommands.DriveCommand;
-import org.dobots.communication.msg.RobotMessage;
-import org.dobots.communication.zmq.ZmqHandler;
-import org.dobots.communication.zmq.ZmqReceiveThread;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
+import org.dobots.zmq.ZmqHandler;
+import org.dobots.zmq.ZmqReceiveThread;
+import org.dobots.zmq.comm.RobotMessage;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMQ.Context;

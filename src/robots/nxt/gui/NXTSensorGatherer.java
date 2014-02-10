@@ -3,12 +3,12 @@ package robots.nxt.gui;
 import java.util.EnumMap;
 
 import org.dobots.R;
+import org.dobots.comm.msg.ISensorDataListener;
 import org.dobots.comm.msg.SensorMessageArray;
-import org.dobots.communication.sensors.ZmqSensorsReceiver;
-import org.dobots.communication.sensors.ZmqSensorsReceiver.ISensorDataListener;
-import org.dobots.communication.zmq.ZmqHandler;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
+import org.dobots.zmq.ZmqHandler;
+import org.dobots.zmq.sensors.ZmqSensorsReceiver;
 import org.zeromq.ZMQ.Socket;
 
 import robots.gui.SensorGatherer;
@@ -22,7 +22,6 @@ import robots.nxt.ctrl.NXTTypes.ENXTSensorID;
 import robots.nxt.ctrl.NXTTypes.ENXTSensorType;
 import robots.nxt.ctrl.NXTTypes.MotorData;
 import robots.nxt.ctrl.NXTTypes.SensorData;
-import android.os.Looper;
 import android.util.Log;
 import android.widget.TableLayout;
 import android.widget.TextView;
@@ -51,7 +50,7 @@ public class NXTSensorGatherer extends SensorGatherer implements ISensorDataList
 		
 		m_oSensorsRecvSocket = ZmqHandler.getInstance().obtainSensorsRecvSocket();
 		m_oSensorsRecvSocket.subscribe(m_oNxt.getID().getBytes());
-		m_oSensorsReceiver = new ZmqSensorsReceiver(ZmqHandler.getInstance().getContext().getContext(), m_oSensorsRecvSocket, "NxtSensorsReceiver");
+		m_oSensorsReceiver = new ZmqSensorsReceiver(m_oSensorsRecvSocket, "NxtSensorsReceiver");
 		m_oSensorsReceiver.setSensorDataListener(this);
 		m_oSensorsReceiver.start();
 		
@@ -107,27 +106,24 @@ public class NXTSensorGatherer extends SensorGatherer implements ISensorDataList
 	}
 
 	@Override
-	public void onSensorData(final SensorMessageArray data) {
+	public void onSensorData(String json) {
 		// to update the UI we need to execute the function
 		// in the main looper.
-		if (Looper.myLooper() != Looper.getMainLooper()) {
-			Utils.runAsyncUiTask(new Runnable() {
-				
-				@Override
-				public void run() {
-					onSensorData(data);
-				}
-			});
-		} else {
-			if (data.getSensorID().equals("sensor_data")) {
-				updateGUI(NXTTypes.assembleSensorData(data));
-			} else if (data.getSensorID().equals("motor_data")) {
-				updateGUI(NXTTypes.assembleMotorData(data));
-			} else if (data.getSensorID().equals("distance_data")) {
-				updateGUI(NXTTypes.assembleDistanceData(data));
-			}
-		}
+		final SensorMessageArray data = SensorMessageArray.decodeJSON(m_oNxt.getID(), json);
 		
+		m_oActivity.runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				if (data.getSensorID().equals("sensor_data")) {
+					updateGUI(NXTTypes.assembleSensorData(data));
+				} else if (data.getSensorID().equals("motor_data")) {
+					updateGUI(NXTTypes.assembleMotorData(data));
+				} else if (data.getSensorID().equals("distance_data")) {
+					updateGUI(NXTTypes.assembleDistanceData(data));
+				}
+			}
+		});
 	}
 	
 	private void updateGUI(MotorData i_oMotorData) {

@@ -1,10 +1,10 @@
 package robots.replicator.gui;
 
 import org.dobots.R;
-import org.dobots.communication.video.VideoDisplayThread;
-import org.dobots.communication.video.VideoHelper;
-import org.dobots.communication.zmq.ZmqHandler;
 import org.dobots.utilities.BaseActivity;
+import org.dobots.zmq.ZmqHandler;
+import org.dobots.zmq.video.ZmqVideoReceiver;
+import org.dobots.zmq.video.gui.VideoHelper;
 import org.zeromq.ZMQ;
 
 import robots.gui.SensorGatherer;
@@ -28,7 +28,7 @@ public class ReplicatorSensorGatherer extends SensorGatherer {
 	
 	private LinearLayout m_layVideo;
 
-	private VideoDisplayThread m_oVideoDisplayer;
+	private ZmqVideoReceiver m_oVideoDisplayer;
 	
 	private VideoHelper mVideoHelper;
 	private ZMQ.Socket m_oVideoRecvSocket;
@@ -76,12 +76,12 @@ public class ReplicatorSensorGatherer extends SensorGatherer {
 		m_oVideoRecvSocket.subscribe(m_oReplicator.getID().getBytes());
 		
 		// start a video display thread which receives video frames from the socket and displays them
-		m_oVideoDisplayer = new VideoDisplayThread(ZmqHandler.getInstance().getContext().getContext(), m_oVideoRecvSocket);
-		m_oVideoDisplayer.setRawVideoListner(mVideoHelper);
+		m_oVideoDisplayer = new ZmqVideoReceiver(m_oVideoRecvSocket);
+		m_oVideoDisplayer.setRawVideoListener(mVideoHelper);
 		m_oVideoDisplayer.setFPSListener(mVideoHelper);
 		m_oVideoDisplayer.start();
 		
-		mVideoHelper.onStartVideo(false);
+		mVideoHelper.onStartVideoPlayback(false);
     }
 
     private void stopVideo() {
@@ -93,7 +93,7 @@ public class ReplicatorSensorGatherer extends SensorGatherer {
 			m_oVideoDisplayer = null;
 		}
 
-    	mVideoHelper.onStopVideo();
+    	mVideoHelper.onStopVideoPlayback();
     	
     	if (m_oVideoRecvSocket != null) {
     		m_oVideoRecvSocket.close();

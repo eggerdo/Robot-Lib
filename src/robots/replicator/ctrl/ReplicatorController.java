@@ -3,8 +3,8 @@ package robots.replicator.ctrl;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import org.dobots.communication.video.IRawVideoListener;
 import org.dobots.utilities.Utils;
+import org.dobots.zmq.video.IRawVideoListener;
 
 import robots.ctrl.WifiRobotController;
 import robots.gui.comm.wifi.WifiConnection;

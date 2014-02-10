@@ -1,12 +1,12 @@
 package robots.rover.rover2.gui;
 
 import org.dobots.R;
-import org.dobots.communication.video.IFpsListener;
-import org.dobots.communication.video.IVideoListener;
-import org.dobots.communication.video.VideoDisplayThread;
-import org.dobots.communication.zmq.ZmqHandler;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
+import org.dobots.zmq.ZmqHandler;
+import org.dobots.zmq.video.IFpsListener;
+import org.dobots.zmq.video.IVideoListener;
+import org.dobots.zmq.video.ZmqVideoReceiver;
 import org.zeromq.ZMQ;
 
 import robots.rover.base.gui.RoverBaseSensorGatherer;
@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 public class Rover2SensorGatherer extends RoverBaseSensorGatherer  implements IFpsListener, IVideoListener {
 
-	private VideoDisplayThread m_oVideoDisplayer;
+	private ZmqVideoReceiver m_oVideoDisplayer;
 	private TextView m_txtBattery;
 
 	public Rover2SensorGatherer(BaseActivity i_oActivity, Rover2 i_oRover) {
@@ -74,20 +74,20 @@ public class Rover2SensorGatherer extends RoverBaseSensorGatherer  implements IF
 		oVideoRecvSocket.subscribe(m_oRover.getID().getBytes());
 
 		// start a video display thread which receives video frames from the socket and displays them
-		m_oVideoDisplayer = new VideoDisplayThread(ZmqHandler.getInstance().getContext().getContext(), oVideoRecvSocket);
+		m_oVideoDisplayer = new ZmqVideoReceiver(oVideoRecvSocket);
 		m_oVideoDisplayer.setVideoListener(this);
 		m_oVideoDisplayer.setFPSListener(this);
 		m_oVideoDisplayer.start();
 	}
 
 	@Override
-	public void onFPS(final int i_nFPS) {
+	public void onFPS(final double fps) {
 		Utils.runAsyncUiTask(new Runnable() {
 
 			@Override
 			public void run() {
 				if (!m_bVideoStopped) {
-					m_lblFPS.setText("FPS: " + String.valueOf(i_nFPS));
+					m_lblFPS.setText("FPS: " + String.valueOf(fps));
 				}
 			}
 		});

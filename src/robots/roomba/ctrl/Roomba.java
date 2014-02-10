@@ -2,14 +2,14 @@ package robots.roomba.ctrl;
 
 import java.util.concurrent.TimeoutException;
 
-import org.dobots.communication.control.ZmqRemoteControlHelper;
-import org.dobots.communication.sensors.ZmqSensorsSender;
 import org.dobots.utilities.ThreadHandler;
 import org.dobots.utilities.Utils;
+import org.dobots.zmq.sensors.ZmqSensorsSender;
 
 import robots.RobotType;
 import robots.ctrl.BaseRobot;
 import robots.ctrl.control.RobotDriveCommandListener;
+import robots.ctrl.zmq.ZmqRemoteControlHelper;
 import robots.gui.comm.IRobotConnection;
 import robots.roomba.ctrl.RoombaTypes.ERoombaModes;
 import robots.roomba.ctrl.RoombaTypes.ERoombaSensorPackages;

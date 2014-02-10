@@ -5,12 +5,12 @@ import java.util.EnumMap;
 import java.util.List;
 
 import org.dobots.R;
+import org.dobots.comm.msg.ISensorDataListener;
 import org.dobots.comm.msg.SensorMessageArray;
-import org.dobots.communication.sensors.ZmqSensorsReceiver;
-import org.dobots.communication.sensors.ZmqSensorsReceiver.ISensorDataListener;
-import org.dobots.communication.zmq.ZmqHandler;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
+import org.dobots.zmq.ZmqHandler;
+import org.dobots.zmq.sensors.ZmqSensorsReceiver;
 import org.zeromq.ZMQ.Socket;
 
 import robots.gui.SensorGatherer;
@@ -108,7 +108,7 @@ public class RoombaSensorGatherer extends SensorGatherer implements ISensorDataL
 
 		Socket sensorsRecvSocket = ZmqHandler.getInstance().obtainSensorsRecvSocket();
 		sensorsRecvSocket.subscribe(m_oRoomba.getID().getBytes());
-		m_oSensorsReceiver = new ZmqSensorsReceiver(ZmqHandler.getInstance().getContext().getContext(), sensorsRecvSocket, "RoombaSensorsReceiver");
+		m_oSensorsReceiver = new ZmqSensorsReceiver(sensorsRecvSocket, "RoombaSensorsReceiver");
 		m_oSensorsReceiver.setSensorDataListener(this);
 		m_oSensorsReceiver.start();
 		
@@ -793,21 +793,11 @@ public class RoombaSensorGatherer extends SensorGatherer implements ISensorDataL
 	}
 
 	@Override
-	public void onSensorData(final SensorMessageArray data) {
-		// to update the UI we need to execute the function
-		// in the main looper.
-//		if (Looper.myLooper() != Looper.getMainLooper()) {
-//			Utils.runAsyncUiTask(new Runnable() {
-//				
-//				@Override
-//				public void run() {
-//					onSensorData(data);
-//				}
-//			});
-//		} else {
-			m_oSensorData = RoombaTypes.assembleSensorPackage(data);
-			m_oUiHandler.post(new UpdateSensorDataTask());
-//		}
+	public void onSensorData(String json) {
+		// TODO Auto-generated method stub
+		SensorMessageArray data = SensorMessageArray.decodeJSON(m_oRoomba.getID(), json);
+		m_oSensorData = RoombaTypes.assembleSensorPackage(data);
+		m_oUiHandler.post(new UpdateSensorDataTask());
 	}
 
 }

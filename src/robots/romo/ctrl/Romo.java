@@ -2,11 +2,10 @@ package robots.romo.ctrl;
 
 import java.io.IOException;
 
-import org.dobots.communication.control.ZmqRemoteControlHelper;
-
 import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
 import robots.ctrl.control.RobotDriveCommandListener;
+import robots.ctrl.zmq.ZmqRemoteControlHelper;
 
 import com.romotive.library.RomoCommandInterface;
 

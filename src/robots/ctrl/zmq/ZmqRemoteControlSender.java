@@ -14,7 +14,7 @@
 * @project:		Robot-Lib
 * @company:		Distributed Organisms B.V.
 */
-package org.dobots.communication.control;
+package robots.ctrl.zmq;
 
 import org.dobots.comm.Move;
 import org.dobots.comm.msg.RoboCommandTypes.CameraCommandType;
@@ -23,8 +23,8 @@ import org.dobots.comm.msg.RoboCommands.BaseCommand;
 import org.dobots.comm.msg.RoboCommands.CameraCommand;
 import org.dobots.comm.msg.RoboCommands.ControlCommand;
 import org.dobots.comm.msg.RoboCommands.DriveCommand;
-import org.dobots.communication.zmq.ZmqHandler;
-import org.dobots.communication.zmq.ZmqUtils;
+import org.dobots.zmq.ZmqHandler;
+import org.dobots.zmq.ZmqUtils;
 import org.zeromq.ZMQ;
 
 import robots.ctrl.control.ICameraControlListener;
@@ -98,7 +98,7 @@ public class ZmqRemoteControlSender implements IDriveControlListener, ICameraCon
 	
 	protected void sendCommand(BaseCommand i_oCmd) {
 		if (m_oCmdSendSocket != null) {
-			ZmqUtils.sendCommand(i_oCmd, m_oCmdSendSocket);
+			ZmqUtils.send(m_strRobot, i_oCmd.toJSONString(), m_oCmdSendSocket);
 		}
 	}
 

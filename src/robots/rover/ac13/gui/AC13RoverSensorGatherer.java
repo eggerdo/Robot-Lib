@@ -1,7 +1,7 @@
 package robots.rover.ac13.gui;
 
-import org.dobots.communication.video.IRawVideoListener;
 import org.dobots.utilities.BaseActivity;
+import org.dobots.zmq.video.IRawVideoListener;
 
 import robots.rover.ac13.ctrl.AC13Rover;
 import robots.rover.base.gui.RoverBaseSensorGatherer;

@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.dobots.R;
-import org.dobots.communication.control.ZmqRemoteControlHelper;
-import org.dobots.communication.control.ZmqRemoteControlSender;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
 
 import robots.RobotType;
+import robots.ctrl.zmq.ZmqRemoteControlHelper;
+import robots.ctrl.zmq.ZmqRemoteControlSender;
 import robots.dotty.ctrl.Dotty;
 import robots.dotty.ctrl.DottyTypes;
 import robots.dotty.ctrl.DottyTypes.EDottySensors;

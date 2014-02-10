@@ -1,11 +1,11 @@
 package robots.dotty.ctrl;
 
-import org.dobots.communication.control.ZmqRemoteControlHelper;
 import org.dobots.utilities.Utils;
 
 import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
 import robots.ctrl.control.RobotDriveCommandListener;
+import robots.ctrl.zmq.ZmqRemoteControlHelper;
 import robots.dotty.ctrl.DottyTypes.DataPackage;
 import robots.gui.MessageTypes;
 import robots.gui.comm.bluetooth.BluetoothConnection;

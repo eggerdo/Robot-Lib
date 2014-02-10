@@ -11,7 +11,7 @@ import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.dobots.communication.video.IRawVideoListener;
+import org.dobots.zmq.video.IRawVideoListener;
 
 import robots.ctrl.WifiRobotController;
 import android.util.Log;

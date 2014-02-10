@@ -4,13 +4,13 @@ import java.util.EnumMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.dobots.communication.control.ZmqRemoteControlHelper;
-import org.dobots.communication.sensors.ZmqSensorsSender;
 import org.dobots.utilities.Utils;
+import org.dobots.zmq.sensors.ZmqSensorsSender;
 
 import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
 import robots.ctrl.control.RobotDriveCommandListener;
+import robots.ctrl.zmq.ZmqRemoteControlHelper;
 import robots.gui.MessageTypes;
 import robots.gui.comm.IRobotConnection;
 import robots.nxt.MsgTypes;

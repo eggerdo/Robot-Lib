@@ -1,10 +1,10 @@
 package robots.gui;
 
 import org.dobots.R;
-import org.dobots.communication.video.VideoDisplayThread;
-import org.dobots.communication.video.VideoHelper;
-import org.dobots.communication.zmq.ZmqHandler;
 import org.dobots.utilities.BaseActivity;
+import org.dobots.zmq.ZmqHandler;
+import org.dobots.zmq.video.ZmqVideoReceiver;
+import org.dobots.zmq.video.gui.VideoHelper;
 import org.zeromq.ZMQ;
 
 import robots.ctrl.IRobotDevice;
@@ -14,7 +14,7 @@ public class VideoSensorGatherer extends SensorGatherer {
 
 	protected IRobotDevice mRobot;
 	
-	protected VideoDisplayThread m_oVideoDisplayer;
+	protected ZmqVideoReceiver m_oVideoDisplayer;
 	protected VideoHelper mVideoHelper;
 
 	public VideoSensorGatherer(BaseActivity i_oActivity, IRobotDevice i_oRobot, String i_strThreadName) {
@@ -30,17 +30,17 @@ public class VideoSensorGatherer extends SensorGatherer {
 	}
 
 	public void startVideo() {
-		mVideoHelper.onStartVideo();                
+		mVideoHelper.onStartVideoPlayback();                
 		setVideoListening(true);
 	}
 
 	public void stopVideo() {
-		mVideoHelper.onStopVideo();
+		mVideoHelper.onStopVideoPlayback();
 		setVideoListening(false);
 	}
 	
 	public boolean isStopped() {
-		return mVideoHelper.isStopped();
+		return mVideoHelper.isPlaybackStopped();
 	}
 	
 	public void setVideoScaled(boolean scaled) {
@@ -76,8 +76,8 @@ public class VideoSensorGatherer extends SensorGatherer {
 		oVideoRecvSocket.subscribe(mRobot.getID().getBytes());
 
 		// start a video display thread which receives video frames from the socket and displays them
-		m_oVideoDisplayer = new VideoDisplayThread(ZmqHandler.getInstance().getContext().getContext(), oVideoRecvSocket);
-		m_oVideoDisplayer.setRawVideoListner(mVideoHelper);
+		m_oVideoDisplayer = new ZmqVideoReceiver(oVideoRecvSocket);
+		m_oVideoDisplayer.setRawVideoListener(mVideoHelper);
 		m_oVideoDisplayer.setFPSListener(mVideoHelper);
 		m_oVideoDisplayer.start();
 	}
@@ -89,7 +89,7 @@ public class VideoSensorGatherer extends SensorGatherer {
 		}
 
 		if (mVideoHelper != null) {
-			mVideoHelper.onDestroy();
+			mVideoHelper.destroy();
 			mVideoHelper = null;
 		}
 	}

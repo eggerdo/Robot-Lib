@@ -1,10 +1,10 @@
 package robots.piratedotty.ctrl;
 
-import org.dobots.communication.control.ZmqRemoteControlHelper;
 
 import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
 import robots.ctrl.control.RobotDriveCommandListener;
+import robots.ctrl.zmq.ZmqRemoteControlHelper;
 import robots.gui.comm.IRobotConnection;
 
 public class PirateDotty extends DifferentialRobot {
