@@ -42,27 +42,111 @@
         android:textOn="@string/control"
         android:visibility="gone" />
 
-    <LinearLayout 
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-	    android:orientation="vertical"
-        >
-        <View 
-	        android:layout_width="match_parent"
-	        android:layout_height="0dp"
-	        android:layout_weight="1"
-            />
-		<include 
-	        android:id="@+id/layRemoteControl"
-	        android:layout_width="match_parent"
-	        android:layout_height="0dp"
-	        android:layout_weight="3"
-	        layout="@layout/remote_control" />
-        <View 
-	        android:layout_width="match_parent"
-	        android:layout_height="0dp"
-	        android:layout_weight="1"
-            />
-	</LinearLayout>
+        android:orientation="vertical" >
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/btnVolley"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="Volley" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/btnShoot"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="Shoot" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <include
+            android:id="@+id/layRemoteControl"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="6"
+            layout="@layout/remote_control" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/btnDummy"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="Volley"
+	    		android:visibility="invisible" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <ToggleButton
+                android:id="@+id/btnDock"
+                style="?android:attr/buttonStyleToggle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:textOn="Dock"
+                android:textOff="Dock" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+    </LinearLayout>
 		
 </RelativeLayout>

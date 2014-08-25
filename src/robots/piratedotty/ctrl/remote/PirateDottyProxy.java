@@ -58,4 +58,25 @@ public class PirateDottyProxy extends RobotProxy implements IPirateDotty {
 		}
 	}
 
+	@Override
+	public void shootGuns() {
+		if (mBound) {
+			getRobot().shootGuns();
+		}
+	}
+
+	@Override
+	public void fireVolley() {
+		if (mBound) {
+			getRobot().fireVolley();
+		}
+	}
+
+	@Override
+	public void dock(boolean isDocking) {
+		if (mBound) {
+			getRobot().dock(isDocking);
+		}
+	}
+
 }

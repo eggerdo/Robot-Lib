@@ -10,4 +10,10 @@ public interface IPirateDotty extends ICameraRobot, IRobotDevice {
 
 	void setConnection(IRobotConnection connection);
 
+	void shootGuns();
+
+	void fireVolley();
+
+	void dock(boolean isDocking);
+
 }

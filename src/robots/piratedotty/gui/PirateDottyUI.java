@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.dobots.R;
 import org.dobots.utilities.BaseActivity;
 import org.dobots.utilities.Utils;
-
 import robots.RobotType;
 import robots.ctrl.control.ICameraControlListener;
 import robots.ctrl.zmq.ZmqRemoteControlHelper;
@@ -19,13 +18,20 @@ import robots.gui.comm.bluetooth.BluetoothConnection;
 import robots.piratedotty.ctrl.IPirateDotty;
 import robots.piratedotty.ctrl.PirateDottyTypes;
 import android.bluetooth.BluetoothDevice;
+import android.graphics.LightingColorFilter;
+import android.graphics.PorterDuff;
 import android.hardware.Camera;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ToggleButton;
 
 public class PirateDottyUI extends BluetoothRobot implements ICameraControlListener {
 
@@ -50,6 +56,19 @@ public class PirateDottyUI extends BluetoothRobot implements ICameraControlListe
 	private ZmqRemoteControlHelper m_oCameraCtrl;
 	
 	private boolean m_bCameraOn = true;
+
+	private Button m_btnShoot;
+
+	private Button m_btnVolley;
+	
+	private Handler mUIHandler = new Handler();
+
+	private ToggleButton m_btnDock;
+	private boolean m_bDocking;
+	
+	private SoundPool mSoundPool;
+
+	private int mGunShotID;
 	
 	public PirateDottyUI(BaseActivity i_oOwner) {
 		super(i_oOwner);
@@ -71,6 +90,9 @@ public class PirateDottyUI extends BluetoothRobot implements ICameraControlListe
 		m_oRemoteCtrl = new ZmqRemoteControlHelper(m_oActivity);
 		
         updateButtons(false);
+        
+        mSoundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
+        mGunShotID = mSoundPool.load(this, R.raw.cannon_blast, 1);
     }
 
     @Override
@@ -85,12 +107,15 @@ public class PirateDottyUI extends BluetoothRobot implements ICameraControlListe
 
         m_oSensorGatherer = new PirateDottySensorGatherer(this, m_oPirateDotty);
         m_oSensorGatherer.stopVideoPlayback();
+//        stopVideo();
+        
+        m_oRemoteCtrl.setRemoteControl(true);
 
-        if (m_oPirateDotty.isConnected()) {
+//        if (m_oPirateDotty.isConnected()) {
 			onConnect();
-		} else {
-			connectToRobot();
-		}
+//		} else {
+//			connectToRobot();
+//		}
     }
     
 	@Override
@@ -125,6 +150,59 @@ public class PirateDottyUI extends BluetoothRobot implements ICameraControlListe
 				}
 			});
 		}
+		
+		m_btnShoot = (Button) findViewById(R.id.btnShoot);
+		m_btnShoot.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				m_oPirateDotty.shootGuns();
+				m_btnShoot.setClickable(false);
+				m_btnVolley.setClickable(false);
+				m_btnShoot.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
+				mUIHandler.postDelayed(new Runnable() {
+					
+					@Override
+					public void run() {
+						m_btnShoot.setClickable(true);
+						m_btnVolley.setClickable(true);
+						m_btnShoot.getBackground().clearColorFilter();
+					}
+				}, 2000);
+				mSoundPool.play(mGunShotID, 1, 1, 1, 0, 1f);
+			}
+		});
+
+		m_btnVolley = (Button) findViewById(R.id.btnVolley);
+		m_btnVolley.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				m_oPirateDotty.fireVolley();
+				m_btnShoot.setClickable(false);
+				m_btnVolley.setClickable(false);
+				m_btnVolley.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
+				mUIHandler.postDelayed(new Runnable() {
+					
+					@Override
+					public void run() {
+						m_btnShoot.setClickable(true);
+						m_btnVolley.setClickable(true);
+						m_btnVolley.getBackground().clearColorFilter();
+					}
+				}, 6000);
+			}
+		});
+		
+		m_btnDock = (ToggleButton) m_oActivity.findViewById(R.id.btnDock);
+		m_btnDock.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				m_bDocking = !m_bDocking;
+				m_oPirateDotty.dock(m_bDocking);
+			}
+		});
     }
 
     @Override
@@ -171,9 +249,9 @@ public class PirateDottyUI extends BluetoothRobot implements ICameraControlListe
 			break;
 		case CAMERA_ID:
 			if (m_bCameraOn) {
-				startVideo();
-			} else {
 				stopVideo();
+			} else {
+				startVideo();
 			}
 			m_bCameraOn = !m_bCameraOn;
 			break;

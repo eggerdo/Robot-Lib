@@ -3,6 +3,8 @@ package robots.piratedotty.ctrl;
 import java.util.UUID;
 
 import org.dobots.comm.DoBotsMessageEncoder;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class PirateDottyTypes extends DoBotsMessageEncoder {
 	
@@ -26,6 +28,12 @@ public class PirateDottyTypes extends DoBotsMessageEncoder {
 	public static final int DEFAULT_SENSOR_INTERVAL = 500;
 
 	/////////////////////////////////////////////////
+	
+	public static final int DOCK = USER + 1;
+	public static final int SHOOT_GUNS = USER + 2;
+	public static final int FIRE_VOLLEY = USER + 3;
+	
+	
 //
 //	public static final byte HEADER = (byte)0xA5;
 //	
@@ -146,5 +154,41 @@ public class PirateDottyTypes extends DoBotsMessageEncoder {
 		return INSTANCE;
 	}
 
-	
+	public static JSONObject createSimpleCommand(int message_id) throws JSONException {
+		return createJsonBase(message_id);
+	}
+
+	public static byte[] getSimpleCommandPackage(int message_id) {
+		JSONObject json;
+		try {
+			json = createSimpleCommand(message_id);
+			return json.toString().getBytes();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public static JSONObject createDockingCommand(boolean isDocking) throws JSONException {
+		JSONObject json = createJsonBase(DOCK);
+
+		JSONObject data = new JSONObject();
+		data.put("enable", isDocking);
+		json.put("data", data);
+		
+		return json;
+	}
+
+	public static byte[] getDockingCommandPackage(boolean isDocking) {
+		JSONObject json;
+		try {
+			json = createDockingCommand(isDocking);
+			return json.toString().getBytes();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 }

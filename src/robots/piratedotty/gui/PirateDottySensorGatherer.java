@@ -26,7 +26,8 @@ public class PirateDottySensorGatherer extends VideoSensorGatherer {
 		m_btnCameraToggle.setVisibility(View.GONE);
 		
 		m_vSail = (PirateDottySail) m_oActivity.findViewById(R.id.vSail);
-		m_vSail.setVisibility(View.VISIBLE);
+//		m_vSail.setVisibility(View.VISIBLE);
+		m_vSail.setVisibility(View.GONE);
 	}
 	
 	@Override
@@ -34,7 +35,7 @@ public class PirateDottySensorGatherer extends VideoSensorGatherer {
 		m_layCameraContainer.setVisibility(View.VISIBLE);
 		m_btnCameraToggle.setVisibility(View.VISIBLE);
 		
-		m_vSail.setVisibility(View.GONE);
+//		m_vSail.setVisibility(View.GONE);
 		
 		super.startVideoPlayback();
 	}
@@ -45,7 +46,7 @@ public class PirateDottySensorGatherer extends VideoSensorGatherer {
 		m_layCameraContainer.setVisibility(View.GONE);
 		m_btnCameraToggle.setVisibility(View.GONE);
 		
-		m_vSail.setVisibility(View.VISIBLE);
+//		m_vSail.setVisibility(View.VISIBLE);
 	}
 
 }

@@ -39,7 +39,7 @@ public class PirateDotty extends DifferentialRobot implements IPirateDotty, ICam
 	public PirateDotty() {
 		super(PirateDottyTypes.AXLE_WIDTH, PirateDottyTypes.MIN_VELOCITY, PirateDottyTypes.MAX_VELOCITY, PirateDottyTypes.MIN_RADIUS, PirateDottyTypes.MAX_RADIUS);
 
-		m_oController = new PirateDottyController();
+		m_oController = new PirateDottyController(true);
 		
 		m_oRemoteListener = new RobotDriveCommandListener(this);
 		m_oRemoteHelper = new ZmqRemoteControlHelper(this);
@@ -280,6 +280,21 @@ public class PirateDotty extends DifferentialRobot implements IPirateDotty, ICam
 	@Override
 	public void cameraStop() {
 		// NOT APPLICABLE
+	}
+
+	@Override
+	public void shootGuns() {
+		m_oController.shootGuns();
+	}
+
+	@Override
+	public void fireVolley() {
+		m_oController.fireVolley();
+	}
+
+	@Override
+	public void dock(boolean isDocking) {
+		m_oController.dock(isDocking);
 	}
 
 }

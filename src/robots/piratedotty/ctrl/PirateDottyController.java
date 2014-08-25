@@ -16,6 +16,12 @@ public class PirateDottyController extends Loggable implements IAsciiMessageHand
 
 	private AsciiProtocolHandler mProtocolHandler;
 	
+	private boolean mSimulated = false;
+	
+	public PirateDottyController(boolean isSim) {
+		mSimulated = isSim;
+	}
+	
 	public void setConnection(IRobotConnection i_oConnection) {
 		m_oConnection = i_oConnection;
 		mProtocolHandler = new AsciiProtocolHandler(i_oConnection, this);
@@ -43,7 +49,15 @@ public class PirateDottyController extends Loggable implements IAsciiMessageHand
 		
 	}
 	
+	private void send(byte[] message) {
+		if (m_oConnection != null) {
+			m_oConnection.send(message);
+		}
+	}
+	
 	public boolean isConnected() {
+		if (mSimulated) return true;
+		
 		if (m_oConnection != null) {
 			return m_oConnection.isConnected();
 		} else {
@@ -52,31 +66,35 @@ public class PirateDottyController extends Loggable implements IAsciiMessageHand
 	}
 	
 	public void connect() {
+		if (mSimulated) return;
+		
 		m_oConnection.open();
 		mProtocolHandler.start();
 	}
 	
 	public void disconnect() {
+		if (mSimulated) return;
+		
 		byte[] message = PirateDottyTypes.getDisconnectPackage();
-		m_oConnection.send(message);
+		send(message);
 		destroyConnection();
 	}
 
 	public void control(boolean i_bEnable) {
 		byte[] message = PirateDottyTypes.getControlCommandPackage(i_bEnable);
-		m_oConnection.send(message);
+		send(message);
 	}
 	
 	public void drive(int i_nLeftVelocity, int i_nRightVelocity) {
 		debug(TAG, String.format("drive(%d, %d)", i_nLeftVelocity, i_nRightVelocity));
 		byte[] message = PirateDottyTypes.getDriveCommandPackage(i_nLeftVelocity, i_nRightVelocity);
-		m_oConnection.send(message);
+		send(message);
 	}
 	
 	public void driveStop() {
 		debug(TAG, "driveStop()");
 		byte[] message = PirateDottyTypes.getDriveCommandPackage(0, 0);
-		m_oConnection.send(message);
+		send(message);
 	}
 
 	@Override
@@ -84,19 +102,39 @@ public class PirateDottyController extends Loggable implements IAsciiMessageHand
 		// TODO Auto-generated method stub
 	}
 
+	public void shootGuns() {
+		debug(TAG, "shootGuns");
+		byte[] message = PirateDottyTypes.getSimpleCommandPackage(PirateDottyTypes.SHOOT_GUNS);
+		send(message);
+	}
+
+	public void fireVolley() {
+		debug(TAG, "fireVolley");
+		byte[] message = PirateDottyTypes.getSimpleCommandPackage(PirateDottyTypes.FIRE_VOLLEY);
+		send(message);
+	}
+
+	public void dock(boolean isDocking) {
+		debug(TAG, "dock(%b)", isDocking);
+		byte[] message = PirateDottyTypes.getDockingCommandPackage(isDocking);
+		send(message);
+	}
+
 //	public void requestSensorData() {
 //		byte[] message = PirateDottyTypes.getSensorRequestPackage();
-//		m_oConnection.sendMessage(message);
+//		sendMessage(message);
 //	}
 	
 //	public void startStreaming(int i_nInterval) {
 //		byte[] message = PirateDottyTypes.getStreamingONPackage(i_nInterval);
-//		m_oConnection.sendMessage(message);
+//		sendMessage(message);
 //	}
 	
 //	public void stopStreaming() {
 //		byte[] message = PirateDottyTypes.getStreamingOFFPackage();
-//		m_oConnection.sendMessage(message);
+//		sendMessage(message);
 //	}
+	
+	
 	
 }
