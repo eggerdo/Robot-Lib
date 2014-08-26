@@ -39,17 +39,21 @@ public class RobotDriveCommandListener extends Loggable implements IDriveControl
 			debug(TAG, "stop()");
 			break;
 		case BACKWARD:
-			m_oRobot.moveBackward(i_dblSpeed, i_dblAngle);
-			debug(TAG, "bwd(s=%f, a=%f)", i_dblSpeed, i_dblAngle);
-			break;
+			if (i_dblAngle != 0) {
+				m_oRobot.moveBackward(i_dblSpeed, i_dblAngle);
+				debug(TAG, "bwd(s=%f, a=%f)", i_dblSpeed, i_dblAngle);
+				break;
+			}
 		case STRAIGHT_BACKWARD:
 			m_oRobot.moveBackward(i_dblSpeed);
 			debug(TAG, "bwd(s=%f)", i_dblSpeed);
 			break;
 		case FORWARD:
-			m_oRobot.moveForward(i_dblSpeed, i_dblAngle);
-			debug(TAG, "fwd(s=%f, a=%f)", i_dblSpeed, i_dblAngle);
-			break;
+			if (i_dblAngle != 0) {
+				m_oRobot.moveForward(i_dblSpeed, i_dblAngle);
+				debug(TAG, "fwd(s=%f, a=%f)", i_dblSpeed, i_dblAngle);
+				break;
+			}
 		case STRAIGHT_FORWARD:
 			m_oRobot.moveForward(i_dblSpeed);
 			debug(TAG, "fwd(s=%f)", i_dblSpeed);

@@ -1,8 +1,11 @@
 package robots.piratedotty.ctrl;
 
+import org.dobots.comm.msg.ISensorDataListener;
+import org.dobots.comm.msg.SensorMessageObj;
 import org.dobots.utilities.Utils;
 import org.dobots.utilities.camera.CameraPreview;
 import org.dobots.utilities.camera.CameraPreview.CameraPreviewCallback;
+import org.dobots.zmq.sensors.ZmqSensorsSender;
 import org.dobots.zmq.video.ZmqVideoSender;
 
 import android.content.Context;
@@ -14,7 +17,7 @@ import robots.ctrl.control.RobotDriveCommandListener;
 import robots.ctrl.zmq.ZmqRemoteControlHelper;
 import robots.gui.comm.IRobotConnection;
 
-public class PirateDotty extends DifferentialRobot implements IPirateDotty, ICameraControlListener {
+public class PirateDotty extends DifferentialRobot implements IPirateDotty, ICameraControlListener, ISensorDataListener {
 
 	private static final String TAG = "PirateDotty";
 	
@@ -29,6 +32,7 @@ public class PirateDotty extends DifferentialRobot implements IPirateDotty, ICam
 	private CameraPreview mCamera;
 
 	private ZmqVideoSender mVideoSender;
+	private ZmqSensorsSender m_oSensorsSender;
 
 	// inverted = -1
 	// normal 	= +1
@@ -39,7 +43,8 @@ public class PirateDotty extends DifferentialRobot implements IPirateDotty, ICam
 	public PirateDotty() {
 		super(PirateDottyTypes.AXLE_WIDTH, PirateDottyTypes.MIN_VELOCITY, PirateDottyTypes.MAX_VELOCITY, PirateDottyTypes.MIN_RADIUS, PirateDottyTypes.MAX_RADIUS);
 
-		m_oController = new PirateDottyController(true);
+		m_oController = new PirateDottyController();
+		m_oController.setSensorListener(this);
 		
 		m_oRemoteListener = new RobotDriveCommandListener(this);
 		m_oRemoteHelper = new ZmqRemoteControlHelper(this);
@@ -49,6 +54,8 @@ public class PirateDotty extends DifferentialRobot implements IPirateDotty, ICam
 		mVideoSender = new ZmqVideoSender(getID());
 		
 		m_oRemoteHelper.setCameraControlListener(this);
+
+		m_oSensorsSender = new ZmqSensorsSender();
 	}
 
 	public void startCamera(Context context) {
@@ -295,6 +302,12 @@ public class PirateDotty extends DifferentialRobot implements IPirateDotty, ICam
 	@Override
 	public void dock(boolean isDocking) {
 		m_oController.dock(isDocking);
+	}
+
+	@Override
+	public void onSensorData(String data) {
+		SensorMessageObj sensorData = SensorMessageObj.decodeJSON(getID(), data);
+		m_oSensorsSender.sendSensors(sensorData);
 	}
 
 }

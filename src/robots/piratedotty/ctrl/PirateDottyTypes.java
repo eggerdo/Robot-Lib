@@ -32,6 +32,7 @@ public class PirateDottyTypes extends DoBotsMessageEncoder {
 	public static final int DOCK = USER + 1;
 	public static final int SHOOT_GUNS = USER + 2;
 	public static final int FIRE_VOLLEY = USER + 3;
+	public static final int HIT_DETECTED = USER + 4;
 	
 	
 //

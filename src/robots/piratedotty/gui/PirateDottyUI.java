@@ -31,6 +31,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ToggleButton;
 
 public class PirateDottyUI extends BluetoothRobot implements ICameraControlListener {
@@ -69,6 +70,11 @@ public class PirateDottyUI extends BluetoothRobot implements ICameraControlListe
 	private SoundPool mSoundPool;
 
 	private int mGunShotID;
+	private int mVolleyID;
+
+	private LinearLayout m_layGuns;
+
+	private LinearLayout m_layControls;
 	
 	public PirateDottyUI(BaseActivity i_oOwner) {
 		super(i_oOwner);
@@ -93,6 +99,7 @@ public class PirateDottyUI extends BluetoothRobot implements ICameraControlListe
         
         mSoundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
         mGunShotID = mSoundPool.load(this, R.raw.cannon_blast, 1);
+        mVolleyID = mSoundPool.load(this, R.raw.volley, 1);
     }
 
     @Override
@@ -109,13 +116,13 @@ public class PirateDottyUI extends BluetoothRobot implements ICameraControlListe
         m_oSensorGatherer.stopVideoPlayback();
 //        stopVideo();
         
-        m_oRemoteCtrl.setRemoteControl(true);
+        setRemoteControl(true);
 
-//        if (m_oPirateDotty.isConnected()) {
+        if (m_oPirateDotty.isConnected()) {
 			onConnect();
-//		} else {
-//			connectToRobot();
-//		}
+		} else {
+			connectToRobot();
+		}
     }
     
 	@Override
@@ -150,6 +157,9 @@ public class PirateDottyUI extends BluetoothRobot implements ICameraControlListe
 				}
 			});
 		}
+		
+		m_layGuns = (LinearLayout) findViewById(R.id.layGuns);
+		m_layControls = (LinearLayout) findViewById(R.id.layControls);
 		
 		m_btnShoot = (Button) findViewById(R.id.btnShoot);
 		m_btnShoot.setOnClickListener(new OnClickListener() {
@@ -191,6 +201,7 @@ public class PirateDottyUI extends BluetoothRobot implements ICameraControlListe
 						m_btnVolley.getBackground().clearColorFilter();
 					}
 				}, 6000);
+				mSoundPool.play(mVolleyID, 1, 1, 1, 0, 1f);
 			}
 		});
 		
@@ -232,6 +243,13 @@ public class PirateDottyUI extends BluetoothRobot implements ICameraControlListe
     	return true;
     }
     
+    private void setRemoteControl(boolean enabled) {
+    	m_oRemoteCtrl.setRemoteControl(enabled);
+    	
+		Utils.showLayout(m_layControls, enabled);
+		Utils.showLayout(m_layGuns, enabled);
+    }
+    
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		switch (item.getItemId()) {
@@ -245,7 +263,7 @@ public class PirateDottyUI extends BluetoothRobot implements ICameraControlListe
 			}
 			break;
 		case REMOTE_CONTROL_ID:
-			m_oRemoteCtrl.setRemoteControl(!m_oRemoteCtrl.isControlEnabled());
+			setRemoteControl(!m_oRemoteCtrl.isControlEnabled());
 			break;
 		case CAMERA_ID:
 			if (m_bCameraOn) {
@@ -282,11 +300,13 @@ public class PirateDottyUI extends BluetoothRobot implements ICameraControlListe
 	@Override
 	protected void onConnect() {
 		updateButtons(true);
+		setRemoteControl(true);
 	}
 	
 	@Override
 	protected void onDisconnect() {
 		updateButtons(false);
+		setRemoteControl(false);
 		m_oRemoteCtrl.resetLayout();
 	}
 

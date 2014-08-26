@@ -2,8 +2,12 @@ package robots.piratedotty.ctrl;
 
 import java.io.IOException;
 
+import org.dobots.comm.msg.ISensorDataListener;
 import org.dobots.utilities.log.Loggable;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import robots.arduino.ctrl.ArduinoTypes;
 import robots.ctrl.comm.AsciiProtocolHandler;
 import robots.ctrl.comm.AsciiProtocolHandler.IAsciiMessageHandler;
 import robots.gui.comm.IRobotConnection;
@@ -17,11 +21,13 @@ public class PirateDottyController extends Loggable implements IAsciiMessageHand
 	private AsciiProtocolHandler mProtocolHandler;
 	
 	private boolean mSimulated = false;
+
+	private ISensorDataListener mListener;
 	
-	public PirateDottyController(boolean isSim) {
-		mSimulated = isSim;
+	public void setSensorListener(ISensorDataListener listener) {
+		mListener = listener;
 	}
-	
+
 	public void setConnection(IRobotConnection i_oConnection) {
 		m_oConnection = i_oConnection;
 		mProtocolHandler = new AsciiProtocolHandler(i_oConnection, this);
@@ -99,7 +105,17 @@ public class PirateDottyController extends Loggable implements IAsciiMessageHand
 
 	@Override
 	public void onMessage(String message) {
-		// TODO Auto-generated method stub
+		try {
+			JSONObject json = new JSONObject(message);
+			switch(PirateDottyTypes.getType(json)) {
+			case PirateDottyTypes.HIT_DETECTED:
+				if (mListener != null) {
+					mListener.onSensorData(message);
+				}
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void shootGuns() {
