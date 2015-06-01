@@ -23,8 +23,8 @@ import java.io.IOException;
 
 import org.dobots.utilities.Utils;
 
-import robots.ctrl.comm.ProtocolHandler;
-import robots.ctrl.comm.ProtocolHandler.ICommHandler;
+import robots.ctrl.comm.OldProtocolHandler;
+import robots.ctrl.comm.OldProtocolHandler.ICommHandler;
 import robots.gui.comm.IRobotConnection;
 import robots.nxt.MsgTypes;
 import android.os.Handler;
@@ -43,7 +43,7 @@ public class NxtController implements ICommHandler<byte[]> {
 
 	private Handler mHandler;
 
-    private class NXTProtocolHandler extends ProtocolHandler {
+    private class NXTProtocolHandler extends OldProtocolHandler {
 
 		public NXTProtocolHandler(IRobotConnection connection, ICommHandler handler) {
 			super(connection, handler);
@@ -74,7 +74,7 @@ public class NxtController implements ICommHandler<byte[]> {
 		}
     }
     
-    private ProtocolHandler mProtocolHandler = new NXTProtocolHandler(m_oConnection, this);
+    private OldProtocolHandler mProtocolHandler = new NXTProtocolHandler(m_oConnection, this);
 
 	public void setHandler(Handler handler) {
 		mHandler = handler;

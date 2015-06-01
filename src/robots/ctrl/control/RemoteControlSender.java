@@ -27,6 +27,8 @@ import org.dobots.comm.msg.RoboCommands.DriveCommand;
 
 public abstract class RemoteControlSender implements IDriveControlListener, ICameraControlListener {
 
+	public static final String TAG = RemoteControlSender.class.getSimpleName();
+	
 	private static final int BASE_SPEED = -1;
 	
 	protected String m_strRobot = "";

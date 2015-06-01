@@ -2,6 +2,7 @@ package robots.arduino.ctrl;
 
 import java.io.IOException;
 
+import org.dobots.comm.JSONEncoder;
 import org.dobots.comm.msg.ISensorDataListener;
 import org.dobots.utilities.log.Loggable;
 import org.json.JSONException;
@@ -23,14 +24,20 @@ public class ArduinoController extends Loggable implements IAsciiMessageHandler 
 	private Handler mHandler;
 	
 	private ISensorDataListener mListener;
-	
+
+	private JSONEncoder mEncoder;
+
+	public ArduinoController() {
+		mEncoder = new JSONEncoder();
+	}
+
 	public void setSensorListener(ISensorDataListener listener) {
 		mListener = listener;
 	}
 
 	public void setConnection(IRobotConnection i_oConnection) {
 		m_oConnection = i_oConnection;
-		mProtocolHandler = new AsciiProtocolHandler(i_oConnection, this);
+		mProtocolHandler = new ByteProtocolHandler(i_oConnection, this);
 		Log.d(TAG, String.format("setConnection(%s)", m_oConnection.getAddress()));
 	}
 
@@ -75,7 +82,7 @@ public class ArduinoController extends Loggable implements IAsciiMessageHandler 
 	public void disconnect() {
 		if (m_oConnection != null) {
 			Log.d(TAG, "disconnect...");
-			byte[] message = ArduinoTypes.getDisconnectPackage();
+			byte[] message = mEncoder.getDisconnectPackage();
 			m_oConnection.send(message);
 		}
 		destroyConnection();
@@ -83,7 +90,7 @@ public class ArduinoController extends Loggable implements IAsciiMessageHandler 
 
 	public void control(boolean i_bEnable) {
 		if (m_oConnection != null) {
-			byte[] message = ArduinoTypes.getControlCommandPackage(i_bEnable);
+			byte[] message = mEncoder.getControlCommandPackage(i_bEnable);
 			m_oConnection.send(message);
 		}
 	}
@@ -91,7 +98,7 @@ public class ArduinoController extends Loggable implements IAsciiMessageHandler 
 	public void drive(int i_nLeftVelocity, int i_nRightVelocity) {
 		if (m_oConnection != null) {
 			debug(TAG, String.format("drive(%d, %d)", i_nLeftVelocity, i_nRightVelocity));
-			byte[] message = ArduinoTypes.getDriveCommandPackage(i_nLeftVelocity, i_nRightVelocity);
+			byte[] message = mEncoder.getDriveCommandPackage(i_nLeftVelocity, i_nRightVelocity);
 			m_oConnection.send(message);
 		}
 	}
@@ -99,7 +106,7 @@ public class ArduinoController extends Loggable implements IAsciiMessageHandler 
 	public void driveStop() {
 		if (m_oConnection != null) {
 			debug(TAG, "driveStop()");
-			byte[] message = ArduinoTypes.getDriveCommandPackage(0, 0);
+			byte[] message = mEncoder.getDriveCommandPackage(0, 0);
 			m_oConnection.send(message);
 		}
 	}
@@ -107,24 +114,14 @@ public class ArduinoController extends Loggable implements IAsciiMessageHandler 
 	public void requestSensorData() {
 		if (m_oConnection != null) {
 			debug(TAG, "requestSensorData");
-			byte[] message = ArduinoTypes.getSensorRequestPackage();
+			byte[] message = mEncoder.getSensorRequestPackage();
 			m_oConnection.send(message);
 		}
 	}
 
 	@Override
-	public void onMessage(String message) {
-		try {
-			JSONObject json = new JSONObject(message);
-			switch(ArduinoTypes.getType(json)) {
-			case ArduinoTypes.SENSOR_DATA:
-				if (mListener != null) {
-					mListener.onSensorData(json.get("data").toString());
-				}
-			}
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
+	public void onMessage(byte[] buffer) {
+		Log.i(TAG, "received: ");
 	}
 
 	public void setHandler(Handler handler) {

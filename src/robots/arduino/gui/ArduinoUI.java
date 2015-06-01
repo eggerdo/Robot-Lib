@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.dobots.R;
 
 import robots.RobotType;
+import robots.arduino.ctrl.ArduinoTypes;
 import robots.arduino.ctrl.IArduino;
 import robots.ctrl.zmq.ZmqRemoteControlHelper;
 import robots.ctrl.zmq.ZmqRemoteControlSender;
@@ -13,7 +14,6 @@ import robots.gui.RobotInventory;
 import robots.gui.SensorGatherer;
 import robots.gui.comm.IRobotConnection;
 import robots.gui.comm.bluetooth.BluetoothConnection;
-import robots.piratedotty.ctrl.PirateDottyTypes;
 import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
 import android.view.View;
@@ -80,7 +80,7 @@ public class ArduinoUI extends BluetoothRobot {
 			}
 			catch (IOException e) { }
 		}
-		IRobotConnection connection = new BluetoothConnection(i_oDevice, PirateDottyTypes.PIRATEDOTTY_UUID);
+		IRobotConnection connection = new BluetoothConnection(i_oDevice, ArduinoTypes.ARDUINO_UUID);
 		connection.setReceiveHandler(m_oUiHandler);
 		mArduino.setConnection(connection);
 	}

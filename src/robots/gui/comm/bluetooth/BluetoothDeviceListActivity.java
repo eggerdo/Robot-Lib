@@ -130,7 +130,7 @@ public class BluetoothDeviceListActivity extends Activity {
                 // only add LEGO devices
                 if (device.getAddress().startsWith(m_strMACFilter)) {
                     bDevicesFound = true;
-                    mPairedDevicesArrayAdapter.add(device.getName() + "-" + device.getAddress());
+                    mPairedDevicesArrayAdapter.add(device.getName() + " - " + device.getAddress());
                 }
             }
         }
@@ -181,13 +181,13 @@ public class BluetoothDeviceListActivity extends Activity {
 
             String info = ((TextView) v).getText().toString();
             // did we choose a correct name and address?
-            if (info.lastIndexOf('-') != info.length()-18) 
+            if (info.lastIndexOf('-') != info.length()-19) 
                 return;
 
             // Cancel discovery because it's costly and we're about to connect
             mBtAdapter.cancelDiscovery();
             // Get the device MAC address, this is the text after the last '-' character
-            String address = info.substring(info.lastIndexOf('-')+1);
+            String address = info.substring(info.lastIndexOf('-')+2);
             // Create the result Intent and include the infos
             Intent intent = new Intent();
             Bundle data = new Bundle();

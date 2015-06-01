@@ -4,7 +4,7 @@ import org.dobots.utilities.DoBotsThread;
 
 import robots.gui.comm.IRobotConnection;
 
-public abstract class ProtocolHandler extends DoBotsThread {
+public abstract class OldProtocolHandler extends DoBotsThread {
 
 	public interface ICommHandler<T> {
 		public void onMessage(T message);
@@ -16,7 +16,7 @@ public abstract class ProtocolHandler extends DoBotsThread {
 	
 //	private boolean mStopped = false;
 	
-	public ProtocolHandler(IRobotConnection connection, ICommHandler handler) {
+	public OldProtocolHandler(IRobotConnection connection, ICommHandler handler) {
 		super("ProtocolHandler");
 		mConnection = connection;
 		mMessageHandler = handler;

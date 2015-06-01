@@ -16,6 +16,7 @@ import robots.gui.comm.IConnectListener;
 import robots.gui.comm.IRobotConnection;
 import robots.gui.comm.bluetooth.BluetoothConnection;
 import robots.piratedotty.ctrl.IPirateDotty;
+import robots.piratedotty.ctrl.PirateDottyEncoder;
 import robots.piratedotty.ctrl.PirateDottyTypes;
 import android.bluetooth.BluetoothDevice;
 import android.graphics.LightingColorFilter;
@@ -43,6 +44,7 @@ public class PirateDottyUI extends BluetoothRobot implements ICameraControlListe
 	private static final int REMOTE_CONTROL_ID = ACCEL_ID + 1;
 	private static final int CAMERA_ID = REMOTE_CONTROL_ID + 1;
 	private static final int CAMERA_DISP_ID = CAMERA_ID + 1;
+	private static final int RESET_STATS = CAMERA_DISP_ID + 1;
 
 	private static final int CONTROL_GRP = GENERAL_GRP + 1;
 //	private static final int REMOTE_CTRL_GRP = GENERAL_GRP + 1;
@@ -180,6 +182,7 @@ public class PirateDottyUI extends BluetoothRobot implements ICameraControlListe
 					}
 				}, 2000);
 				mSoundPool.play(mGunShotID, 1, 1, 1, 0, 1f);
+				m_oSensorGatherer.onShotFired(1);
 			}
 		});
 
@@ -202,6 +205,7 @@ public class PirateDottyUI extends BluetoothRobot implements ICameraControlListe
 					}
 				}, 6000);
 				mSoundPool.play(mVolleyID, 1, 1, 1, 0, 1f);
+				m_oSensorGatherer.onShotFired(3);
 			}
 		});
 		
@@ -224,6 +228,7 @@ public class PirateDottyUI extends BluetoothRobot implements ICameraControlListe
 		menu.add(CONTROL_GRP, REMOTE_CONTROL_ID, REMOTE_CONTROL_ID, "Remote Control");
 		menu.add(CONTROL_GRP, CAMERA_ID, CAMERA_ID, "Camera");
 		menu.add(CAMERA_CTRL_GRP, CAMERA_DISP_ID, CAMERA_DISP_ID, "Display Camera");
+		menu.add(CONTROL_GRP, RESET_STATS, RESET_STATS, "Reset Stats");
 		
 		return true;
 	}
@@ -280,6 +285,8 @@ public class PirateDottyUI extends BluetoothRobot implements ICameraControlListe
 				m_oSensorGatherer.stopVideoPlayback();
 			}
 			break;
+		case RESET_STATS:
+			m_oSensorGatherer.resetStats();
 		}
 
 		return super.onMenuItemSelected(featureId, item);
@@ -287,6 +294,7 @@ public class PirateDottyUI extends BluetoothRobot implements ICameraControlListe
 
 	protected void resetLayout() {
         m_oRemoteCtrl.resetLayout();
+        setRemoteControl(true);
         
         updateButtons(false);
 

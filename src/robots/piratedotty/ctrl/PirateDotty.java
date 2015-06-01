@@ -1,5 +1,6 @@
 package robots.piratedotty.ctrl;
 
+import org.dobots.comm.Move;
 import org.dobots.comm.msg.ISensorDataListener;
 import org.dobots.comm.msg.SensorMessageObj;
 import org.dobots.utilities.Utils;
@@ -13,11 +14,13 @@ import android.content.Context;
 import robots.RobotType;
 import robots.ctrl.DifferentialRobot;
 import robots.ctrl.control.ICameraControlListener;
+import robots.ctrl.control.IMoveRepeaterListener;
+import robots.ctrl.control.MoveRepeater;
 import robots.ctrl.control.RobotDriveCommandListener;
 import robots.ctrl.zmq.ZmqRemoteControlHelper;
 import robots.gui.comm.IRobotConnection;
 
-public class PirateDotty extends DifferentialRobot implements IPirateDotty, ICameraControlListener, ISensorDataListener {
+public class PirateDotty extends DifferentialRobot implements IPirateDotty, ICameraControlListener, ISensorDataListener, IMoveRepeaterListener {
 
 	private static final String TAG = "PirateDotty";
 	
@@ -33,6 +36,8 @@ public class PirateDotty extends DifferentialRobot implements IPirateDotty, ICam
 
 	private ZmqVideoSender mVideoSender;
 	private ZmqSensorsSender m_oSensorsSender;
+
+	private MoveRepeater m_oRepeater;
 
 	// inverted = -1
 	// normal 	= +1
@@ -56,6 +61,8 @@ public class PirateDotty extends DifferentialRobot implements IPirateDotty, ICam
 		m_oRemoteHelper.setCameraControlListener(this);
 
 		m_oSensorsSender = new ZmqSensorsSender();
+
+		m_oRepeater = new MoveRepeater(this, 500);
 	}
 
 	public void startCamera(Context context) {
@@ -138,61 +145,130 @@ public class PirateDotty extends DifferentialRobot implements IPirateDotty, ICam
 
 	@Override
 	public void moveForward(double i_dblSpeed) {
+		m_oRepeater.startMove(Move.FORWARD, i_dblSpeed, true);
+	}
+	
+	@Override
+	public void moveForward(double i_dblSpeed, int i_nRadius) {
+		m_oRepeater.startMove(Move.FORWARD, i_dblSpeed, i_nRadius, true);
+	}
+	
+	public void moveForward(double i_dblSpeed, double i_dblAngle) {
+
+		if (Math.abs(i_dblAngle) < 2) {
+			moveForward(i_dblSpeed);
+		} else {
+			int nRadius = angleToRadius(i_dblAngle);
+			moveForward(i_dblSpeed, nRadius);
+		}
+	}
+
+	@Override
+	public void moveBackward(double i_dblSpeed) {
+		m_oRepeater.startMove(Move.BACKWARD, i_dblSpeed, true);
+	}
+
+	@Override
+	public void moveBackward(double i_dblSpeed, int i_nRadius) {
+		m_oRepeater.startMove(Move.BACKWARD, i_dblSpeed, i_nRadius, true);
+	}
+
+	public void moveBackward(double i_dblSpeed, double i_dblAngle) {
+
+		if (Math.abs(i_dblAngle) < 2) {
+			moveBackward(i_dblSpeed);
+		} else {
+			int nRadius = angleToRadius(i_dblAngle);
+			moveBackward(i_dblSpeed, nRadius);
+		}
+	}
+	
+	@Override
+	public void rotateClockwise(double i_dblSpeed) {
+		m_oRepeater.startMove(Move.ROTATE_RIGHT, i_dblSpeed, true);
+	}
+
+	@Override
+	public void rotateCounterClockwise(double i_dblSpeed) {
+		m_oRepeater.startMove(Move.ROTATE_LEFT, i_dblSpeed, true);
+	}
+	
+	@Override
+	public void moveStop() {
+		m_oRepeater.stopMove();
+		m_oController.driveStop();
+	}
+
+	@Override
+	public void onDoMove(Move i_eMove, double i_dblSpeed) {
+		switch(i_eMove) {
+		case BACKWARD:
+			executeMoveBackward(i_dblSpeed);
+			break;
+		case FORWARD:
+			executeMoveForward(i_dblSpeed);
+			break;
+		case ROTATE_LEFT:
+			executeRotateCounterClockwise(i_dblSpeed);
+			break;
+		case ROTATE_RIGHT:
+			executeRotateClockwise(i_dblSpeed);
+			break;
+		default:
+			error(TAG, "Move not available");
+			return;
+		}
+	}
+
+	public void executeMoveForward(double i_dblSpeed) {
 		int nVelocity = calculateVelocity(i_dblSpeed);
 		
 		m_oController.drive(nVelocity * m_nInverted, nVelocity * m_nInverted);
 	}
 
-	@Override
-	public void moveForward(double i_dblSpeed, int i_nRadius) {
-		DriveVelocityLR oVelocity = calculateVelocity(i_dblSpeed, i_nRadius);
-
-		m_oController.drive(oVelocity.left * m_nInverted, oVelocity.right * m_nInverted);
-	}
-	
-	public void moveForward(double i_dblSpeed, double i_dblAngle) {
-		int nRadius = angleToRadius(i_dblAngle);
-		
-		moveForward(i_dblSpeed, nRadius);
-	}
-
-	@Override
-	public void moveBackward(double i_dblSpeed) {
+	public void executeMoveBackward(double i_dblSpeed) {
 		int nVelocity = calculateVelocity(i_dblSpeed);
 		
 		m_oController.drive(-nVelocity * m_nInverted, -nVelocity * m_nInverted);
 	}
 
-	@Override
-	public void moveBackward(double i_dblSpeed, int i_nRadius) {
-		DriveVelocityLR oVelocity = calculateVelocity(i_dblSpeed, i_nRadius);
-
-		m_oController.drive(-oVelocity.left * m_nInverted, -oVelocity.right * m_nInverted);
-	}
-	
-	public void moveBackward(double i_dblSpeed, double i_dblAngle) {
-		int nRadius = angleToRadius(i_dblAngle);
-		
-		moveBackward(i_dblSpeed, nRadius);
-	}
-
-	@Override
-	public void rotateClockwise(double i_dblSpeed) {
+	public void executeRotateClockwise(double i_dblSpeed) {
 		int nVelocity = calculateVelocity(i_dblSpeed);
 
 		m_oController.drive(nVelocity, -nVelocity);
 	}
 
-	@Override
-	public void rotateCounterClockwise(double i_dblSpeed) {
+	public void executeRotateCounterClockwise(double i_dblSpeed) {
 		int nVelocity = calculateVelocity(i_dblSpeed);
 
 		m_oController.drive(-nVelocity, nVelocity);
 	}
 
 	@Override
-	public void moveStop() {
-		m_oController.driveStop();
+	public void onDoMove(Move i_eMove, double i_dblSpeed, double i_dblRadius) {
+		switch(i_eMove) {
+		case BACKWARD:
+			executeMoveBackward(i_dblSpeed, i_dblRadius);
+			break;
+		case FORWARD:
+			executeMoveForward(i_dblSpeed, i_dblRadius);
+			break;
+		default:
+			error(TAG, "Move not available");
+			return;
+		}
+	}
+
+	public void executeMoveForward(double i_dblSpeed, double i_dblRadius) {
+		DriveVelocityLR oVelocity = calculateVelocity(i_dblSpeed, i_dblRadius);
+
+		m_oController.drive(oVelocity.left * m_nInverted, oVelocity.right * m_nInverted);
+	}
+
+	public void executeMoveBackward(double i_dblSpeed, double i_dblRadius) {
+		DriveVelocityLR oVelocity = calculateVelocity(i_dblSpeed, i_dblRadius);
+
+		m_oController.drive(-oVelocity.left * m_nInverted, -oVelocity.right * m_nInverted);
 	}
 	
 	public void requestSensorData() {

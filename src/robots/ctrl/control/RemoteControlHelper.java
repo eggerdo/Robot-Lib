@@ -65,7 +65,7 @@ public class RemoteControlHelper implements IJoystickListener, IMenuListener {
 	private Move lastMove = Move.NONE;
 
 	private long lastTime = SystemClock.uptimeMillis();
-	private double updateFrequency = 5.0; // Hz
+	private double updateFrequency = 10.0; // Hz
 	private int threshold = 20;
 	
 	protected BaseActivity m_oActivity;

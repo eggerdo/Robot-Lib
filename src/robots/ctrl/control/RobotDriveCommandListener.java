@@ -9,7 +9,7 @@ import android.util.Log;
 
 public class RobotDriveCommandListener extends Loggable implements IDriveControlListener {
 	
-	private static final String TAG = "RobotRemote";
+	private static final String TAG = RobotDriveCommandListener.class.getSimpleName();
 
 	private IRobotDevice m_oRobot;
 	
@@ -35,36 +35,36 @@ public class RobotDriveCommandListener extends Loggable implements IDriveControl
 		// execute this move
 		switch(i_oMove) {
 		case NONE:
-			m_oRobot.moveStop();
 			debug(TAG, "stop()");
+			m_oRobot.moveStop();
 			break;
 		case BACKWARD:
 			if (i_dblAngle != 0) {
-				m_oRobot.moveBackward(i_dblSpeed, i_dblAngle);
 				debug(TAG, "bwd(s=%f, a=%f)", i_dblSpeed, i_dblAngle);
+				m_oRobot.moveBackward(i_dblSpeed, i_dblAngle);
 				break;
 			}
 		case STRAIGHT_BACKWARD:
-			m_oRobot.moveBackward(i_dblSpeed);
 			debug(TAG, "bwd(s=%f)", i_dblSpeed);
+			m_oRobot.moveBackward(i_dblSpeed);
 			break;
 		case FORWARD:
 			if (i_dblAngle != 0) {
-				m_oRobot.moveForward(i_dblSpeed, i_dblAngle);
 				debug(TAG, "fwd(s=%f, a=%f)", i_dblSpeed, i_dblAngle);
+				m_oRobot.moveForward(i_dblSpeed, i_dblAngle);
 				break;
 			}
 		case STRAIGHT_FORWARD:
-			m_oRobot.moveForward(i_dblSpeed);
 			debug(TAG, "fwd(s=%f)", i_dblSpeed);
+			m_oRobot.moveForward(i_dblSpeed);
 			break;
 		case ROTATE_LEFT:
-			m_oRobot.rotateCounterClockwise(i_dblSpeed);
 			debug(TAG, "c cw(s=%f)", i_dblSpeed);
+			m_oRobot.rotateCounterClockwise(i_dblSpeed);
 			break;
 		case ROTATE_RIGHT:
-			m_oRobot.rotateClockwise(i_dblSpeed);
 			debug(TAG, "cw(s=%f)", i_dblSpeed);
+			m_oRobot.rotateClockwise(i_dblSpeed);
 			break;
 		}
 	}
@@ -77,26 +77,26 @@ public class RobotDriveCommandListener extends Loggable implements IDriveControl
 		// execute this move
 		switch(i_oMove) {
 		case NONE:
-			m_oRobot.moveStop();
 			debug(TAG, "stop()");
+			m_oRobot.moveStop();
 			break;
 		case STRAIGHT_BACKWARD:
 		case BACKWARD:
-			m_oRobot.moveBackward();
 			debug(TAG, "bwd()");
+			m_oRobot.moveBackward();
 			break;
 		case STRAIGHT_FORWARD:
 		case FORWARD:
-			m_oRobot.moveForward();
 			debug(TAG, "fwd()");
+			m_oRobot.moveForward();
 			break;
 		case ROTATE_LEFT:
-			m_oRobot.rotateCounterClockwise();
 			debug(TAG, "c cw()");
+			m_oRobot.rotateCounterClockwise();
 			break;
 		case ROTATE_RIGHT:
-			m_oRobot.rotateClockwise();
 			debug(TAG, "cw()");
+			m_oRobot.rotateClockwise();
 			break;
 		}
 	}

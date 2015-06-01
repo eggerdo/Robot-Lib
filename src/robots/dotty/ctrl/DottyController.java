@@ -5,8 +5,8 @@ import java.io.IOException;
 import org.dobots.utilities.Utils;
 import org.dobots.utilities.log.Loggable;
 
-import robots.ctrl.comm.ProtocolHandler;
-import robots.ctrl.comm.ProtocolHandler.ICommHandler;
+import robots.ctrl.comm.OldProtocolHandler;
+import robots.ctrl.comm.OldProtocolHandler.ICommHandler;
 import robots.gui.comm.bluetooth.BluetoothConnection;
 import robots.nxt.MsgTypes;
 import android.os.Handler;
@@ -19,7 +19,7 @@ public class DottyController extends Loggable implements ICommHandler<byte[]> {
 
 	private Handler mUiHandler;
 
-	private class DottyProtocolHandler extends ProtocolHandler {
+	private class DottyProtocolHandler extends OldProtocolHandler {
 
 		public DottyProtocolHandler(BluetoothConnection connection, ICommHandler handler) {
 			super(connection, handler);

@@ -50,7 +50,7 @@ public class Romo extends DifferentialRobot implements IRomo, ICameraControlList
 	
 	public void startCamera(Context context) {
 		mCamera = CameraPreview.createCameraWithoutSurface(context);
-		mCamera.setPreviewSize(320, 240);
+		mCamera.setPreviewSize(176, 144);
 		mCamera.setFrameListener(new CameraPreviewCallback() {
 			@Override
 			public void onFrame(byte[] rgb, int width, int height, int rotation) {

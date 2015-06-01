@@ -55,15 +55,18 @@ public class MoveRepeater extends DoBotsThread {
 		synchronized (m_oMoveMutex) {
 			m_oCurrentMove = i_oMoveRunnable;
 			m_bRepeat = i_bRepeat;
+			// notify the thread that a new command is available
+			m_oMoveMutex.notify();
 		}
 	}
 
 	public void stopMove() {
-//		synchronized (m_oMoveMutex) {
-			Log.d(TAG, "done");
+		synchronized (m_oMoveMutex) {
 			m_bRepeat = false;
 			m_oCurrentMove = null;
-//		}
+			// notify the thread that a new command is available
+			m_oMoveMutex.notify();
+		}
 	}
 	
 	class MoveRunner implements Runnable {
@@ -104,7 +107,7 @@ public class MoveRepeater extends DoBotsThread {
 		m_lUpdateTime = System.nanoTime();
 
 		if (m_oCurrentMove != null) {
-
+			
 			synchronized (m_oMoveMutex) {
 				m_oCurrentMove.run();
 				
@@ -112,21 +115,24 @@ public class MoveRepeater extends DoBotsThread {
 					m_oCurrentMove = null;
 				}
 			}
+		}
+				
+		//SLEEP
+		//Sleep time. Time required to sleep to keep intervals consistent
+		//This starts with the specified delay time (in milliseconds) then subtracts from that the
+		//actual time it took to update.
+		this.m_lSleepTime = m_nInterval-((System.nanoTime()-m_lUpdateTime)/1000000L);
 
-			//SLEEP
-			//Sleep time. Time required to sleep to keep game consistent
-			//This starts with the specified delay time (in milliseconds) then subtracts from that the
-			//actual time it took to update and render the game. This allows the joystick to render smoothly.
-			this.m_lSleepTime = m_nInterval-((System.nanoTime()-m_lUpdateTime)/1000000L);
-
-			try {
-				//actual sleep code
-				if(m_lSleepTime>0){
-					Thread.sleep(m_lSleepTime);
+		try {
+			//actual sleep code
+			if(m_lSleepTime>0){
+				// sleep for the given time
+				synchronized (m_oMoveMutex) {
+					m_oMoveMutex.wait(m_lSleepTime);
 				}
-			} catch (InterruptedException ex) {
-				ex.printStackTrace();
 			}
+		} catch (InterruptedException ex) {
+			ex.printStackTrace();
 		}
 	}
 

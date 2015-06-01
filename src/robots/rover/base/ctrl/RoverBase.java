@@ -30,7 +30,7 @@ public abstract class RoverBase extends DifferentialRobot implements IMoveRepeat
 
 	protected Timer m_oKeepAliveTimer;
 
-	protected double m_dblBaseSpeed = 100.0;
+	protected double m_dblBaseSpeed = 50.0;
 
 	protected MoveRepeater m_oRepeater;
 

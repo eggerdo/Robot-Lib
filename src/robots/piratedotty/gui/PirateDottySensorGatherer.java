@@ -4,6 +4,7 @@ import org.dobots.R;
 import org.dobots.comm.msg.ISensorDataListener;
 import org.dobots.comm.msg.SensorMessageObj;
 import org.dobots.utilities.BaseActivity;
+import org.dobots.utilities.Utils;
 import org.dobots.zmq.ZmqHandler;
 import org.dobots.zmq.sensors.ZmqSensorsReceiver;
 import org.dobots.zmq.video.gui.VideoSurfaceView.DisplayMode;
@@ -14,10 +15,11 @@ import android.media.SoundPool;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import robots.gui.VideoSensorGatherer;
 import robots.piratedotty.ctrl.IPirateDotty;
-import robots.piratedotty.ctrl.PirateDottyTypes;
+import robots.piratedotty.ctrl.PirateDottyEncoder;
 
 public class PirateDottySensorGatherer extends VideoSensorGatherer implements ISensorDataListener {
 	
@@ -30,6 +32,11 @@ public class PirateDottySensorGatherer extends VideoSensorGatherer implements IS
 	
 	private SoundPool mSoundPool;
 	private int mHitID;
+	private int mHitsDetected = 0;
+	private int mShotsFired;
+	
+	private TextView txtShotsFired;
+	private TextView txtHitsDetected;
 	
 //	private IPirateDotty mPirateDotty;
 	
@@ -53,6 +60,9 @@ public class PirateDottySensorGatherer extends VideoSensorGatherer implements IS
 
         mSoundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
         mHitID = mSoundPool.load(m_oActivity, R.raw.explosion, 1);
+        
+        txtShotsFired = (TextView) m_oActivity.findViewById(R.id.txtShotsFired);
+        txtHitsDetected = (TextView) m_oActivity.findViewById(R.id.txtHitsDetected);
 	}
 	
 	@Override
@@ -77,10 +87,47 @@ public class PirateDottySensorGatherer extends VideoSensorGatherer implements IS
 	@Override
 	public void onSensorData(String data) {
 		SensorMessageObj sensorData = SensorMessageObj.decodeJSON(mRobot.getID(), data);
-		switch(PirateDottyTypes.getType(sensorData)) {
-		case PirateDottyTypes.HIT_DETECTED:
-			mSoundPool.play(mHitID, 1, 1, 1, 0, 1f);
+		switch(PirateDottyEncoder.getType(sensorData)) {
+		case PirateDottyEncoder.HIT_DETECTED:
+			onHitDetected();
 		}
+	}
+	
+	public void onHitDetected() {
+		mHitsDetected ++;
+		updateHits();
+		
+		mSoundPool.play(mHitID, 1, 1, 1, 0, 1f);
+	}
+	
+	private void updateHits() {
+		Utils.runAsyncUiTask(new Runnable() {
+			@Override
+			public void run() {
+				txtHitsDetected.setText("" + mHitsDetected);
+			}
+		});
+	}
+	
+	public void onShotFired(int num) {
+		mShotsFired += num;
+		updateShots();
+	}
+	
+	private void updateShots() {
+		Utils.runAsyncUiTask(new Runnable() {
+			@Override
+			public void run() {
+				txtShotsFired.setText("" + mShotsFired);
+			}
+		});
+	}
+
+	public void resetStats() {
+		mShotsFired = 0;
+		mHitsDetected = 0;
+		updateHits();
+		updateShots();
 	}
 
 }
