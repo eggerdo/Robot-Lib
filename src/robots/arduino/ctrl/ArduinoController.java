@@ -2,7 +2,7 @@ package robots.arduino.ctrl;
 
 import java.io.IOException;
 
-import org.dobots.comm.JSONEncoder;
+import org.dobots.comm.JsonEncoder;
 import org.dobots.comm.msg.ISensorDataListener;
 import org.dobots.utilities.log.Loggable;
 import org.json.JSONException;
@@ -25,10 +25,10 @@ public class ArduinoController extends Loggable implements IAsciiMessageHandler 
 	
 	private ISensorDataListener mListener;
 
-	private JSONEncoder mEncoder;
+	private JsonEncoder mEncoder;
 
 	public ArduinoController() {
-		mEncoder = new JSONEncoder();
+		mEncoder = new JsonEncoder();
 	}
 
 	public void setSensorListener(ISensorDataListener listener) {
@@ -37,7 +37,7 @@ public class ArduinoController extends Loggable implements IAsciiMessageHandler 
 
 	public void setConnection(IRobotConnection i_oConnection) {
 		m_oConnection = i_oConnection;
-		mProtocolHandler = new ByteProtocolHandler(i_oConnection, this);
+		mProtocolHandler = new AsciiProtocolHandler(i_oConnection, this);
 		Log.d(TAG, String.format("setConnection(%s)", m_oConnection.getAddress()));
 	}
 
@@ -119,9 +119,18 @@ public class ArduinoController extends Loggable implements IAsciiMessageHandler 
 		}
 	}
 
-	@Override
-	public void onMessage(byte[] buffer) {
-		Log.i(TAG, "received: ");
+	public void onMessage(String message) {
+		try {
+			JSONObject json = new JSONObject(message);
+			switch(JsonEncoder.getType(json)) {
+			case JsonEncoder.SENSOR_DATA:
+				if (mListener != null) {
+					mListener.onSensorData(json.get("data").toString());
+				}
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void setHandler(Handler handler) {
