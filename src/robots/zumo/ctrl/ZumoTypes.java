@@ -24,12 +24,12 @@ public class ZumoTypes {
 
 	/////////////////////////////////////////////////
 
-	public static final int INIT_MAZE 			= MessageEncoder.USER + 1;	
-	public static final int START_MAZE 			= MessageEncoder.USER + 2;
-	public static final int STOP_MAZE 			= MessageEncoder.USER + 3;
-	public static final int REPEAT_MAZE 		= MessageEncoder.USER + 4;
-	public static final int CALIBRATE_COMPSS 	= MessageEncoder.USER + 5;
-	public static final int RESET_HEADING 		= MessageEncoder.USER + 6;
-	public static final int TURN_DEG 			= MessageEncoder.USER + 7;
+	public static final int INIT_MAZE 			= MessageEncoder.USER + 0;	
+	public static final int START_MAZE 			= MessageEncoder.USER + 1;
+	public static final int STOP_MAZE 			= MessageEncoder.USER + 2;
+	public static final int REPEAT_MAZE 		= MessageEncoder.USER + 3;
+	public static final int CALIBRATE_COMPSS 	= MessageEncoder.USER + 4;
+	public static final int RESET_HEADING 		= MessageEncoder.USER + 5;
+	public static final int TURN_DEG 			= MessageEncoder.USER + 6;
 	
 }

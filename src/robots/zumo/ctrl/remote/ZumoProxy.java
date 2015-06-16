@@ -58,6 +58,55 @@ public class ZumoProxy extends RobotProxy implements IZumo {
 		}
 	}
 
+	public boolean isMazeSolving() {
+		if (mBound) {
+			return getRobot().isMazeSolving();
+		}
+		return false;
+	}
+
+	public void initMazeSolver() {
+		if (mBound) {
+			getRobot().initMazeSolver();
+		}
+	}
+
+	public void startMazeSolving() {
+		if (mBound) {
+			getRobot().startMazeSolving();
+		}
+	}
+
+	public void stopMazeSolving() {
+		if (mBound) {
+			getRobot().stopMazeSolving();
+		}
+	}
+
+	public void repeatMaze() {
+		if (mBound) {
+			getRobot().repeatMaze();
+		}
+	}
+
+	public void calibrateCompass() {
+		if (mBound) {
+			getRobot().calibrateCompass();
+		}
+	}
+
+	public void resetHeading() {
+		if (mBound) {
+			getRobot().resetHeading();
+		}
+	}
+
+	public void turnDegrees(int angle) {
+		if (mBound) {
+			getRobot().turnDegrees(angle);
+		}
+	}
+	
 //	@Override
 //	public void shootGuns() {
 //		if (mBound) {

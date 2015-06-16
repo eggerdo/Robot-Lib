@@ -41,6 +41,8 @@ public class Zumo extends DifferentialRobot implements IZumo, ICameraControlList
 	private MoveRepeater m_oRepeater;
 	
 	private Context mCameraContext;
+	
+	private boolean mMazeSolving = false;
 
 	// inverted = -1
 	// normal 	= +1
@@ -373,36 +375,42 @@ public class Zumo extends DifferentialRobot implements IZumo, ICameraControlList
 	public void cameraStop() {
 		// NOT APPLICABLE
 	}
-	
 
+	@Override
+	public boolean isMazeSolving() {
+		return mMazeSolving;
+	}
+	
 	public void initMazeSolver() {
 		m_oController.initMazeSolver();
 	}
 
 	public void startMazeSolving() {
 		m_oController.startMazeSolving();
+		mMazeSolving = true;
 	}
 
 	public void stopMazeSolving() {
 		m_oController.stopMazeSolving();
+		mMazeSolving = false;
 	}
 
 	public void repeatMaze() {
-		m_oController.stopMazeSolving();
+		m_oController.repeatMaze();
 	}
 
 	public void calibrateCompass() {
-		m_oController.stopMazeSolving();
+		m_oController.calibrateCompass();
 	}
 
 	public void resetHeading() {
-		m_oController.stopMazeSolving();
+		m_oController.resetHeading();
 	}
 
 	public void turnDegrees(int angle) {
-		m_oController.stopMazeSolving();
+		m_oController.turnDegrees(angle);
 	}
-	
+
 
 //	@Override
 //	public void shootGuns() {

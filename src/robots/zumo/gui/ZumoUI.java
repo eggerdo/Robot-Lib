@@ -31,6 +31,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ToggleButton;
@@ -65,6 +66,20 @@ public class ZumoUI extends BluetoothRobot implements ICameraControlListener {
 //	private Button m_btnVolley;
 	
 	private Handler mUIHandler = new Handler();
+
+	private Button m_btnStartUp;
+
+	private Button m_btnSolve;
+
+	private Button m_btnRepeat;
+
+	private Button m_btnCalibrateCompass;
+
+	private Button m_btnResetHeading;
+
+	private EditText m_edtAngle;
+
+	private Button m_btnTurnDegrees;
 
 //	private ToggleButton m_btnDock;
 //	private boolean m_bDocking;
@@ -161,64 +176,73 @@ public class ZumoUI extends BluetoothRobot implements ICameraControlListener {
 			});
 		}
 		
-//		m_layGuns = (LinearLayout) findViewById(R.id.layGuns);
-//		m_layControls = (LinearLayout) findViewById(R.id.layControls);
+		m_btnStartUp = (Button) findViewById(R.id.btnStartUp);
+		m_btnStartUp.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				m_oZumo.initMazeSolver();
+				
+				m_btnSolve.setEnabled(true);
+				m_btnRepeat.setEnabled(true);
+			}
+		});
 		
-//		m_btnShoot = (Button) findViewById(R.id.btnShoot);
-//		m_btnShoot.setOnClickListener(new OnClickListener() {
-//			
-//			@Override
-//			public void onClick(View arg0) {
-//				m_oZumo.shootGuns();
-//				m_btnShoot.setClickable(false);
-//				m_btnVolley.setClickable(false);
-//				m_btnShoot.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
-//				mUIHandler.postDelayed(new Runnable() {
-//					
-//					@Override
-//					public void run() {
-//						m_btnShoot.setClickable(true);
-//						m_btnVolley.setClickable(true);
-//						m_btnShoot.getBackground().clearColorFilter();
-//					}
-//				}, 2000);
-//				mSoundPool.play(mGunShotID, 1, 1, 1, 0, 1f);
-//				m_oSensorGatherer.onShotFired(1);
-//			}
-//		});
+		m_btnSolve = (Button) findViewById(R.id.btnSolveMaze);
+		m_btnSolve.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if (!m_oZumo.isMazeSolving()) {
+					m_oZumo.startMazeSolving();
+					m_btnSolve.setText("Stop");
+				} else {
+					m_oZumo.stopMazeSolving();
+					m_btnSolve.setText("Solve");
+				}
+			}
+		});
 
-//		m_btnVolley = (Button) findViewById(R.id.btnVolley);
-//		m_btnVolley.setOnClickListener(new OnClickListener() {
-//			
-//			@Override
-//			public void onClick(View arg0) {
-//				m_oZumo.fireVolley();
-//				m_btnShoot.setClickable(false);
-//				m_btnVolley.setClickable(false);
-//				m_btnVolley.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
-//				mUIHandler.postDelayed(new Runnable() {
-//					
-//					@Override
-//					public void run() {
-//						m_btnShoot.setClickable(true);
-//						m_btnVolley.setClickable(true);
-//						m_btnVolley.getBackground().clearColorFilter();
-//					}
-//				}, 6000);
-//				mSoundPool.play(mVolleyID, 1, 1, 1, 0, 1f);
-//				m_oSensorGatherer.onShotFired(3);
-//			}
-//		});
+		m_btnRepeat = (Button) findViewById(R.id.btnRepeat);
+		m_btnRepeat.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				m_oZumo.repeatMaze();
+			}
+		});
 		
-//		m_btnDock = (ToggleButton) m_oActivity.findViewById(R.id.btnDock);
-//		m_btnDock.setOnClickListener(new OnClickListener() {
-//			
-//			@Override
-//			public void onClick(View v) {
-//				m_bDocking = !m_bDocking;
-//				m_oZumo.dock(m_bDocking);
-//			}
-//		});
+		m_btnCalibrateCompass = (Button) findViewById(R.id.btnCalibrateCompass);
+		m_btnCalibrateCompass.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				m_oZumo.calibrateCompass();
+			}
+		});
+
+		m_btnResetHeading = (Button) findViewById(R.id.btnResetHeading);
+		m_btnResetHeading.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				m_oZumo.resetHeading();
+			}
+		});
+
+		m_edtAngle = (EditText) findViewById(R.id.edtAngle);
+		
+		m_btnTurnDegrees = (Button) findViewById(R.id.btnTurnDegrees);
+		m_btnTurnDegrees.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				int angle = Integer.valueOf(m_edtAngle.getText().toString());
+				m_oZumo.turnDegrees(angle);
+			}
+		});
+		
+		
     }
 
     @Override
@@ -302,6 +326,10 @@ public class ZumoUI extends BluetoothRobot implements ICameraControlListener {
         updateButtons(false);
 
 		m_oSensorGatherer.resetLayout();
+		
+		m_btnSolve.setText("Solve");
+		m_btnSolve.setEnabled(false);
+		m_btnRepeat.setEnabled(false);
 	}
 	
 	public void updateButtons(boolean enabled) {
