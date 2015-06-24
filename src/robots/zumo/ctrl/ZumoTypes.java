@@ -28,8 +28,16 @@ public class ZumoTypes {
 	public static final int START_MAZE 			= MessageEncoder.USER + 1;
 	public static final int STOP_MAZE 			= MessageEncoder.USER + 2;
 	public static final int REPEAT_MAZE 		= MessageEncoder.USER + 3;
-	public static final int CALIBRATE_COMPSS 	= MessageEncoder.USER + 4;
-	public static final int RESET_HEADING 		= MessageEncoder.USER + 5;
+	public static final int CALIBRATE_COMPASS 	= MessageEncoder.USER + 4;
+	public static final int INIT_HEADING 		= MessageEncoder.USER + 5;
 	public static final int TURN_DEG 			= MessageEncoder.USER + 6;
+	public static final int SET_HEADING			= MessageEncoder.USER + 7;
+	public static final int INIT_LINE_FOLLOWER	= MessageEncoder.USER + 8;
+	public static final int START_LINE_FOLLOWER	= MessageEncoder.USER + 9;
+	public static final int STOP_LINE_FOLLOWER	= MessageEncoder.USER + 10;
+	public static final int START_SUMO			= MessageEncoder.USER + 11;
+	public static final int STOP_SUMO			= MessageEncoder.USER + 12;
+	public static final int SET_WHITE_LINES		= MessageEncoder.USER + 13;
+	public static final int SET_PROGRAM			= MessageEncoder.USER + 14;
 	
 }

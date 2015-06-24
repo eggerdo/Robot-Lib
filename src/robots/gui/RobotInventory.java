@@ -28,7 +28,9 @@ public class RobotInventory {
 
 	public void removeRobot(String i_strRobotID) {
 		IRobotDevice oRobot = m_oRobotList.remove(i_strRobotID);
-		oRobot.destroy();
+		if (oRobot != null) {
+			oRobot.destroy();
+		}
 	}
 	
 	public boolean containsRobot(String i_strRobotID) {

@@ -50,6 +50,10 @@ public class Zumo extends DifferentialRobot implements IZumo, ICameraControlList
 	// factor with the speed for each wheel
 	private int m_nInverted = 1;
 
+	private boolean mLineFollowing;
+
+	private boolean mSumoRunning;
+
 	public Zumo() {
 		super(ZumoTypes.AXLE_WIDTH, ZumoTypes.MIN_VELOCITY, ZumoTypes.MAX_VELOCITY, ZumoTypes.MIN_RADIUS, ZumoTypes.MAX_RADIUS);
 
@@ -144,9 +148,9 @@ public class Zumo extends DifferentialRobot implements IZumo, ICameraControlList
 
 	@Override
 	public void enableControl(boolean i_bEnable) {
-		if (isConnected()) {
-			m_oController.control(i_bEnable);
-		}
+//		if (isConnected()) {
+//			m_oController.control(i_bEnable);
+//		}
 	}
 
 	@Override
@@ -325,6 +329,18 @@ public class Zumo extends DifferentialRobot implements IZumo, ICameraControlList
 		return true;
 	}
 
+	public boolean isInverted() {
+		return m_nInverted == -1;
+	}
+
+	public void setInverted(boolean i_bInverted) {
+		if (i_bInverted) {
+			m_nInverted = -1;
+		} else {
+			m_nInverted = 1;
+		}
+	}
+
 	@Override
 	public boolean isStreaming() {
 		return mCamera.isStopped();
@@ -409,6 +425,45 @@ public class Zumo extends DifferentialRobot implements IZumo, ICameraControlList
 
 	public void turnDegrees(int angle) {
 		m_oController.turnDegrees(angle);
+	}
+
+	@Override
+	public void initLineFollower() {
+		m_oController.initLineFollower();
+	}
+
+	@Override
+	public boolean isLineFollowing() {
+		return mLineFollowing;
+	}
+
+	@Override
+	public void startLineFollowing() {
+		m_oController.startLineFollowing();
+		mLineFollowing = true;
+	}
+
+	@Override
+	public void stopLineFollowing() {
+		m_oController.stopLineFollowing();
+		mLineFollowing = false;
+	}
+
+	@Override
+	public boolean isSumoRunning() {
+		return mSumoRunning;
+	}
+
+	@Override
+	public void startSumo() {
+		m_oController.startSumo();
+		mSumoRunning = true;
+	}
+
+	@Override
+	public void stopSumo() {
+		m_oController.stopSumo();
+		mSumoRunning = false;
 	}
 
 

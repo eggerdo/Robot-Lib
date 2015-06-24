@@ -25,5 +25,23 @@ public interface IZumo extends ICameraRobot, IRobotDevice {
 	public void turnDegrees(int angle);
 
 	boolean isMazeSolving();
+
+	void initLineFollower();
+
+	boolean isLineFollowing();
+
+	void startLineFollowing();
+
+	void stopLineFollowing();
+
+	boolean isSumoRunning();
+
+	void startSumo();
+
+	void stopSumo();
+
+	public boolean isInverted();
+
+	public void setInverted(boolean inverted);
 	
 }

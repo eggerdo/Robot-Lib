@@ -7,7 +7,7 @@ import org.dobots.comm.protocol.BaseMessage;
 
 public class ZumoEncoder extends ByteEncoder {
 
-	public  byte[] getTurnDegreespackage(int angle) {
+	public  byte[] getTurnDegreesPackage(int angle) {
 		
 		BaseMessage msg = new BaseMessage(ZumoTypes.TURN_DEG, 2);
 

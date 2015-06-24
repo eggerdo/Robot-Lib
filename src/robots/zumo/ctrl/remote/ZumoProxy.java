@@ -106,6 +106,72 @@ public class ZumoProxy extends RobotProxy implements IZumo {
 			getRobot().turnDegrees(angle);
 		}
 	}
+
+	@Override
+	public void initLineFollower() {
+		if (mBound) {
+			getRobot().initLineFollower();
+		}
+	}
+
+	@Override
+	public boolean isLineFollowing() {
+		if (mBound) {
+			return getRobot().isLineFollowing();
+		}
+		return false;
+	}
+
+	@Override
+	public void startLineFollowing() {
+		if (mBound) {
+			getRobot().startLineFollowing();
+		}
+	}
+
+	@Override
+	public void stopLineFollowing() {
+		if (mBound) {
+			getRobot().stopLineFollowing();
+		}
+	}
+
+	@Override
+	public boolean isSumoRunning() {
+		if (mBound) {
+			return getRobot().isSumoRunning();
+		}
+		return false;
+	}
+
+	@Override
+	public void startSumo() {
+		if (mBound) {
+			getRobot().startSumo();
+		}
+	}
+
+	@Override
+	public void stopSumo() {
+		if (mBound) {
+			getRobot().stopSumo();
+		}
+	}
+
+	@Override
+	public boolean isInverted() {
+		if (mBound) {
+			return getRobot().isInverted();
+		}
+		return false;
+	}
+
+	@Override
+	public void setInverted(boolean inverted) {
+		if (mBound) {
+			getRobot().setInverted(inverted);
+		}
+	}
 	
 //	@Override
 //	public void shootGuns() {

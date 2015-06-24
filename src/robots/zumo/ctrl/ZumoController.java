@@ -124,10 +124,10 @@ public class ZumoController extends Loggable implements IByteMessageHandler {
 	
 	@Override
 	public void onMessage(byte[] buffer) {
-		switch(ZumoEncoder.getType(buffer)) {
-		default:
-			// nada
-		}
+//		switch(ZumoEncoder.getType(buffer)) {
+//		default:
+//			// nada
+//		}
 	}
 
 	public void initMazeSolver() {
@@ -156,19 +156,49 @@ public class ZumoController extends Loggable implements IByteMessageHandler {
 
 	public void calibrateCompass() {
 		debug(TAG, "calibrateCompass");
-		byte[] message = mEncoder.getSimplePackage(ZumoTypes.CALIBRATE_COMPSS);
+		byte[] message = mEncoder.getSimplePackage(ZumoTypes.CALIBRATE_COMPASS);
 		send(message);
 	}
 
 	public void resetHeading() {
 		debug(TAG, "resetHeading");
-		byte[] message = mEncoder.getSimplePackage(ZumoTypes.RESET_HEADING);
+		byte[] message = mEncoder.getSimplePackage(ZumoTypes.INIT_HEADING);
 		send(message);
 	}
 
 	public void turnDegrees(int angle) {
 		debug(TAG, "ResetHeading");
-		byte[] message = mEncoder.getTurnDegreespackage(angle);
+		byte[] message = mEncoder.getTurnDegreesPackage(angle);
+		send(message);
+	}
+
+	public void initLineFollower() {
+		debug(TAG, "initLineFollower");
+		byte[] message = mEncoder.getSimplePackage(ZumoTypes.INIT_LINE_FOLLOWER);
+		send(message);
+	}
+
+	public void startLineFollowing() {
+		debug(TAG, "startLineFollowing");
+		byte[] message = mEncoder.getSimplePackage(ZumoTypes.START_LINE_FOLLOWER);
+		send(message);
+	}
+
+	public void stopLineFollowing() {
+		debug(TAG, "stopLineFollowing");
+		byte[] message = mEncoder.getSimplePackage(ZumoTypes.STOP_LINE_FOLLOWER);
+		send(message);
+	}
+
+	public void startSumo() {
+		debug(TAG, "startSumo");
+		byte[] message = mEncoder.getSimplePackage(ZumoTypes.START_SUMO);
+		send(message);
+	}
+
+	public void stopSumo() {
+		debug(TAG, "stopSumo");
+		byte[] message = mEncoder.getSimplePackage(ZumoTypes.STOP_SUMO);
 		send(message);
 	}
 	
